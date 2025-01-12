@@ -50,7 +50,7 @@ public class AprilTagCamera extends PhotonCamera {
         );
         // Uncomment the following to silence missing camera errors
         // PhotonCamera.setVersionCheckEnabled(false);
-        estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, this, robotToCam);
+        estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam);
     }
 
     public double getDistanceToTarget() {
@@ -66,7 +66,13 @@ public class AprilTagCamera extends PhotonCamera {
     }
 
     public Optional<EstimatedRobotPose> getGlobalPose() {
-        return estimator.update();
+        Optional<EstimatedRobotPose> visionEst = Optional.empty();
+        for (var change : getAllUnreadResults()) {
+            visionEst = estimator.update(change);
+            // TODO: See example: https://github.com/PhotonVision/photonvision/blob/main/photonlib-java-examples/poseest/src/main/java/frc/robot/Vision.java
+            //updateEstimationStdDevs(visionEst, change.getTargets());
+        }
+        return visionEst;
     }
 
     public double getYaw() {
