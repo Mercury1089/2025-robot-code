@@ -36,7 +36,6 @@ import frc.robot.Constants.APRILTAGS;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.SWERVE;
 import frc.robot.sensors.AprilTagCamera;
-import frc.robot.sensors.ObjectDetectionCamera;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.PathUtils;
 import frc.robot.util.SwerveUtils;
@@ -53,7 +52,6 @@ public class Drivetrain extends SubsystemBase {
   private PIDController rotationPIDController, xPIDController, yPIDController;
   private PathPlannerPath pathToNote, pathToAmp;
 
-  private ObjectDetectionCamera objectDetectionCam;
   private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.5, I = 0.0, D = 0.0;
   private final double THRESHOLD_DEGREES = 3.0;
   private final double THRESHOLD_SPEED = 0.5;
@@ -102,8 +100,6 @@ public class Drivetrain extends SubsystemBase {
 
     // photonvision wrapper
     photonCam = new AprilTagCamera();
-    // limelight = new Limelight();
-    objectDetectionCam = new ObjectDetectionCamera();
 
     smartdashField = new Field2d();
     SmartDashboard.putData("Swerve Odometry", smartdashField);
@@ -344,21 +340,6 @@ public class Drivetrain extends SubsystemBase {
     return this.photonCam;
   }
 
-  public ObjectDetectionCamera getObjCam() {
-    return this.objectDetectionCam;
-  }
-
-  public PathPlannerPath getPathToNote() {
-    return pathToNote;
-  }
-  public PathPlannerPath getPathToAmp() {
-    return pathToAmp;
-  }
-
-  public boolean noteInRange() {
-    return objectDetectionCam.getDistanceToTarget() > 0.0 && objectDetectionCam.getDistanceToTarget() < 1.65;
-  }
-
   public boolean isTargetPresent() {
     Optional<EstimatedRobotPose> result = photonCam.getGlobalPose();
     return result.isPresent();
@@ -405,7 +386,6 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drivetrain/distanceToSpeaker", Units.metersToInches(TargetUtils.getDistanceToFieldPos(getPose(), APRILTAGS.MIDDLE_BLUE_SPEAKER)));
     SmartDashboard.putNumber("Drivetrain/New Func (angle to red)", TargetUtils.getTargetHeadingToAprilTag(getPose(), APRILTAGS.MIDDLE_RED_SPEAKER));
     SmartDashboard.putNumber("Drivetrain/Angle Offset", 0);
-    SmartDashboard.putNumber("Drivetrain/Distance to closest note", objectDetectionCam.getDistanceToTarget());
 
   }
 
