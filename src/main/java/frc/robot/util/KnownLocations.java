@@ -99,10 +99,11 @@ public class KnownLocations {
             leftBranchInLeftZone = PathPointInch(127.149,167.625,0.0);
             rightBranchInRightZone = PathPointInch(230.640,154.625,180.0);
             leftBranchInRightZone = PathPointInch(230.640,167.625,180.0);
-            leftBranchInTopLeftZone = PathPointInch(158.685,209.208,-120.0);
-            rightBranchInTopLeftZone = PathPointInch(146.482,202.162,-120);
-            leftBranchInTopRightZone = PathPointInch(199.103,209.208,-60.0);
-            rightBranchInTopRightZone = PathPointInch(211.307, 202.162, -60.0);
+            leftBranchInTopLeftZone = PathPointInch(158.685,209.208,-60.0);
+            rightBranchInTopLeftZone = PathPointInch(146.482,202.162,-60.0);
+            leftBranchInTopRightZone = PathPointInch(199.103,209.208,-120.0);
+            rightBranchInTopRightZone = PathPointInch(211.307, 202.162, -120.0);
+
             REEF = PathPointInch(176.75, 158.5, 0);
         } else {
             rightBranchInBottomLeftZone = PathPointInch(483.907, 120.0650, 60.0);
@@ -113,10 +114,11 @@ public class KnownLocations {
             leftBranchInLeftZone = PathPointInch(464.534,154.625,0.0);
             rightBranchInRightZone = PathPointInch(568.025,167.625,180.0);
             leftBranchInRightZone = PathPointInch(568.025,154.625,180.0);
-            leftBranchInTopLeftZone = PathPointInch(483.907,202.185,-120.0);
-            rightBranchInTopLeftZone = PathPointInch(496.907,202.185,-120);
-            leftBranchInTopRightZone = PathPointInch(548.652,202.185,-60.0);
-            rightBranchInTopRightZone = PathPointInch(535.652, 209.691, -60.0);
+            leftBranchInTopLeftZone = PathPointInch(483.907,202.185,-60.0);
+            rightBranchInTopLeftZone = PathPointInch(496.907,202.185,-60);
+            leftBranchInTopRightZone = PathPointInch(548.652,202.185,-120.0);
+            rightBranchInTopRightZone = PathPointInch(535.652, 209.691, -120.0);
+
             REEF = PathPointInch(514.13, 158.5, 0);
         }
 

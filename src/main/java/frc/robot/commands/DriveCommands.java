@@ -69,7 +69,7 @@ public class DriveCommands {
         return new RunCommand(
             () -> drivetrain.drive(
               drivetrain.getXController().calculate(drivetrain.getPose().getX(), desiredPose.getX()),
-              drivetrain.getXController().calculate(drivetrain.getPose().getY(), desiredPose.getY()),
+              drivetrain.getYController().calculate(drivetrain.getPose().getY(), desiredPose.getY()),
               drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), TargetUtils.getTargetHeadingToReef(drivetrain.getPose())),
               true)
           , drivetrain);

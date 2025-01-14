@@ -80,8 +80,8 @@ public class RobotContainer {
 
     gamepadA.onTrue(new RunCommand(() -> DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain), drivetrain));
 
-    gamepadX.onTrue(new InstantCommand(() -> DriveCommands.goToPose(drivetrain, TargetUtils.getLeftBranch()), drivetrain));
-    gamepadB.onTrue(new InstantCommand(() -> DriveCommands.goToPose(drivetrain, TargetUtils.getRightBranch()), drivetrain));
+    gamepadX.onTrue(new RunCommand(() -> DriveCommands.goToPose(drivetrain, TargetUtils.getLeftBranch()), drivetrain));
+    gamepadB.onTrue(new RunCommand(() -> DriveCommands.goToPose(drivetrain, TargetUtils.getRightBranch()), drivetrain));
   }
 
   /**

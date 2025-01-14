@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADXL345_I2C.AllAxes;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Robot;
 import frc.robot.Constants.APRILTAGS;
 import frc.robot.commands.Autons;
 import frc.robot.commands.Autons.AutonTypes;
@@ -21,7 +22,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain.FieldPosition;
 
 public class TargetUtils {
 
-    public static String robotZone = "";
+    public static RobotZone robotZone = RobotZone.LEFT;
 
     public static double getDistanceToFieldPos(Pose2d robotPose, int apriltag) {
         double distance = 0.0;
@@ -64,41 +65,45 @@ public class TargetUtils {
         double rawHeading = getTargetHeadingToPoint(robotPose, KnownLocations.REEF.getTranslation());
         double finalHeading = 0.0;
 
-        if (rawHeading > 30 && rawHeading <= 60) {
+        if (rawHeading >= -30.0 && rawHeading <= 30.0) {
+            finalHeading = 0.0;
+            robotZone = RobotZone.LEFT;
+        } else if (rawHeading > 30.0 && rawHeading <= 90.0) {
             finalHeading = 60.0;
-            robotZone = "bottomLeft";
-        } else if (rawHeading > 60 && rawHeading <= 150) {
-            finalHeading =  120.0;
-            robotZone = "bottomRight";
-        } else if (rawHeading > 150 || rawHeading < -150) {
-            finalHeading = 180.0; 
-            robotZone = "right";
-        } else if (rawHeading < 30 && rawHeading >= -30) {
-            finalHeading =  0.0;
-            robotZone = "left";
-        } else if (rawHeading < -30 && rawHeading <= -90) {
-            finalHeading = -60.0;
-            robotZone = "topLeft";
-        } else if (rawHeading < -90 && rawHeading <= -150) {
+            robotZone = RobotZone.BOTTOM_LEFT;
+        } else if (rawHeading > 90.0 && rawHeading <= 150.0) {
+            finalHeading = 120.0;
+            robotZone = RobotZone.BOTTOM_RIGHT;
+        } else if (rawHeading > 150.0 && rawHeading <= 180.0) { 
+            finalHeading = 180.0;
+            robotZone = RobotZone.RIGHT;
+        } else if (rawHeading >= -180.0 && rawHeading < -150.0) { 
+            finalHeading = 180.0;
+            robotZone = RobotZone.RIGHT;
+        } else if (rawHeading >= -150.0 && rawHeading < -90.0) {
             finalHeading = -120.0;
-            robotZone = "topRight";
-        }
+            robotZone = RobotZone.TOP_RIGHT;
+        } else if (rawHeading >= -90.0 && rawHeading < -30.0) {
+            finalHeading = -60.0;
+            robotZone = RobotZone.TOP_LEFT;
+        }        
+
         return finalHeading;
     }
 
     public static Pose2d getLeftBranch() {
         switch (robotZone) {
-            case "right":
+            case RIGHT:
                 return KnownLocations.leftBranchInRightZone;
-            case "bottomRight":
+            case BOTTOM_RIGHT:
                 return KnownLocations.leftBranchInBottomRightZone;
-            case "bottomLeft":
+            case BOTTOM_LEFT:
                 return KnownLocations.leftBranchInBottomLeftZone;
-            case "left":
+            case LEFT:
                 return KnownLocations.leftBranchInLeftZone;
-            case "topLeft":
+            case TOP_LEFT:
                 return KnownLocations.leftBranchInTopLeftZone;
-            case "topRight":
+            case TOP_RIGHT:
                 return KnownLocations.leftBranchInTopRightZone;        
         }
         return new Pose2d(); //should not get here
@@ -106,20 +111,34 @@ public class TargetUtils {
 
     public static Pose2d getRightBranch() {
         switch (robotZone) {
-            case "right":
+            case RIGHT:
                 return KnownLocations.rightBranchInRightZone;
-            case "bottomRight":
+            case BOTTOM_RIGHT:
                 return KnownLocations.rightBranchInBottomRightZone;
-            case "bottomLeft":
+            case BOTTOM_LEFT:
                 return KnownLocations.rightBranchInBottomLeftZone;
-            case "left":
+            case LEFT:
                 return KnownLocations.rightBranchInLeftZone;
-            case "topLeft":
+            case TOP_LEFT:
                 return KnownLocations.rightBranchInTopLeftZone;
-            case "topRight":
+            case TOP_RIGHT:
                 return KnownLocations.rightBranchInTopRightZone;        
         }
         return new Pose2d(); //should not get here
+    }
+
+    public enum RobotZone {
+        LEFT("left"),
+        BOTTOM_LEFT("bottomLeft"),
+        BOTTOM_RIGHT("bottomRight"),
+        TOP_LEFT("topLeft"),
+        TOP_RIGHT("topRight"),
+        RIGHT("right");
+      
+        public final String robotZone;
+          RobotZone(String zone) {
+            this.robotZone = zone;
+          }
     }
 }
 
