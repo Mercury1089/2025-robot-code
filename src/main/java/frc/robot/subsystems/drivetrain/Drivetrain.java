@@ -44,13 +44,13 @@ import frc.robot.util.TargetUtils;
 
 public class Drivetrain extends SubsystemBase {
 
-  private SwerveModule frontLeftModule, frontRightModule, backLeftModule, backRightModule;
+  private MAXSwerveModule frontLeftModule, frontRightModule, backLeftModule, backRightModule;
   private Pigeon2 pigeon;
   private SwerveDrivePoseEstimator odometry;
   private SwerveDriveKinematics swerveKinematics;
   private AprilTagCamera photonCam;
   private Field2d smartdashField;
-  private PIDController rotationPIDController, directionalPidController;
+  private PIDController rotationPIDController, xPIDController, yPIDController;
   private PathPlannerPath pathToNote, pathToAmp;
 
   private ObjectDetectionCamera objectDetectionCam;
@@ -80,10 +80,10 @@ public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     // configure swerve modules
-    frontLeftModule = new SwerveModule(CAN.DRIVING_FRONT_LEFT, CAN.TURNING_FRONT_LEFT, -Math.PI / 2);
-    frontRightModule = new SwerveModule(CAN.DRIVING_FRONT_RIGHT, CAN.TURNING_FRONT_RIGHT, 0);
-    backLeftModule = new SwerveModule(CAN.DRIVING_BACK_LEFT, CAN.TURNING_BACK_LEFT, Math.PI);
-    backRightModule = new SwerveModule(CAN.DRIVING_BACK_RIGHT, CAN.TURNING_BACK_RIGHT, Math.PI / 2);
+    frontLeftModule = new MAXSwerveModule(CAN.DRIVING_FRONT_LEFT, CAN.TURNING_FRONT_LEFT, -Math.PI / 2);
+    frontRightModule = new MAXSwerveModule(CAN.DRIVING_FRONT_RIGHT, CAN.TURNING_FRONT_RIGHT, 0);
+    backLeftModule = new MAXSwerveModule(CAN.DRIVING_BACK_LEFT, CAN.TURNING_BACK_LEFT, Math.PI);
+    backRightModule = new MAXSwerveModule(CAN.DRIVING_BACK_RIGHT, CAN.TURNING_BACK_RIGHT, Math.PI / 2);
 
     //configure gyro
     pigeon = new Pigeon2(CAN.PIGEON_DRIVETRAIN);
@@ -94,8 +94,11 @@ public class Drivetrain extends SubsystemBase {
     rotationPIDController.enableContinuousInput(-180, 180);
     rotationPIDController.setTolerance(1.0);
 
-    directionalPidController = new PIDController(DIRECTION_P, I, D);
-    directionalPidController.setTolerance(0.1);
+    xPIDController = new PIDController(DIRECTION_P, I, D);
+    xPIDController.setTolerance(0.1);
+    
+    yPIDController = new PIDController(DIRECTION_P, I, D);
+    yPIDController.setTolerance(0.1);
 
     // photonvision wrapper
     photonCam = new AprilTagCamera();
@@ -138,8 +141,12 @@ public class Drivetrain extends SubsystemBase {
     return rotationPIDController;
   }
 
-  public PIDController getDirectionalController() {
-    return directionalPidController;
+  public PIDController getXController() {
+    return xPIDController;
+  }
+
+  public PIDController getYController() {
+    return yPIDController;
   }
 
   /**
@@ -390,13 +397,11 @@ public class Drivetrain extends SubsystemBase {
 
     SmartDashboard.putNumber("Drivetrain/CurrentPose X", getPose().getX());
     SmartDashboard.putNumber("Drivetrain/CurrentPose Y", getPose().getY());
-    SmartDashboard.putBoolean("Drivetrain/inStageArea", TargetUtils.isInStageArea(getPose()));
     SmartDashboard.putNumber("Drivetrain/getRotation", getRotation().getDegrees());
     SmartDashboard.putNumber("Drivetrain/distanceToAMP", TargetUtils.getDistanceToFieldPos(getPose(), APRILTAGS.BLUE_AMP));
     SmartDashboard.putBoolean("Drivetrain/isNotMoving", isNotMoving());
     SmartDashboard.putNumber("Drivetrain/CurrentPose Rotation", getPose().getRotation().getDegrees());
     SmartDashboard.putNumber("Drivetrain/Drive Angle", getRotation().getDegrees());
-    SmartDashboard.putNumber("Drivetrain/Angle to speaker without AprilTag", TargetUtils.getTargetHeadingToFieldPosition(getPose(), FieldPosition.SPEAKER));
     SmartDashboard.putNumber("Drivetrain/distanceToSpeaker", Units.metersToInches(TargetUtils.getDistanceToFieldPos(getPose(), APRILTAGS.MIDDLE_BLUE_SPEAKER)));
     SmartDashboard.putNumber("Drivetrain/New Func (angle to red)", TargetUtils.getTargetHeadingToAprilTag(getPose(), APRILTAGS.MIDDLE_RED_SPEAKER));
     SmartDashboard.putNumber("Drivetrain/Angle Offset", 0);

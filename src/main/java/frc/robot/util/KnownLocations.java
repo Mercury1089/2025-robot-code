@@ -5,6 +5,7 @@
 package frc.robot.util;
 
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -25,8 +26,24 @@ public class KnownLocations {
     private static KnownLocations knownLocations = null;
     private static AprilTagFieldLayout fieldLayout = null;
 
+    public static Pose2d REEF;
+
     // The alliance of the current KnownLocations
     public final Alliance alliance;
+
+    public static Pose2d 
+        rightBranchInRightZone,
+        leftBranchInRightZone,
+        rightBranchInBottomRightZone,
+        leftBranchInBottomRightZone,
+        rightBranchInBottomLeftZone,
+        leftBranchInBottomLeftZone,
+        rightBranchInLeftZone,
+        leftBranchInLeftZone,
+        rightBranchInTopLeftZone,
+        leftBranchInTopLeftZone,
+        rightBranchInTopRightZone,
+        leftBranchInTopRightZone;
 
     /**
      * Load the field layout for the current year (currently CRESCENDO).
@@ -71,6 +88,37 @@ public class KnownLocations {
 
     private KnownLocations(Alliance alliance) {
         this.alliance = alliance;
+
+        //TODO: check headings
+        if (alliance == Alliance.Blue) {
+            rightBranchInBottomLeftZone = PathPointInch(159.522, 112.559, 60.0);
+            leftBranchInBottomLeftZone = PathPointInch(146.522,120.065,60.0);
+            rightBranchInBottomRightZone = PathPointInch(198.267, 112.559, 120);
+            leftBranchInBottomRightZone = PathPointInch(211.267,120.065,120.0);
+            rightBranchInLeftZone = PathPointInch(200.189,154.625,0.0);
+            leftBranchInLeftZone = PathPointInch(127.149,167.625,0.0);
+            rightBranchInRightZone = PathPointInch(230.640,154.625,180.0);
+            leftBranchInRightZone = PathPointInch(230.640,167.625,180.0);
+            leftBranchInTopLeftZone = PathPointInch(158.685,209.208,-120.0);
+            rightBranchInTopLeftZone = PathPointInch(146.482,202.162,-120);
+            leftBranchInTopRightZone = PathPointInch(199.103,209.208,-60.0);
+            rightBranchInTopRightZone = PathPointInch(211.307, 202.162, -60.0);
+            REEF = PathPointInch(176.75, 158.5, 0);
+        } else {
+            rightBranchInBottomLeftZone = PathPointInch(483.907, 120.0650, 60.0);
+            leftBranchInBottomLeftZone = PathPointInch(496.907,112.559,60.0);
+            rightBranchInBottomRightZone = PathPointInch(548.652, 120.065, 120);
+            leftBranchInBottomRightZone = PathPointInch(535.652,112.559,120.0);
+            rightBranchInLeftZone = PathPointInch(464.534,167.625,0.0);
+            leftBranchInLeftZone = PathPointInch(464.534,154.625,0.0);
+            rightBranchInRightZone = PathPointInch(568.025,167.625,180.0);
+            leftBranchInRightZone = PathPointInch(568.025,154.625,180.0);
+            leftBranchInTopLeftZone = PathPointInch(483.907,202.185,-120.0);
+            rightBranchInTopLeftZone = PathPointInch(496.907,202.185,-120);
+            leftBranchInTopRightZone = PathPointInch(548.652,202.185,-60.0);
+            rightBranchInTopRightZone = PathPointInch(535.652, 209.691, -60.0);
+            REEF = PathPointInch(514.13, 158.5, 0);
+        }
 
     }
 

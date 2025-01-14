@@ -6,15 +6,10 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-import com.choreo.lib.Choreo;
-import com.choreo.lib.ChoreoControlFunction;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -33,12 +28,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.SWERVE;
 import frc.robot.sensors.ObjectDetectionCamera;
-import frc.robot.subsystems.RobotModeLEDs;
-import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.Arm.ArmPosition;
-import frc.robot.subsystems.arm.Intake;
-import frc.robot.subsystems.arm.Intake.IntakeSpeed;
-import frc.robot.subsystems.arm.Shooter;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
@@ -62,66 +51,49 @@ public class Autons {
 
     private final Command DO_NOTHING = new PrintCommand("Do Nothing Auton");
     private Drivetrain drivetrain;
-    private Arm arm;
-    private Intake intake;
-    private RobotModeLEDs LEDs;
-    private Shooter shooter;
-    private ChoreoControlFunction choreoController;
 
-    public Autons(Drivetrain drivetrain, Intake intake, Shooter shooter, Arm arm, RobotModeLEDs leds) {
+    public Autons(Drivetrain drivetrain) {
 
         this.drivetrain = drivetrain;
-        this.arm = arm;
-        this.intake = intake;
-        this.shooter = shooter;
-        this.LEDs = leds;
 
         KnownLocations knownLocations = KnownLocations.getKnownLocations();
         this.alliance = knownLocations.alliance;
 
         // Starting config for Auton Choosers
-        this.startingPose = knownLocations.DO_NOTHING;
+        // this.startingPose = knownLocations.DO_NOTHING;
         this.autonType = AutonTypes.DO_NOT_MOVE;
         // this.multiNoteType = AutonTypes.DO_NOT_MOVE;
 
         setChoosers(knownLocations);
 
-        HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live your Constants class
-                new PIDConstants(TRANSLATION_P, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(ROTATION_P, 0.0, 0.0), // Rotation PID constants
-                SWERVE.MAX_SPEED_METERS_PER_SECOND, // Max module speed, in m/s
-                SWERVE.WHEEL_RADIUS, // Drive base radius in meters. Distance from robot center to furthest module.
-                new ReplanningConfig(true, true) // Default path replanning config. See the API for the options here
-        );
+        // HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live your Constants class
+        //         new PIDConstants(TRANSLATION_P, 0.0, 0.0), // Translation PID constants
+        //         new PIDConstants(ROTATION_P, 0.0, 0.0), // Rotation PID constants
+        //         SWERVE.MAX_SPEED_METERS_PER_SECOND, // Max module speed, in m/s
+        //         SWERVE.WHEEL_RADIUS, // Drive base radius in meters. Distance from robot center to furthest module.
+        //         new ReplanningConfig(true, true) // Default path replanning config. See the API for the options here
+        // );
 
         // Configure AutoBuilder last
-        AutoBuilder.configureHolonomic(
-                () -> drivetrain.getPose(), // Robot pose supplier
-                (pose) -> drivetrain.resetPose(pose), // Method to reset odometry (will be called if your auto has starting pose)
-                () -> drivetrain.getFieldRelativSpeeds(), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (chassisSpeeds) -> drivetrain.drive(chassisSpeeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                pathFollowerConfig,
-                () -> {
-                // Boolean supplier that controls when the path will be mirrored for the red alliance
-                // This will flip the path being followed to the red side of the field.
-                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        // AutoBuilder.configureHolonomic(
+        //         () -> drivetrain.getPose(), // Robot pose supplier
+        //         (pose) -> drivetrain.resetPose(pose), // Method to reset odometry (will be called if your auto has starting pose)
+        //         () -> drivetrain.getFieldRelativSpeeds(), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        //         (chassisSpeeds) -> drivetrain.drive(chassisSpeeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        //         pathFollowerConfig,
+        //         () -> {
+        //         // Boolean supplier that controls when the path will be mirrored for the red alliance
+        //         // This will flip the path being followed to the red side of the field.
+        //         // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-                }, // Never flip a path - all paths use absolute coordinates
-                drivetrain // Reference to this subsystem to set requirements
-        );
-
-        PPHolonomicDriveController
-                .setRotationTargetOverride(() -> TargetUtils.getRotationTargetOverride(this, drivetrain, intake, arm));
-
-        choreoController = Choreo.choreoSwerveController(
-                new PIDController(TRANSLATION_P, 0.0, 0.0),
-                new PIDController(TRANSLATION_P, 0.0, 0.0),
-                new PIDController(ROTATION_P, 0.0, 0.0));
+        //         var alliance = DriverStation.getAlliance();
+        //         if (alliance.isPresent()) {
+        //             return alliance.get() == DriverStation.Alliance.Red;
+        //         }
+        //         return false;
+        //         }, // Never flip a path - all paths use absolute coordinates
+        //         drivetrain // Reference to this subsystem to set requirements
+        // );
     }
 
     public Command getAutonCommand() {
@@ -132,121 +104,22 @@ public class Autons {
         return this.autonType;
     }
 
-    public Command buildAutonCommand(KnownLocations knownLocations) {
-        // SET OUR INITIAL POSE
-        drivetrain.resetPose(startingPose);
+    // public Command buildAutonCommand(KnownLocations knownLocations) {
+    //     // SET OUR INITIAL POSE
+    //     drivetrain.resetPose(startingPose);
 
-        if (startingPose == knownLocations.DO_NOTHING) {
-            SmartDashboard.putBoolean("isDoNothing", true);
-            drivetrain.setTrajectorySmartdash(new Trajectory(), "traj1");
-            drivetrain.setTrajectorySmartdash(new Trajectory(), "traj2");
-            return DO_NOTHING;
-        }
-        SequentialCommandGroup autonCommand = new SequentialCommandGroup();
+    //     // if (startingPose == knownLocations.DO_NOTHING) {
+    //     //     SmartDashboard.putBoolean("isDoNothing", true);
+    //     //     drivetrain.setTrajectorySmartdash(new Trajectory(), "traj1");
+    //     //     drivetrain.setTrajectorySmartdash(new Trajectory(), "traj2");
+    //     //     return DO_NOTHING;
+    //     // }
+    //     SequentialCommandGroup autonCommand = new SequentialCommandGroup();
 
-        PathPlannerPath path;
-        int pathIndex = 1;
+    //     PathPlannerPath path;
+    //     int pathIndex = 1;
 
-        // First, always score the preloaded NOTE
-        autonCommand.addCommands(
-                new InstantCommand(() -> LEDs.enableAutoShoot(), LEDs),
-                shootNote());
-
-        String autonToRun = "leaveStartingZone";
-
-        switch (autonType) {
-            case DO_NOT_MOVE:
-                break;
-            case LEAVE_STARTING_ZONE:
-                autonToRun = "leaveStartingZone";
-                break;
-            case SCORE_2ND_NOTE:
-                break;
-            case MULTI_NOTE_SCORE:
-                if (startingPose == knownLocations.START_TOPMOST) {
-                    autonToRun = "leaveStartingZone";
-                } else if (startingPose == knownLocations.START_BOTTOMMOST) {
-                    autonToRun = "leaveStartingZone";
-                } else if (startingPose == knownLocations.START_MIDDLE) {
-                    autonToRun = "wingNoteAutonMiddle";
-                }
-                break;
-            case CENTER_LINE_NOTES:
-                if (startingPose == knownLocations.START_TOPMOST) {
-                    autonToRun = "centerNoteAutonTopMost";
-                } else if (startingPose == knownLocations.START_BOTTOMMOST) {
-                    autonToRun = "centerNoteAutonBottomMost";
-                }
-                break;
-        }
-
-        PathPlannerAuto finalizedAuton = new PathPlannerAuto(autonToRun);
-
-        // if (KnownLocations.getKnownLocations().alliance == Alliance.Red) {
-        //     List<PathPlannerPath> pathsInAuto = PathPlannerAuto.getPathGroupFromAutoFile(autonToRun);
-        //     for (PathPlannerPath p : pathsInAuto) {
-        //         PathPlannerPath redSidedPath = p.flipPath();
-        //         autonCommand.addCommands(
-        //             AutoBuilder.followPath(redSidedPath),
-        //             shootNote()
-        //         );
-        //     }
-        // } else {
-            
-        // }
-
-        autonCommand.addCommands(finalizedAuton);
-
-        // drivetrain.setTrajectorySmartdash(PathUtils.TrajectoryFromPath(finalizedAuton), "autoRoutine");
-
-        return autonCommand;
-    }
-
-    public boolean isReadyToShoot() {
-        return intake.hasNote() &&
-                drivetrain.isPointedAtTarget() &&
-                drivetrain.isNotMoving() &&
-                shooter.isAtTargetVelocity() &&
-                arm.isFinishedMovingSpeaker() &&
-                drivetrain.inShootingRange() &&
-                LEDs.isAutoShootEnabled();
-    }
-
-    public boolean noteInRange() {
-        ObjectDetectionCamera objectDetectionCam = drivetrain.getObjCam();
-        return (objectDetectionCam.getLatestResult().hasTargets() &&
-                objectDetectionCam.getDistanceToTarget() < MAX_NOTE_DISTANCE)
-                || (intake.hasNote());
-    }
-
-    public Command setUpToShoot() {
-        return DriveCommands.prepareToShoot(MercMath.zeroSupplier, MercMath.zeroSupplier, shooter, arm, drivetrain);
-    }
-
-    public Command pickUpNote() {
-        return new SequentialCommandGroup(
-            new RunCommand(() -> intake.setSpeed(IntakeSpeed.INTAKE), intake).until(() -> intake.hasNote()),
-            new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake)
-        );
-    }
-
-    public Command shootNote() {
-        return new ConditionalCommand(
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                        setUpToShoot(),
-                        new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake)).until(() -> isReadyToShoot()),
-                new RunCommand(() -> intake.setSpeed(IntakeSpeed.SHOOT), intake)
-                        .until(() -> !shooter.hasNote() && !intake.hasNote()),
-                new ParallelCommandGroup(
-                    new RunCommand(() -> arm.setPosition(ArmPosition.HOME), arm),
-                    new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake)
-                ).until(() -> arm.isAtPosition(ArmPosition.HOME))
-            ),
-            new RunCommand(() -> intake.setSpeed(IntakeSpeed.STOP), intake).until(() -> !intake.hasNote()), 
-            () -> intake.hasNote()
-        );
-    }
+    // }
 
 
     /**
@@ -289,18 +162,15 @@ public class Autons {
         // rebuildAutonCommand = true;
         // }
 
-        if (rebuildAutonCommand) {
-            this.autonCommand = buildAutonCommand(knownLocations);
-        }
+        // if (rebuildAutonCommand) {
+        //     this.autonCommand = buildAutonCommand(knownLocations);
+        // }
     }
 
     public void setChoosers(KnownLocations knownLocations) {
         // select the MANUAL STARTING POSITION of the robot
         this.startingPoseChooser = new SendableChooser<Pose2d>();
-        this.startingPoseChooser.setDefaultOption("DO NOTHING", knownLocations.DO_NOTHING);
-        this.startingPoseChooser.addOption("START TOP MOST", knownLocations.START_TOPMOST);
-        this.startingPoseChooser.addOption("START MIDDLE", knownLocations.START_MIDDLE);
-        this.startingPoseChooser.addOption("START BOTTOM MOST", knownLocations.START_BOTTOMMOST);
+        //this.startingPoseChooser.setDefaultOption("DO NOTHING", knownLocations.DO_NOTHING);
         SmartDashboard.putData("Starting Pose", startingPoseChooser);
 
         // select whether to visit charging station or score 2nd piece (or leave
