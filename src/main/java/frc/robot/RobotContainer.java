@@ -6,39 +6,20 @@ package frc.robot;
 
 import frc.robot.Constants.DS_USB;
 import frc.robot.Constants.JOYSTICK_BUTTONS;
-import frc.robot.Constants.SWERVE;
 import frc.robot.commands.Autons;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.drivetrain.Drivetrain.FieldPosition;
-import frc.robot.util.KnownLocations;
-import frc.robot.util.MercMath;
 import frc.robot.util.TargetUtils;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController; 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
