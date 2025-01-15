@@ -65,11 +65,11 @@ public class DriveCommands {
           , drivetrain);
     }
 
-    public static Command goToPose(Drivetrain drivetrain, Pose2d desiredPose) {
+    public static Command goToPose(Drivetrain drivetrain, Supplier<Pose2d> desiredPose) {
         return new RunCommand(
             () -> drivetrain.drive(
-              drivetrain.getXController().calculate(drivetrain.getPose().getX(), desiredPose.getX()),
-              drivetrain.getYController().calculate(drivetrain.getPose().getY(), desiredPose.getY()),
+              drivetrain.getXController().calculate(drivetrain.getPose().getX(), desiredPose.get().getX()),
+              drivetrain.getYController().calculate(drivetrain.getPose().getY(), desiredPose.get().getY()),
               drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), TargetUtils.getTargetHeadingToReef(drivetrain.getPose())),
               true)
           , drivetrain);

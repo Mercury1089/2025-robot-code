@@ -16,7 +16,7 @@ public final class Configs {
             double drivingFactor = Constants.SWERVE.WHEEL_DIAMETER * Math.PI
                     / Constants.SWERVE.MOTOR_REDUCTION;
             double turningFactor = 2 * Math.PI;
-            double drivingVelocityFeedForward = 1 / Constants.NEO_MOTOR_CONSTANTS.FREE_SPEED_RPMS;
+            double drivingVelocityFeedForward = 1 / Constants.SWERVE.DRIVE_WHEEL_FREE_SPEED;
 
             drivingConfig
                     .idleMode(IdleMode.kBrake)

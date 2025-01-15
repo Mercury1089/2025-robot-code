@@ -55,13 +55,13 @@ public class TargetUtils {
         return heading;
     }
 
-    public static double getTargetHeadingToPoint(Pose2d robotPose, Translation2d point) {
+    public static Rotation2d getTargetHeadingToPoint(Pose2d robotPose, Translation2d point) {
         Rotation2d targetRotation = point.minus(robotPose.getTranslation()).getAngle();
-        return  targetRotation.rotateBy(Rotation2d.fromDegrees(180.0)).getDegrees();
+        return  targetRotation.rotateBy(Rotation2d.fromDegrees(180.0));
     }
 
     public static double getTargetHeadingToReef(Pose2d robotPose) {
-        double rawHeading = getTargetHeadingToPoint(robotPose, KnownLocations.REEF.getTranslation());
+        double rawHeading = getTargetHeadingToPoint(robotPose, KnownLocations.REEF.getTranslation()).rotateBy(Rotation2d.fromDegrees(180.0)).getDegrees();
         double finalHeading = 0.0;
 
         if (rawHeading >= -30.0 && rawHeading <= 30.0) {
@@ -90,40 +90,57 @@ public class TargetUtils {
         return finalHeading;
     }
 
+    
+
     public static Pose2d getLeftBranch() {
+        Pose2d leftBranch = new Pose2d();
         switch (robotZone) {
             case RIGHT:
-                return KnownLocations.leftBranchInRightZone;
+                leftBranch = KnownLocations.leftBranchInRightZone;
+                break;
             case BOTTOM_RIGHT:
-                return KnownLocations.leftBranchInBottomRightZone;
+                leftBranch = KnownLocations.leftBranchInBottomRightZone;
+                break;
             case BOTTOM_LEFT:
-                return KnownLocations.leftBranchInBottomLeftZone;
+                leftBranch = KnownLocations.leftBranchInBottomLeftZone;
+                break;
             case LEFT:
-                return KnownLocations.leftBranchInLeftZone;
+                leftBranch = KnownLocations.leftBranchInLeftZone;
+                break;
             case TOP_LEFT:
-                return KnownLocations.leftBranchInTopLeftZone;
+                leftBranch = KnownLocations.leftBranchInTopLeftZone;
+                break;
             case TOP_RIGHT:
-                return KnownLocations.leftBranchInTopRightZone;        
+                leftBranch = KnownLocations.leftBranchInTopRightZone;
+                break;     
         }
-        return new Pose2d(); //should not get here
+        return leftBranch; //should get here (:
     }
 
-    public static Pose2d getRightBranch() {
+    public static Pose2d getRightBranch()  {
+        Pose2d rightBranch = new Pose2d();
         switch (robotZone) {
             case RIGHT:
-                return KnownLocations.rightBranchInRightZone;
+                rightBranch = KnownLocations.rightBranchInRightZone;
+                break;
             case BOTTOM_RIGHT:
-                return KnownLocations.rightBranchInBottomRightZone;
+                rightBranch = KnownLocations.rightBranchInBottomRightZone;
+                break;
             case BOTTOM_LEFT:
-                return KnownLocations.rightBranchInBottomLeftZone;
+                rightBranch = KnownLocations.rightBranchInBottomLeftZone;
+                break;
             case LEFT:
-                return KnownLocations.rightBranchInLeftZone;
+                rightBranch = KnownLocations.rightBranchInLeftZone;
+                break;
             case TOP_LEFT:
-                return KnownLocations.rightBranchInTopLeftZone;
+                rightBranch = KnownLocations.rightBranchInTopLeftZone;
+                break;
             case TOP_RIGHT:
-                return KnownLocations.rightBranchInTopRightZone;        
+                rightBranch = KnownLocations.rightBranchInTopRightZone;   
+                break;
+                     
         }
-        return new Pose2d(); //should not get here
+        return rightBranch; //should not get here
     }
 
     public enum RobotZone {
@@ -134,7 +151,7 @@ public class TargetUtils {
         TOP_RIGHT("topRight"),
         RIGHT("right");
       
-        public final String robotZone;
+        public String robotZone;
           RobotZone(String zone) {
             this.robotZone = zone;
           }

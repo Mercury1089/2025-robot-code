@@ -9,6 +9,7 @@ import frc.robot.Constants.JOYSTICK_BUTTONS;
 import frc.robot.commands.Autons;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.util.KnownLocations;
 import frc.robot.util.TargetUtils;
 
 import java.util.HashMap;
@@ -78,10 +79,10 @@ public class RobotContainer {
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     left11.onTrue(new RunCommand(() -> drivetrain.lockSwerve(), drivetrain));
 
-    gamepadA.onTrue(new RunCommand(() -> DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain), drivetrain));
+    gamepadA.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
 
-    gamepadX.onTrue(new RunCommand(() -> DriveCommands.goToPose(drivetrain, TargetUtils.getLeftBranch()), drivetrain));
-    gamepadB.onTrue(new RunCommand(() -> DriveCommands.goToPose(drivetrain, TargetUtils.getRightBranch()), drivetrain));
+    gamepadX.onTrue(DriveCommands.goToPose(drivetrain, () -> TargetUtils.getLeftBranch()));
+    gamepadB.onTrue(DriveCommands.goToPose(drivetrain, () -> TargetUtils.getRightBranch()));
   }
 
   /**
