@@ -40,6 +40,7 @@ import frc.robot.util.KnownLocations;
 import frc.robot.util.PathUtils;
 import frc.robot.util.SwerveUtils;
 import frc.robot.util.TargetUtils;
+import frc.robot.util.ReefscapeUtils;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -55,14 +56,16 @@ public class Drivetrain extends SubsystemBase {
   private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.5, I = 0.0, D = 0.0;
   private final double THRESHOLD_DEGREES = 3.0;
   private final double THRESHOLD_SPEED = 0.5;
+
+  private double targetHeadingToReef = 0.0;
     
   // 2024 - Autotune
-  private final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
-  private final double WHEEL_LENGTH = 28.5; // distance between left/right wheels (in inches)
+  //private final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
+  //private final double WHEEL_LENGTH = 28.5; // distance between left/right wheels (in inches)
 
   // // 2023 - Bolt
-  // private final double WHEEL_WIDTH = 27; // distance between front/back wheels (in inches)
-  // private final double WHEEL_LENGTH = 27; // distance between left/right wheels (in inches)
+  private final double WHEEL_WIDTH = 27; // distance between front/back wheels (in inches)
+  private final double WHEEL_LENGTH = 27; // distance between left/right wheels (in inches)
 
   private Rotation2d gyroOffset = Rotation2d.fromDegrees(0); // Offset to apply to gyro for field oriented
 
@@ -340,6 +343,10 @@ public class Drivetrain extends SubsystemBase {
     return this.photonCam;
   }
 
+  public double getTargetHeadingToReef() {
+    return targetHeadingToReef;
+  }
+
   public boolean isTargetPresent() {
     Optional<EstimatedRobotPose> result = photonCam.getGlobalPose();
     return result.isPresent();
@@ -376,7 +383,7 @@ public class Drivetrain extends SubsystemBase {
     // pathToAmp = PathUtils.generatePath(Rotation2d.fromDegrees(-90.0), getPose(), knownLocations.AMP);
     // setTrajectorySmartdash(PathUtils.TrajectoryFromPath(pathToAmp), "pathToAmp");
 
-    TargetUtils.getTargetHeadingToReef(getPose());
+    targetHeadingToReef = ReefscapeUtils.getTargetHeadingToReef(getPose());
 
     SmartDashboard.putNumber("Drivetrain/CurrentPose X", getPose().getX());
     SmartDashboard.putNumber("Drivetrain/CurrentPose Y", getPose().getY());
@@ -388,7 +395,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drivetrain/distanceToSpeaker", Units.metersToInches(TargetUtils.getDistanceToFieldPos(getPose(), APRILTAGS.MIDDLE_BLUE_SPEAKER)));
     SmartDashboard.putNumber("Drivetrain/New Func (angle to red)", TargetUtils.getTargetHeadingToAprilTag(getPose(), APRILTAGS.MIDDLE_RED_SPEAKER));
     SmartDashboard.putNumber("Drivetrain/Angle Offset", 0);
-    SmartDashboard.putString("Drivetrain/robotZone", TargetUtils.robotZone.robotZone);
+    SmartDashboard.putString("Drivetrain/robotZone", ReefscapeUtils.getCurrentRobotZone().robotZone);
+    SmartDashboard.putString("Drivetrain/preferredZone", ReefscapeUtils.preferredZone().robotZone);
+    SmartDashboard.putString("Drivetrain/branchSide", ReefscapeUtils.branchSide().side);
 
   }
 

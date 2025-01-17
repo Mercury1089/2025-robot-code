@@ -10,7 +10,10 @@ import frc.robot.commands.Autons;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.util.KnownLocations;
+import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
+import frc.robot.util.ReefscapeUtils.CoralStation;
+import frc.robot.util.ReefscapeUtils.RobotZone;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,10 +82,18 @@ public class RobotContainer {
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     left11.onTrue(new RunCommand(() -> drivetrain.lockSwerve(), drivetrain));
 
-    gamepadA.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
+    gamepadX.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
 
-    gamepadX.onTrue(DriveCommands.goToPose(drivetrain, () -> TargetUtils.getLeftBranch()));
-    gamepadB.onTrue(DriveCommands.goToPose(drivetrain, () -> TargetUtils.getRightBranch()));
+    right4.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
+    right5.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
+
+    gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.LEFT)));
+    gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BOTTOM_LEFT)));
+    gamepadY.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BOTTOM_RIGHT)));
+
+    gamepadPOVRight.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.OUTSIDERIGHT)));
+    gamepadPOVDown.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.INSIDERIGHT)));
+
   }
 
   /**

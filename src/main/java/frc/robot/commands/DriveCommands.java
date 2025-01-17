@@ -14,12 +14,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.APRILTAGS;
 import frc.robot.Constants.SWERVE;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.Drivetrain.FieldPosition;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
+import frc.robot.util.PathUtils;
+import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
 
 public class DriveCommands {
@@ -56,11 +59,12 @@ public class DriveCommands {
     }
 
     public static Command targetDriveToReef(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
+        Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
         return new RunCommand(
             () -> drivetrain.drive(
               -MercMath.sqaureInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
               -MercMath.sqaureInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-              drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), TargetUtils.getTargetHeadingToReef(drivetrain.getPose())),
+              drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), heading.get()),
               true)
           , drivetrain);
     }
@@ -70,11 +74,24 @@ public class DriveCommands {
             () -> drivetrain.drive(
               drivetrain.getXController().calculate(drivetrain.getPose().getX(), desiredPose.get().getX()),
               drivetrain.getYController().calculate(drivetrain.getPose().getY(), desiredPose.get().getY()),
-              drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), TargetUtils.getTargetHeadingToReef(drivetrain.getPose())),
+              drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), desiredPose.get().getRotation().getDegrees()),
               true)
           , drivetrain);
     }
 
+    public static Command goTopreferredBranch(Drivetrain drivetrain, Supplier<Double> goalEndVel) {
+        return new SequentialCommandGroup(
+            PathUtils.getPathToPose(ReefscapeUtils.getpreferredZone(), goalEndVel),
+            goToPose(drivetrain, () -> ReefscapeUtils.getpreferredBranch())
+        );
+    }
+
+    public static Command goTopreferredCoralStation(Drivetrain drivetrain, Supplier<Double> goalEndVel) {
+        return new SequentialCommandGroup(
+            PathUtils.getPathToPose(ReefscapeUtils.getPreferredCoralStation(), goalEndVel),
+            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredCoralStation())
+        );
+    }
     
 
     /**

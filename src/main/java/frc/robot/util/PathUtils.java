@@ -3,14 +3,17 @@ package frc.robot.util;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SWERVE;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -34,6 +37,10 @@ public class PathUtils {
         SWERVE.MAX_ROTATIONAL_SPEED,
         SWERVE.MAX_ANGULAR_SPEED
     );
+
+    public static Command getPathToPose(Pose2d desiredPose, Supplier<Double> goalEndVel) {
+        return AutoBuilder.pathfindToPose(desiredPose, pathConstraints, goalEndVel.get());
+    }
 
     /**
      * Generate a PathPlannerPath from a supplied list of poses.
