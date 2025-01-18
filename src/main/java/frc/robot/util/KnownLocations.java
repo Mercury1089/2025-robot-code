@@ -109,7 +109,7 @@ public class KnownLocations {
             leftBranchInBottomLeftZone = PathPointInch(146.522,120.065,60.0);
             rightBranchInBottomRightZone = PathPointInch(198.267, 112.559, 120);
             leftBranchInBottomRightZone = PathPointInch(211.267,120.065,120.0);
-            rightBranchInLeftZone = PathPointInch(200.189,154.625,0.0);
+            rightBranchInLeftZone = PathPointInch(127.149,154.625,0.0);
             leftBranchInLeftZone = PathPointInch(127.149,167.625,0.0);
             rightBranchInRightZone = PathPointInch(230.640,167.625,180.0);
             leftBranchInRightZone = PathPointInch(230.640,154.625,180.0);

@@ -8,6 +8,9 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -50,6 +53,7 @@ public class Autons {
 
     private final Command DO_NOTHING = new PrintCommand("Do Nothing Auton");
     private Drivetrain drivetrain;
+    private RobotConfig config;
 
     public Autons(Drivetrain drivetrain) {
 
@@ -65,34 +69,46 @@ public class Autons {
 
         setChoosers(knownLocations);
 
-        // HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live your Constants class
-        //         new PIDConstants(TRANSLATION_P, 0.0, 0.0), // Translation PID constants
-        //         new PIDConstants(ROTATION_P, 0.0, 0.0), // Rotation PID constants
-        //         SWERVE.MAX_SPEED_METERS_PER_SECOND, // Max module speed, in m/s
-        //         SWERVE.WHEEL_RADIUS, // Drive base radius in meters. Distance from robot center to furthest module.
-        //         new ReplanningConfig(true, true) // Default path replanning config. See the API for the options here
-        // );
+        
+        try{
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            // Handle exception as needed
+            e.printStackTrace();
+        }
+
+        // // HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live your Constants class
+        // //         new PIDConstants(TRANSLATION_P, 0.0, 0.0), // Translation PID constants
+        // //         new PIDConstants(ROTATION_P, 0.0, 0.0), // Rotation PID constants
+        // //         SWERVE.MAX_SPEED_METERS_PER_SECOND, // Max module speed, in m/s
+        // //         SWERVE.WHEEL_RADIUS, // Drive base radius in meters. Distance from robot center to furthest module.
+        // //         new ReplanningConfig(true, true) // Default path replanning config. See the API for the options here
+        // // );
 
         // Configure AutoBuilder last
-        // AutoBuilder.configureHolonomic(
-        //         () -> drivetrain.getPose(), // Robot pose supplier
-        //         (pose) -> drivetrain.resetPose(pose), // Method to reset odometry (will be called if your auto has starting pose)
-        //         () -> drivetrain.getFieldRelativSpeeds(), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        //         (chassisSpeeds) -> drivetrain.drive(chassisSpeeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        //         pathFollowerConfig,
-        //         () -> {
-        //         // Boolean supplier that controls when the path will be mirrored for the red alliance
-        //         // This will flip the path being followed to the red side of the field.
-        //         // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        AutoBuilder.configure(
+                () -> drivetrain.getPose(), // Robot pose supplier
+                (pose) -> drivetrain.resetPose(pose), // Method to reset odometry (will be called if your auto has starting pose)
+                () -> drivetrain.getFieldRelativSpeeds(), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                (chassisSpeeds) -> drivetrain.drive(chassisSpeeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                    new PIDConstants(TRANSLATION_P, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(ROTATION_P, 0.0, 0.0) // Rotation PID constants
+                ),
+                config,
+                () -> {
+                // Boolean supplier that controls when the path will be mirrored for the red alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-        //         var alliance = DriverStation.getAlliance();
-        //         if (alliance.isPresent()) {
-        //             return alliance.get() == DriverStation.Alliance.Red;
-        //         }
-        //         return false;
-        //         }, // Never flip a path - all paths use absolute coordinates
-        //         drivetrain // Reference to this subsystem to set requirements
-        // );
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+                }, // Never flip a path - all paths use absolute coordinates
+                drivetrain // Reference to this subsystem to set requirements
+        );
     }
 
     public Command getAutonCommand() {

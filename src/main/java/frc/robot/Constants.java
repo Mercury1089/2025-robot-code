@@ -67,13 +67,13 @@ public final class Constants {
   }
 
   public static class SWERVE {
-    // 2024 robot
-    public static final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
-    public static final double WHEEL_LENGTH = 28.5; // distance between left/right wheels (in inches)
+    // // 2024 robot
+    // public static final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
+    // public static final double WHEEL_LENGTH = 28.5; // distance between left/right wheels (in inches)
 
-    // // bolt
-    // public static final double WHEEL_WIDTH = 27; // distance between front/back wheels (in inches)
-    // public static final double WHEEL_LENGTH = 27; // distance between left/right wheels (in inches)
+    // bolt
+    public static final double WHEEL_WIDTH = 27; // distance between front/back wheels (in inches)
+    public static final double WHEEL_LENGTH = 27; // distance between left/right wheels (in inches)
 
     // Distance from center to farthest wheel
     public static final double WHEEL_RADIUS = (new Translation2d(Units.inchesToMeters(WHEEL_WIDTH / 2),Units.inchesToMeters(WHEEL_WIDTH / 2))).getNorm();
@@ -81,7 +81,7 @@ public final class Constants {
 
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
+    public static final double MAX_SPEED_METERS_PER_SECOND = 4.46;
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 
     public static final double DIRECTION_SLEW_RATE = 1.2; // radians per second

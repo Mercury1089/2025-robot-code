@@ -81,14 +81,14 @@ public class DriveCommands {
 
     public static Command goTopreferredBranch(Drivetrain drivetrain, Supplier<Double> goalEndVel) {
         return new SequentialCommandGroup(
-            PathUtils.getPathToPose(ReefscapeUtils.getpreferredZone(), goalEndVel),
+            ReefscapeUtils.getPathToPreferredZone(),
             goToPose(drivetrain, () -> ReefscapeUtils.getpreferredBranch())
         );
     }
 
     public static Command goTopreferredCoralStation(Drivetrain drivetrain, Supplier<Double> goalEndVel) {
         return new SequentialCommandGroup(
-            PathUtils.getPathToPose(ReefscapeUtils.getPreferredCoralStation(), goalEndVel),
+            ReefscapeUtils.getPathToPreferredCoralStation(),
             goToPose(drivetrain, () -> ReefscapeUtils.getPreferredCoralStation())
         );
     }

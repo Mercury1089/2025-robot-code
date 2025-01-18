@@ -1,21 +1,28 @@
 package frc.robot.util;
 
+import java.nio.file.Path;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 
 public class ReefscapeUtils {
     private static RobotZone robotZone = RobotZone.LEFT; // this is your current robotZone
 
     private static RobotZone preferredZone = RobotZone.LEFT; // this is your intended robot zone to go to while in FIDO
-    private static CoralStation preferredCoralStation = CoralStation.INSIDELEFT;
+    private static CoralStation preferredCoralStation = CoralStation.INSIDERIGHT;
     private static Level preferredLevel = Level.L4;
     private static BranchSide preferredBranchSide = BranchSide.LEFT;
 
     
     public static RobotZone preferredZone() {
         return preferredZone;
+    }
+
+    public static CoralStation preferredCoralStation() {
+        return preferredCoralStation;
     }
 
     
@@ -89,6 +96,46 @@ public class ReefscapeUtils {
         }
 
         return zone;
+    }
+
+    public static Command getPathToPreferredZone() {
+        Supplier<Double> goalEndSupplier = () -> 0.5;
+        return new ConditionalCommand(
+            PathUtils.getPathToPose(() -> KnownLocations.rightZone, goalEndSupplier),
+            new ConditionalCommand(
+                PathUtils.getPathToPose(() -> KnownLocations.leftZone, goalEndSupplier), 
+                new ConditionalCommand(
+                    PathUtils.getPathToPose(() -> KnownLocations.bottomLeftZone, goalEndSupplier), 
+                    new ConditionalCommand(
+                        PathUtils.getPathToPose(() -> KnownLocations.bottomRightZone, goalEndSupplier), 
+                        new ConditionalCommand(
+                            PathUtils.getPathToPose(() -> KnownLocations.topRightZone, goalEndSupplier), 
+                            new ConditionalCommand(
+                                PathUtils.getPathToPose(() -> KnownLocations.topLeftZone, goalEndSupplier), 
+                                    PathUtils.getPathToPose(() -> KnownLocations.leftZone, goalEndSupplier), 
+                                () -> preferredZone == RobotZone.TOP_LEFT),
+                            () -> preferredZone == RobotZone.TOP_RIGHT),
+                        () -> preferredZone == RobotZone.BOTTOM_RIGHT), 
+                    () -> preferredZone == RobotZone.BOTTOM_LEFT), 
+                () -> preferredZone == RobotZone.LEFT), 
+            () -> preferredZone == RobotZone.RIGHT);
+    }
+
+    public static Command getPathToPreferredCoralStation() {
+        Supplier<Double> goalEndSupplier = () -> 0.5;
+        return new ConditionalCommand(
+            PathUtils.getPathToPose(() -> KnownLocations.leftCoralStationInside, goalEndSupplier), 
+            new ConditionalCommand(
+                PathUtils.getPathToPose(() -> KnownLocations.leftCoralStationOutside, goalEndSupplier), 
+                new ConditionalCommand(
+                    PathUtils.getPathToPose(() -> KnownLocations.rightCoralStationInside, goalEndSupplier), 
+                    new ConditionalCommand(
+                        PathUtils.getPathToPose(() -> KnownLocations.rightCoralStationOutside, goalEndSupplier), 
+                            PathUtils.getPathToPose(() -> KnownLocations.rightCoralStationInside, goalEndSupplier), 
+                        () -> preferredCoralStation == CoralStation.OUTSIDELEFT),
+                    () -> preferredCoralStation == CoralStation.OUTSIDELEFT),
+                () -> preferredCoralStation == CoralStation.OUTSIDELEFT), 
+            () -> preferredCoralStation == CoralStation.INSIDELEFT);
     }
 
     public static void changepreferredBranch(BranchSide side) {

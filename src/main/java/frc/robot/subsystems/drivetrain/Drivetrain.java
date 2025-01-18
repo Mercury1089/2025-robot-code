@@ -30,6 +30,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.APRILTAGS;
@@ -68,6 +69,10 @@ public class Drivetrain extends SubsystemBase {
   private final double WHEEL_LENGTH = 27; // distance between left/right wheels (in inches)
 
   private Rotation2d gyroOffset = Rotation2d.fromDegrees(0); // Offset to apply to gyro for field oriented
+
+  private Command pathToZone = new Command() {
+    
+  };
 
   // Slew rate filter variables for controlling lateral acceleration
   private double currentAngularSpeed = 0.0;
@@ -355,6 +360,10 @@ public class Drivetrain extends SubsystemBase {
   public boolean isNotMoving() {
     return Math.abs(getXSpeeds()) < THRESHOLD_SPEED && Math.abs(getYSpeeds()) < THRESHOLD_SPEED;
   }
+  
+  public Command getPathToPreferredZone() {
+    return pathToZone;
+  }
 
   @Override
   public void periodic() {
@@ -385,6 +394,8 @@ public class Drivetrain extends SubsystemBase {
 
     targetHeadingToReef = ReefscapeUtils.getTargetHeadingToReef(getPose());
 
+    pathToZone = PathUtils.getPathToPose(() -> ReefscapeUtils.getpreferredZone(), () -> 0.0);
+
     SmartDashboard.putNumber("Drivetrain/CurrentPose X", getPose().getX());
     SmartDashboard.putNumber("Drivetrain/CurrentPose Y", getPose().getY());
     SmartDashboard.putNumber("Drivetrain/getRotation", getRotation().getDegrees());
@@ -398,6 +409,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Drivetrain/robotZone", ReefscapeUtils.getCurrentRobotZone().robotZone);
     SmartDashboard.putString("Drivetrain/preferredZone", ReefscapeUtils.preferredZone().robotZone);
     SmartDashboard.putString("Drivetrain/branchSide", ReefscapeUtils.branchSide().side);
+    SmartDashboard.putString("Drivetrain/coralStation", ReefscapeUtils.preferredCoralStation().coralStation);
 
   }
 
