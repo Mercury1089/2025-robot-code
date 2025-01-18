@@ -8,7 +8,7 @@ import frc.robot.Constants;
 
 public final class Configs {
     
-     public static final class Arm {
+     public static final class Elevator {
         public static final SparkMaxConfig leftConfig = new SparkMaxConfig();
         public static final SparkMaxConfig rightConfig = new SparkMaxConfig();
 
