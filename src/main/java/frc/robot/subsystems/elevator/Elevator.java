@@ -6,12 +6,15 @@ package frc.robot.subsystems.elevator;
 import java.util.function.Supplier;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
+import frc.robot.subsystems.drivetrain.Configs;
 
 
 public class Elevator extends SubsystemBase {
@@ -51,7 +54,10 @@ public class Elevator extends SubsystemBase {
     armRight = new SparkMax(CAN.ARM_RIGHT, MotorType.kBrushless);
 
     // TODO: Configure...
-
+    armLeft.configure(Configs.Elevator.leftConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+    armRight.configure(Configs.Elevator.leftConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
     //TODO: How do we follow with the new REVLib??
     //armRight.follow(armLeft, true);
 
