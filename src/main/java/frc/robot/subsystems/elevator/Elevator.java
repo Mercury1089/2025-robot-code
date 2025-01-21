@@ -11,13 +11,17 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.CAN;
-import frc.robot.subsystems.drivetrain.Configs;
-
 
 public class Elevator extends SubsystemBase {
+
   /** Creates a new Arm. */
   public static final int
     ARM_PID_SLOT = 0;
@@ -33,35 +37,48 @@ public class Elevator extends SubsystemBase {
 
   private static final double ANGLE_OFFSET = -3.5;
 
-  private final double 
-    NOMINAL_OUTPUT_FORWARD = 0.01, //0.02,
-    PEAK_OUTPUT_FORWARD = 1.0, // 0.6,
-    NOMINAL_OUTPUT_REVERSE = -0.01, //-0.5,
-    PEAK_OUTPUT_REVERSE = -0.6;
-
   public final double GEAR_RATIO = 125.0 / 1.0;
   public final double THRESHOLD_DEGREES = 0.5;
 
   
-  private SparkMax armLeft;
-  private SparkMax armRight;
-  private SparkClosedLoopController armPIDController;
+  private SparkMax leftMotor, rightMotor;
+  private SparkClosedLoopController armClosedLoopController;
   private AbsoluteEncoder armAbsoluteEncoder;
   private double setPosition;
 
   public Elevator() {
-    armLeft = new SparkMax(CAN.ARM_LEFT, MotorType.kBrushless);
-    armRight = new SparkMax(CAN.ARM_RIGHT, MotorType.kBrushless);
+    leftMotor = new SparkMax(CAN.ARM_LEFT, MotorType.kBrushless);
+    rightMotor = new SparkMax(CAN.ARM_RIGHT, MotorType.kBrushless);
 
-    // TODO: Configure...
-    armLeft.configure(Configs.Elevator.leftConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-    armRight.configure(Configs.Elevator.leftConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-    //TODO: How do we follow with the new REVLib??
-    //armRight.follow(armLeft, true);
+    SparkMaxConfig leftConfig = new SparkMaxConfig();
+    SparkMaxConfig rightConfig = new SparkMaxConfig();
 
-    armPIDController = armLeft.getClosedLoopController();
+    leftConfig
+      .idleMode(IdleMode.kBrake)
+      .inverted(false);
+    leftConfig.absoluteEncoder
+      .positionConversionFactor(360.0); // multiplied by native units
+    leftConfig.softLimit
+      .forwardSoftLimitEnabled(true)
+      .forwardSoftLimit(ARM_SOFT_LIMIT_FWD)
+      .reverseSoftLimitEnabled(false)
+      .reverseSoftLimit(ARM_SOFT_LIMIT_BKW);
+    leftConfig.closedLoop
+      .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+      .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
+      .positionWrappingEnabled(false);
+
+    rightConfig
+      .idleMode(IdleMode.kBrake)
+      .follow(Constants.CAN.ARM_LEFT,true);
+
+    leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+    rightMotor.configure(rightConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+
+
+    armClosedLoopController = leftMotor.getClosedLoopController();
 
     setPosition = getArmPosition();
 
@@ -69,11 +86,11 @@ public class Elevator extends SubsystemBase {
   }
   
   public void resetEncoders() {
-    armPIDController.setReference(0, SparkMax.ControlType.kPosition);
+    armClosedLoopController.setReference(0, SparkMax.ControlType.kPosition);
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
-    armLeft.set((speedSupplier.get() * 0.5));
+    leftMotor.set((speedSupplier.get() * 0.5));
   }
 
   public void setPosition(ArmPosition pos) {
@@ -85,15 +102,8 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setPosition(double pos) {
-    // if (pos > ARM_SOFT_LIMIT_FWD) {
-    //   pos = ARM_SOFT_LIMIT_FWD;
-    // } else if (pos < ARM_SOFT_LIMIT_BKW) {
-    //   pos = ARM_SOFT_LIMIT_BKW;
-    // }
-
     setPosition = pos;
-
-    armPIDController.setReference(pos, SparkMax.ControlType.kPosition);
+    armClosedLoopController.setReference(pos, SparkMax.ControlType.kPosition);
   }
 
   public double getPosToTarget(double distance) {
@@ -101,14 +111,16 @@ public class Elevator extends SubsystemBase {
     return (37.1 + (0.633 * distance) - (0.00207 * (distance * distance))) + ANGLE_OFFSET;
   }
 
-  
-
   public boolean isAtPosition(double pos) {
     return Math.abs(getArmPosition() - pos) < THRESHOLD_DEGREES;
   }
 
   public boolean isAtPosition(ArmPosition pos) {
     return isAtPosition(pos.degreePos);
+  }
+
+  public boolean isInPosition() {
+    return isAtPosition(setPosition);
   }
 
   public double getArmPosition() {
