@@ -132,8 +132,8 @@ public class ReefscapeUtils {
                     new ConditionalCommand(
                         PathUtils.getPathToPose(() -> KnownLocations.rightCoralStationOutside, goalEndSupplier), 
                             PathUtils.getPathToPose(() -> KnownLocations.rightCoralStationInside, goalEndSupplier), 
-                        () -> preferredCoralStation == CoralStation.OUTSIDELEFT),
-                    () -> preferredCoralStation == CoralStation.OUTSIDELEFT),
+                        () -> preferredCoralStation == CoralStation.OUTSIDERIGHT),
+                    () -> preferredCoralStation == CoralStation.INSIDERIGHT),
                 () -> preferredCoralStation == CoralStation.OUTSIDELEFT), 
             () -> preferredCoralStation == CoralStation.INSIDELEFT);
     }
