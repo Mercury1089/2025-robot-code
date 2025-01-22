@@ -27,42 +27,30 @@ public class AprilTagCamera extends PhotonCamera {
 
     // AprilTagCamera 3d Pose on robot
     // Uses coordinates described here: https://docs.photonvision.org/en/latest/docs/apriltag-pipelines/coordinate-systems.html#camera-coordinate-frame
-    private static final String DEFAULT_CAM_NAME = "AprilTagCamera";
-    private static final double DEFAULT_CAM_X = Units.inchesToMeters(13.5); // 14.75in behind center
-    private static final double DEFAULT_CAM_Y = 0.0; // centered in robot Y
-    private static final double DEFAULT_CAM_Z = Units.inchesToMeters(6.5); // 21.25in up from center
+    // private static final String DEFAULT_CAM_NAME = "AprilTagCamera";
+    // private static final double DEFAULT_CAM_X = Units.inchesToMeters(13.5); // 14.75in behind center
+    // private static final double DEFAULT_CAM_Y = 0.0; // centered in robot Y
+    // private static final double DEFAULT_CAM_Z = Units.inchesToMeters(6.5); // 21.25in up from center
 
-    private static final double DEFAULT_CAM_ROTATION = Rotation2d.fromDegrees(0).getRadians(); // rotation relative to robot front (radians)
-    private static final double DEFAULT_CAM_TILT = Rotation2d.fromDegrees(20).getRadians(); // tilt relative to floor (raians)
+    // private static final double DEFAULT_CAM_ROTATION = Rotation2d.fromDegrees(0).getRadians(); // rotation relative to robot front (radians)
+    //private static final double DEFAULT_CAM_TILT = Rotation2d.fromDegrees(20).getRadians(); // tilt relative to floor (raians)
 
-    private static final double TARGET_HEIGHT = 0.36; // may need to change - DO WE NEED THIS?
-    private static final double CAMERA_HEIGHT = DEFAULT_CAM_Z; // height on robot (meters) - DO WE NEED THIS?
+    // private static final double TARGET_HEIGHT = 0.36; // may need to change - DO WE NEED THIS?
+    // private static final double CAMERA_HEIGHT = DEFAULT_CAM_Z; // height on robot (meters) - DO WE NEED THIS?
 
 
     private AprilTagFieldLayout fieldLayout;
     private PhotonPoseEstimator estimator;
 
-    public AprilTagCamera() {
-        super(DEFAULT_CAM_NAME);
+    public AprilTagCamera(String name, Transform3d robotToCam) {
+        super(name);
         fieldLayout = KnownLocations.getFieldLayout();
-        Transform3d robotToCam = new Transform3d(
-            new Translation3d(DEFAULT_CAM_X, DEFAULT_CAM_Y, DEFAULT_CAM_Z), new Rotation3d(0.0, DEFAULT_CAM_TILT, DEFAULT_CAM_ROTATION)
-        );
+        // Transform3d robotToCam = new Transform3d(
+        //     new Translation3d(DEFAULT_CAM_X, DEFAULT_CAM_Y, DEFAULT_CAM_Z), new Rotation3d(0.0, DEFAULT_CAM_TILT, DEFAULT_CAM_ROTATION)
+        // );
         // Uncomment the following to silence missing camera errors
         // PhotonCamera.setVersionCheckEnabled(false);
         estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam);
-    }
-
-    public double getDistanceToTarget() {
-        PhotonPipelineResult result = getLatestResult();
-        if (result.hasTargets()) {
-            double range = PhotonUtils.calculateDistanceToTargetMeters(
-                CAMERA_HEIGHT, TARGET_HEIGHT, DEFAULT_CAM_TILT, 
-                Units.degreesToRadians(getPitch())
-            );
-            return range;
-        }
-        return 0.0;
     }
 
     public Optional<EstimatedRobotPose> getGlobalPose() {
