@@ -9,6 +9,7 @@ import frc.robot.Constants.JOYSTICK_BUTTONS;
 import frc.robot.commands.Autons;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
@@ -52,6 +53,7 @@ public class RobotContainer {
 
   private Autons auton;
   private Drivetrain drivetrain;
+  private Elevator elevator; 
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -67,7 +69,13 @@ public class RobotContainer {
     drivetrain = new Drivetrain();
     drivetrain.setDefaultCommand(DriveCommands.joyStickDrive(leftJoystickY, leftJoystickX, rightJoystickX, drivetrain));
     drivetrain.resetGyro();
+    elevator = new Elevator(); 
 
+    elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
+    gamepadA.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL1), elevator));
+    gamepadB.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL2), elevator));
+    gamepadX.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL3), elevator));
+    gamepadY.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL4), elevator));
 
     
     auton = new Autons(drivetrain);
