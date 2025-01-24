@@ -137,9 +137,9 @@ public class KnownLocations {
                 
             REEF = PathPointInch(176.75, 158.5, 0);
 
-            topMostStart = PathPointInch(0,0,0);
-            middleStart = PathPointInch(0,0,0);
-            bottomMostStart = PathPointInch(0,0,0);
+            topMostStart = PathPointInch(290.0,246.0,180.0);
+            middleStart = PathPointInch(290.0,158.5,180.0);
+            bottomMostStart = PathPointInch(290.0,76.5,180.0);
 
         } else {
             rightBranchInBottomLeftZone = PathPointInch(483.907, 120.0650, 60.0);
@@ -171,9 +171,9 @@ public class KnownLocations {
 
             REEF = PathPointInch(514.14, 158.5, 0);
             
-            topMostStart = PathPointInch(0,0,0);
-            middleStart = PathPointInch(0,0,0);
-            bottomMostStart = PathPointInch(0,0,0);
+            topMostStart = PathPointInch(403,246,0);
+            middleStart = PathPointInch(403,158.5,0);
+            bottomMostStart = PathPointInch(403,76.5,0);
         }
 
     }

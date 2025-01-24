@@ -88,8 +88,8 @@ public class RobotContainer {
     right4.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
     right5.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
 
-    gamepadLB.onTrue(DriveCommands.goTopreferredBranch(drivetrain, () -> 0.0));
-    gamepadRB.onTrue(DriveCommands.goTopreferredCoralStation(drivetrain, () -> 0.0));
+    gamepadLB.onTrue(DriveCommands.goTopreferredBranch(drivetrain));
+    gamepadRB.onTrue(DriveCommands.goTopreferredCoralStation(drivetrain));
 
     gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.LEFT)));
     gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BOTTOM_LEFT)));

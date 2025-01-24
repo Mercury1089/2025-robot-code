@@ -79,17 +79,17 @@ public class DriveCommands {
           , drivetrain);
     }
 
-    public static Command goTopreferredBranch(Drivetrain drivetrain, Supplier<Double> goalEndVel) {
+    public static Command goTopreferredBranch(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredZone(),
-            goToPose(drivetrain, () -> ReefscapeUtils.getpreferredBranch())
+            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()).until(() -> drivetrain.isAtPreferredBranch())
         );
     }
 
-    public static Command goTopreferredCoralStation(Drivetrain drivetrain, Supplier<Double> goalEndVel) {
+    public static Command goTopreferredCoralStation(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredCoralStation(),
-            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredCoralStation())
+            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredCoralStation()).until(() -> drivetrain.isAtPreferredCoralStation())
         );
     }
     

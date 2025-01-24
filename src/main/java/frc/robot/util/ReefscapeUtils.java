@@ -38,7 +38,7 @@ public class ReefscapeUtils {
         return getRightBranch(robotZone);
     }
 
-    public static Pose2d getpreferredBranch() {
+    public static Pose2d getPreferredBranch() {
        if (preferredBranchSide == BranchSide.LEFT) {
             return getLeftBranch(preferredZone);
        } else {

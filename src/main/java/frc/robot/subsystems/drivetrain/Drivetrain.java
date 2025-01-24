@@ -57,7 +57,7 @@ public class Drivetrain extends SubsystemBase {
   private PIDController rotationPIDController, xPIDController, yPIDController;
   private PathPlannerPath pathToNote, pathToAmp;
 
-  private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.5, I = 0.0, D = 0.0;
+  private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.0, I = 0.0, D = 0.0;
   private final double THRESHOLD_DEGREES = 3.0;
   private final double THRESHOLD_SPEED = 0.5;
 
@@ -78,8 +78,8 @@ public class Drivetrain extends SubsystemBase {
   //private final double WHEEL_LENGTH = 28.5; // distance between left/right wheels (in inches)
 
   // // 2023 - Bolt
-  private final double WHEEL_WIDTH = 27; // distance between front/back wheels (in inches)
-  private final double WHEEL_LENGTH = 27; // distance between left/right wheels (in inches)
+  private final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
+  private final double WHEEL_LENGTH = 23.5; // distance between left/right wheels (in inches)
 
   private Rotation2d gyroOffset = Rotation2d.fromDegrees(0); // Offset to apply to gyro for field oriented
 
@@ -114,10 +114,10 @@ public class Drivetrain extends SubsystemBase {
     rotationPIDController.setTolerance(1.0);
 
     xPIDController = new PIDController(DIRECTION_P, I, D);
-    xPIDController.setTolerance(0.05);
+    xPIDController.setTolerance(0.07);
     
     yPIDController = new PIDController(DIRECTION_P, I, D);
-    yPIDController.setTolerance(0.05);
+    yPIDController.setTolerance(0.07);
 
     // photonvision wrapper
     photonCam = new AprilTagCamera("AprilTagCamera" , frontCam);
@@ -380,6 +380,19 @@ public class Drivetrain extends SubsystemBase {
     return pathToZone;
   }
 
+  public boolean isAtPose(Pose2d target) {
+    return Math.abs(target.getX() - getPose().getX()) < 0.1
+        && Math.abs(target.getY() - getPose().getY()) < 0.1;
+  } 
+
+  public boolean isAtPreferredCoralStation() {
+    return isAtPose(ReefscapeUtils.getPreferredCoralStation());
+  }
+
+  public boolean isAtPreferredBranch() {
+    return isAtPose(ReefscapeUtils.getPreferredBranch());
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -436,6 +449,8 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Drivetrain/preferredZone", ReefscapeUtils.preferredZone().robotZone);
     SmartDashboard.putString("Drivetrain/branchSide", ReefscapeUtils.branchSide().side);
     SmartDashboard.putString("Drivetrain/coralStation", ReefscapeUtils.preferredCoralStation().coralStation);
+    SmartDashboard.putBoolean("Drivetrain/isAtPreferredStation", isAtPreferredCoralStation());
+    SmartDashboard.putBoolean("Drivetrain/isAtPreferredBranch", isAtPreferredBranch());
 
   }
 

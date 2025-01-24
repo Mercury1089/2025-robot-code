@@ -29,32 +29,37 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.SWERVE;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
 import frc.robot.util.PathUtils;
+import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
+import frc.robot.util.ReefscapeUtils.BranchSide;
+import frc.robot.util.ReefscapeUtils.RobotZone;
+import frc.robot.util.ReefscapeUtils.CoralStation;
 
 public class Autons {
 
     private SendableChooser<Pose2d> startingPoseChooser;
-    private SendableChooser<Pose2d> firstBranchChooser;
-    private SendableChooser<Pose2d> firstStationChooser;
-    private SendableChooser<Pose2d> secondBranchChooser;
-    private SendableChooser<Pose2d> secondStationChooser;
-    private SendableChooser<Pose2d> thirdBranchChooser;
-    private SendableChooser<Pose2d> thirdStationChooser;
-    private SendableChooser<Pose2d> fourthBranchChooser;
+    private SendableChooser<AutonLocations> firstBranchChooser;
+    private SendableChooser<CoralStation> firstStationChooser;
+    private SendableChooser<AutonLocations> secondBranchChooser;
+    private SendableChooser<CoralStation> secondStationChooser;
+    private SendableChooser<AutonLocations> thirdBranchChooser;
+    private SendableChooser<CoralStation> thirdStationChooser;
+    private SendableChooser<AutonLocations> fourthBranchChooser;
     private Pose2d startingPose;
-    private Pose2d firstBranch;
-    private Pose2d secondBranch;
-    private Pose2d thirdBranch;
-    private Pose2d fourthBranch;
-    private Pose2d firstStation;
-    private Pose2d secondStation;
-    private Pose2d thirdStation;
-    private Pose2d fourthStation;
+    private AutonLocations firstBranch;
+    private AutonLocations secondBranch;
+    private AutonLocations thirdBranch;
+    private AutonLocations fourthBranch;
+    private CoralStation firstStation;
+    private CoralStation secondStation;
+    private CoralStation thirdStation;
+    private CoralStation fourthStation;
     private Command autonCommand;
 
     private Alliance alliance;
@@ -119,9 +124,41 @@ public class Autons {
         // SET OUR INITIAL POSE
         drivetrain.resetPose(startingPose);
 
-        SequentialCommandGroup autonCommand = new SequentialCommandGroup();
+        SequentialCommandGroup autonCommandGroup = new SequentialCommandGroup();
 
-        return autonCommand;
+        autonCommandGroup.addCommands(
+            new InstantCommand(() -> changePreferredScoringLocation(firstBranch)),
+            DriveCommands.goTopreferredBranch(drivetrain),
+            new WaitCommand(1.0),
+
+            new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(firstStation)),
+            DriveCommands.goTopreferredCoralStation(drivetrain),
+            new WaitCommand(1.0),
+            new InstantCommand(() -> changePreferredScoringLocation(secondBranch)),
+            DriveCommands.goTopreferredBranch(drivetrain),
+            new WaitCommand(1.0),
+
+            new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(secondStation)),
+            DriveCommands.goTopreferredCoralStation(drivetrain),
+            new WaitCommand(1.0),
+            new InstantCommand(() -> changePreferredScoringLocation(thirdBranch)),
+            DriveCommands.goTopreferredBranch(drivetrain),
+            new WaitCommand(1.0),
+
+            new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(thirdStation)),
+            DriveCommands.goTopreferredCoralStation(drivetrain),
+            new WaitCommand(1.0),
+            new InstantCommand(() -> changePreferredScoringLocation(fourthBranch)),
+            DriveCommands.goTopreferredBranch(drivetrain),
+            new WaitCommand(1.0)
+        );
+
+        return autonCommandGroup;
+    }
+
+    public void changePreferredScoringLocation(AutonLocations loc) {
+        ReefscapeUtils.changepreferredZone(loc.getZone());
+        ReefscapeUtils.changepreferredBranch(loc.getSide());
     }
 
 
@@ -147,14 +184,14 @@ public class Autons {
 
         Pose2d startingPose = startingPoseChooser.getSelected();
 
-        Pose2d firstBranch = firstBranchChooser.getSelected();
-        Pose2d secondBranch = secondBranchChooser.getSelected();
-        Pose2d thirdBranch = thirdBranchChooser.getSelected();
-        Pose2d fourthBranch = fourthBranchChooser.getSelected();
+        AutonLocations firstBranch = firstBranchChooser.getSelected();
+        AutonLocations secondBranch = secondBranchChooser.getSelected();
+        AutonLocations thirdBranch = thirdBranchChooser.getSelected();
+        AutonLocations fourthBranch = fourthBranchChooser.getSelected();
 
-        Pose2d firstStation = firstStationChooser.getSelected();
-        Pose2d secondStation = secondStationChooser.getSelected();
-        Pose2d thirdStation = thirdStationChooser.getSelected();
+        CoralStation firstStation = firstStationChooser.getSelected();
+        CoralStation secondStation = secondStationChooser.getSelected();
+        CoralStation thirdStation = thirdStationChooser.getSelected();
 
         if (startingPose != this.startingPose) {
             this.startingPose = startingPose;
@@ -175,7 +212,7 @@ public class Autons {
             this.thirdBranch = thirdBranch;
             rebuildAutonCommand = true;
         }
-
+        
         if (fourthBranch != this.fourthBranch) {
             this.fourthBranch = fourthBranch;
             rebuildAutonCommand = true;
@@ -187,7 +224,7 @@ public class Autons {
         }
 
         if (secondStation != this.secondStation) {
-            this.secondBranch = secondBranch;
+            this.secondStation = secondStation;
             rebuildAutonCommand = true;
         }
 
@@ -195,6 +232,7 @@ public class Autons {
             this.thirdStation = thirdStation;
             rebuildAutonCommand = true;
         }
+        
 
         if (rebuildAutonCommand) {
             this.autonCommand = buildAutonCommand(knownLocations);
@@ -215,48 +253,71 @@ public class Autons {
         firstStationChooser = getCoralStationChooser();
         secondStationChooser = getCoralStationChooser();
         thirdStationChooser = getCoralStationChooser();
+
+        SmartDashboard.putData("Starting Pose", startingPoseChooser);
+        SmartDashboard.putData("First Branch", firstBranchChooser);
+        SmartDashboard.putData("Second Branch", secondBranchChooser);
+        SmartDashboard.putData("Third Branch", thirdBranchChooser);
+        SmartDashboard.putData("Fourth Branch", fourthBranchChooser);
+        SmartDashboard.putData("First Coral Station", firstStationChooser);
+        SmartDashboard.putData("Second Coral Station", secondStationChooser);
+        SmartDashboard.putData("Third Coral Station", thirdStationChooser);
     }
 
-    private SendableChooser<Pose2d> getBranchChooser() {
-        SendableChooser<Pose2d> branchChooser = new SendableChooser<Pose2d>();
-        branchChooser.setDefaultOption("Right Zone Right Branch", KnownLocations.rightBranchInRightZone);
-        branchChooser.addOption("Bottom Right Zone Left Branch", KnownLocations.leftBranchInBottomRightZone);
-        branchChooser.addOption("Bottom Right Zone Right Branch", KnownLocations.rightBranchInBottomRightZone);
-        branchChooser.addOption("Bottom Left Zone Right Branch", KnownLocations.rightBranchInBottomLeftZone);
-        branchChooser.addOption("Bottom Left Zone Left Branch", KnownLocations.leftBranchInBottomLeftZone);
-        branchChooser.addOption("Left Zone Right Branch", KnownLocations.rightBranchInLeftZone);
-        branchChooser.addOption("Left Zone Left Branch", KnownLocations.leftBranchInLeftZone);
-        branchChooser.addOption("Top Left Zone Right Branch", KnownLocations.rightBranchInTopLeftZone);
-        branchChooser.addOption("Top Left Zone Left Branch", KnownLocations.leftBranchInTopLeftZone);
-        branchChooser.addOption("Top Right Zone Left Branch", KnownLocations.leftBranchInTopRightZone);
-        branchChooser.addOption("Top Right Zone Right Branch", KnownLocations.rightBranchInTopRightZone);
-        branchChooser.addOption("Right Zone Left Branch", KnownLocations.leftBranchInRightZone);
+    private SendableChooser<AutonLocations> getBranchChooser() {
+        SendableChooser<AutonLocations> branchChooser = new SendableChooser<AutonLocations>();
+        branchChooser.setDefaultOption("Right Zone Right Branch", AutonLocations.RIGHTINRIGTHZONE);
+        branchChooser.addOption("Bottom Right Zone Left Branch", AutonLocations.LEFTINBOTTOMRIGHTZONE);
+        branchChooser.addOption("Bottom Right Zone Right Branch", AutonLocations.RIGHTINLBOTTOMRIGHTZONE);
+        branchChooser.addOption("Bottom Left Zone Right Branch", AutonLocations.RIGHTINBOTTOMLEFTZONE);
+        branchChooser.addOption("Bottom Left Zone Left Branch", AutonLocations.LEFTINBOTTOMLEFTZONE);
+        branchChooser.addOption("Left Zone Right Branch", AutonLocations.RIGHTINLEFTZONE);
+        branchChooser.addOption("Left Zone Left Branch", AutonLocations.LEFTINLEFTZONE);
+        branchChooser.addOption("Top Left Zone Right Branch", AutonLocations.RIGHTINTOPLEFTZONE);
+        branchChooser.addOption("Top Left Zone Left Branch", AutonLocations.LEFTINTOPLEFTZONE);
+        branchChooser.addOption("Top Right Zone Left Branch", AutonLocations.LEFTINTOPRIGHTZONE);
+        branchChooser.addOption("Top Right Zone Right Branch", AutonLocations.RIGHTINTOPRIGHTZONE);
+        branchChooser.addOption("Right Zone Left Branch", AutonLocations.LEFTINRIGHTZONE);
         return branchChooser;
     }
 
-    private SendableChooser<Pose2d> getCoralStationChooser() {
-        SendableChooser<Pose2d> coralStationChooser = new SendableChooser<Pose2d>();
-        coralStationChooser.setDefaultOption("Outside Right", KnownLocations.rightCoralStationOutside);
-        coralStationChooser.addOption("Inside Right", KnownLocations.rightCoralStationInside);
-        coralStationChooser.addOption("Inside Left", KnownLocations.leftCoralStationInside);
-        coralStationChooser.addOption("Outside Left", KnownLocations.leftCoralStationOutside);
+    private SendableChooser<CoralStation> getCoralStationChooser() {
+        SendableChooser<CoralStation> coralStationChooser = new SendableChooser<CoralStation>();
+        coralStationChooser.setDefaultOption("Outside Right", CoralStation.OUTSIDERIGHT);
+        coralStationChooser.addOption("Inside Right", CoralStation.INSIDERIGHT);
+        coralStationChooser.addOption("Inside Left", CoralStation.INSIDELEFT);
+        coralStationChooser.addOption("Outside Left", CoralStation.OUTSIDELEFT);
         return coralStationChooser;
     }
 
-    /**
-     * Determines what we after scoring initial note
-     */
-    // public enum AutonTypes {
-    //     DO_NOT_MOVE, // Do nothing after scoring first note
-    //     LEAVE_STARTING_ZONE, // Leave the starting area after scoring first note
-    //     SCORE_2ND_NOTE, // Score a second NOTE
-    //     MULTI_NOTE_SCORE, // Score multiple NOTES
-    //     WING_NOTES, // Score additional WING NOTES
-    //     CENTER_LINE_NOTES // Score CENTER LINE NOTES
-    // }
+    public enum AutonLocations {
+        LEFTINRIGHTZONE(RobotZone.RIGHT, BranchSide.LEFT),
+        RIGHTINRIGTHZONE(RobotZone.RIGHT, BranchSide.RIGHT),
+        LEFTINBOTTOMRIGHTZONE(RobotZone.BOTTOM_RIGHT, BranchSide.LEFT),
+        RIGHTINLBOTTOMRIGHTZONE(RobotZone.BOTTOM_RIGHT, BranchSide.RIGHT),
+        LEFTINBOTTOMLEFTZONE(RobotZone.BOTTOM_LEFT, BranchSide.LEFT),
+        RIGHTINBOTTOMLEFTZONE(RobotZone.BOTTOM_LEFT, BranchSide.RIGHT),
+        LEFTINLEFTZONE(RobotZone.LEFT, BranchSide.LEFT),
+        RIGHTINLEFTZONE(RobotZone.LEFT, BranchSide.RIGHT),
+        LEFTINTOPLEFTZONE(RobotZone.TOP_LEFT, BranchSide.LEFT),
+        RIGHTINTOPLEFTZONE(RobotZone.TOP_LEFT, BranchSide.RIGHT),
+        LEFTINTOPRIGHTZONE(RobotZone.TOP_RIGHT, BranchSide.LEFT),
+        RIGHTINTOPRIGHTZONE(RobotZone.TOP_RIGHT, BranchSide.RIGHT);
 
-    //TODO: figure out how to do auton locations (choosers as pose or as enum?)
-    // public enum AutonLocations {
+        private RobotZone zone;
+        private BranchSide side;
 
-    // }
+        AutonLocations(RobotZone z, BranchSide s) {
+            this.zone = z;
+            this.side = s;
+        }
+
+        public RobotZone getZone() {
+            return zone;
+        }
+
+        public BranchSide getSide() {
+            return side;
+        }
+    }
 }
