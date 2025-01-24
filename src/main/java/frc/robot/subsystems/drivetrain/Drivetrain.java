@@ -19,7 +19,10 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -49,7 +52,7 @@ public class Drivetrain extends SubsystemBase {
   private Pigeon2 pigeon;
   private SwerveDrivePoseEstimator odometry;
   private SwerveDriveKinematics swerveKinematics;
-  private AprilTagCamera photonCam;
+  private AprilTagCamera photonCam, photonCam2;
   private Field2d smartdashField;
   private PIDController rotationPIDController, xPIDController, yPIDController;
   private PathPlannerPath pathToNote, pathToAmp;
@@ -59,7 +62,17 @@ public class Drivetrain extends SubsystemBase {
   private final double THRESHOLD_SPEED = 0.5;
 
   private double targetHeadingToReef = 0.0;
+
+  private Transform3d frontCam = new Transform3d(
+    new Translation3d(Units.inchesToMeters(13.5), Units.inchesToMeters(0.0), Units.inchesToMeters(6.5)), 
+    new Rotation3d(0.0, Rotation2d.fromDegrees(20).getRadians(), Rotation2d.fromDegrees(0).getRadians())
+  );
     
+  private Transform3d backCam = new Transform3d(
+    new Translation3d(Units.inchesToMeters(9.5), Units.inchesToMeters(0.0), Units.inchesToMeters(18.25)), 
+    new Rotation3d(0.0, Rotation2d.fromDegrees(20).getRadians(), Rotation2d.fromDegrees(180).getRadians())
+  );
+
   // 2024 - Autotune
   //private final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
   //private final double WHEEL_LENGTH = 28.5; // distance between left/right wheels (in inches)
@@ -101,13 +114,15 @@ public class Drivetrain extends SubsystemBase {
     rotationPIDController.setTolerance(1.0);
 
     xPIDController = new PIDController(DIRECTION_P, I, D);
-    xPIDController.setTolerance(0.1);
+    xPIDController.setTolerance(0.05);
     
     yPIDController = new PIDController(DIRECTION_P, I, D);
-    yPIDController.setTolerance(0.1);
+    yPIDController.setTolerance(0.05);
 
     // photonvision wrapper
-    photonCam = new AprilTagCamera();
+    photonCam = new AprilTagCamera("AprilTagCamera" , frontCam);
+
+    photonCam2 = new AprilTagCamera("BackTagCamera" , backCam);
 
     smartdashField = new Field2d();
     SmartDashboard.putData("Swerve Odometry", smartdashField);
@@ -386,6 +401,17 @@ public class Drivetrain extends SubsystemBase {
       // SmartDashboard.putNumber("Cam/Roll", estimatedPose.getRotation().getX());
       odometry.addVisionMeasurement(result.get().estimatedPose.toPose2d(), result.get().timestampSeconds);
     }
+
+    Optional<EstimatedRobotPose> backResult = photonCam2.getGlobalPose();
+    if (backResult.isPresent()) {
+      // Uncomment the following to check camera position on robot
+      // Pose3d estimatedPose = result.get().estimatedPose;
+      // SmartDashboard.putNumber("Cam/Yaw", estimatedPose.getRotation().getZ());
+      // SmartDashboard.putNumber("Cam/Pitch", estimatedPose.getRotation().getY());
+      // SmartDashboard.putNumber("Cam/Roll", estimatedPose.getRotation().getX());
+      odometry.addVisionMeasurement(backResult.get().estimatedPose.toPose2d(), backResult.get().timestampSeconds);
+    }
+
     smartdashField.setRobotPose(getPose());
   
     // KnownLocations knownLocations = KnownLocations.getKnownLocations();

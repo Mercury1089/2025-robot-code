@@ -59,8 +59,12 @@ public class KnownLocations {
         rightCoralStationInside,
         rightCoralStationOutside;
 
+    public static Pose2d
+        topMostStart,
+        middleStart,
+        bottomMostStart;
     /**
-     * Load the field layout for the current year (currently CRESCENDO).
+     * Load the field layout for the current year (currently CHARGED UP).
      * 
      * <p>
      * This is a singleton instance of the field layout for any class that needs it.
@@ -111,8 +115,8 @@ public class KnownLocations {
             leftBranchInBottomRightZone = PathPointInch(211.267,120.065,120.0);
             rightBranchInLeftZone = PathPointInch(127.149,154.625,0.0);
             leftBranchInLeftZone = PathPointInch(127.149,167.625,0.0);
-            rightBranchInRightZone = PathPointInch(230.640,167.625,180.0);
-            leftBranchInRightZone = PathPointInch(230.640,154.625,180.0);
+            rightBranchInRightZone = PathPointInch(230.640,154.625,180.0);
+            leftBranchInRightZone = PathPointInch(230.640,167.625,180.0);
             leftBranchInTopLeftZone = PathPointInch(158.685,209.208,-60.0);
             rightBranchInTopLeftZone = PathPointInch(146.482,202.162,-60.0);
             leftBranchInTopRightZone = PathPointInch(199.103,209.208,-120.0);
@@ -125,15 +129,18 @@ public class KnownLocations {
             topRightZone = PathPointInch(206.767, 209.402, -120);
             bottomRightZone = PathPointInch(206.767, 112.848, 120);
 
+            rightCoralStationInside = PathPointInch(30.783, 54.988, -126);
+            rightCoralStationOutside = PathPointInch(62.743, 32.206, -126);
 
-            rightCoralStationInside = PathPointInch(30.783, 54.988, -120);
-            rightCoralStationOutside = PathPointInch(62.743, 32.206, -120);
-
-            leftCoralStationInside = PathPointInch(30.783, 267.262, 120);
-            leftCoralStationOutside = PathPointInch(62.743, 290.044, -120);
-
-
+            leftCoralStationInside = PathPointInch(30.783, 267.262, 126);
+            leftCoralStationOutside = PathPointInch(62.743, 290.044, 126);
+                
             REEF = PathPointInch(176.75, 158.5, 0);
+
+            topMostStart = PathPointInch(0,0,0);
+            middleStart = PathPointInch(0,0,0);
+            bottomMostStart = PathPointInch(0,0,0);
+
         } else {
             rightBranchInBottomLeftZone = PathPointInch(483.907, 120.0650, 60.0);
             leftBranchInBottomLeftZone = PathPointInch(496.907,112.559,60.0);
@@ -156,13 +163,17 @@ public class KnownLocations {
             bottomRightZone = PathPointInch(544.152, 112.848, 120);
 
             
-            rightCoralStationInside = PathPointInch(664.391, 267.262, 60);
-            rightCoralStationOutside = PathPointInch(632.431, 290.044, 60);
+            rightCoralStationInside = PathPointInch(664.391, 267.262, 54);
+            rightCoralStationOutside = PathPointInch(632.431, 290.044, 54);
 
-            leftCoralStationInside = PathPointInch(664.391, 54.988, -60);
-            leftCoralStationOutside = PathPointInch(632.431, 54.988, -60);
+            leftCoralStationInside = PathPointInch(664.391, 54.988, -54);
+            leftCoralStationOutside = PathPointInch(632.431, 54.988, -54);
 
             REEF = PathPointInch(514.14, 158.5, 0);
+            
+            topMostStart = PathPointInch(0,0,0);
+            middleStart = PathPointInch(0,0,0);
+            bottomMostStart = PathPointInch(0,0,0);
         }
 
     }

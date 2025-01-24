@@ -75,7 +75,7 @@ public class RobotContainer {
     Map<String, Command> commands = new HashMap<String, Command>();
 
 
-    NamedCommands.registerCommands(commands);
+    NamedCommands.registerCommands(commands); 
 
     right11.onTrue(new InstantCommand(() -> drivetrain.drive(0.0, 0.0, 0.0), drivetrain));
     
@@ -88,12 +88,13 @@ public class RobotContainer {
     right4.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
     right5.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
 
-    gamepadX.onTrue(DriveCommands.goTopreferredBranch(drivetrain, () -> 0.0));
+    gamepadLB.onTrue(DriveCommands.goTopreferredBranch(drivetrain, () -> 0.0));
     gamepadRB.onTrue(DriveCommands.goTopreferredCoralStation(drivetrain, () -> 0.0));
 
     gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.LEFT)));
     gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BOTTOM_LEFT)));
     gamepadY.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BOTTOM_RIGHT)));
+    gamepadX.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.RIGHT)));
 
     gamepadPOVRight.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.OUTSIDERIGHT)));
     gamepadPOVLeft.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.INSIDERIGHT)));

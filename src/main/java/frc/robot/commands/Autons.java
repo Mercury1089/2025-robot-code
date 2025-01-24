@@ -39,17 +39,28 @@ import frc.robot.util.TargetUtils;
 public class Autons {
 
     private SendableChooser<Pose2d> startingPoseChooser;
-    private SendableChooser<AutonTypes> multiNoteChooser;
-    private SendableChooser<AutonTypes> autonTypeChooser;
+    private SendableChooser<Pose2d> firstBranchChooser;
+    private SendableChooser<Pose2d> firstStationChooser;
+    private SendableChooser<Pose2d> secondBranchChooser;
+    private SendableChooser<Pose2d> secondStationChooser;
+    private SendableChooser<Pose2d> thirdBranchChooser;
+    private SendableChooser<Pose2d> thirdStationChooser;
+    private SendableChooser<Pose2d> fourthBranchChooser;
     private Pose2d startingPose;
-    private AutonTypes autonType; // multiNoteType;
+    private Pose2d firstBranch;
+    private Pose2d secondBranch;
+    private Pose2d thirdBranch;
+    private Pose2d fourthBranch;
+    private Pose2d firstStation;
+    private Pose2d secondStation;
+    private Pose2d thirdStation;
+    private Pose2d fourthStation;
     private Command autonCommand;
 
     private Alliance alliance;
 
     private final double ROTATION_P = 3.0;
     private final double TRANSLATION_P = 5.0;
-    private static final double MAX_NOTE_DISTANCE = 1.25;
 
     private final Command DO_NOTHING = new PrintCommand("Do Nothing Auton");
     private Drivetrain drivetrain;
@@ -62,10 +73,6 @@ public class Autons {
         KnownLocations knownLocations = KnownLocations.getKnownLocations();
         this.alliance = knownLocations.alliance;
 
-        // Starting config for Auton Choosers
-        // this.startingPose = knownLocations.DO_NOTHING;
-        this.autonType = AutonTypes.DO_NOT_MOVE;
-        // this.multiNoteType = AutonTypes.DO_NOT_MOVE;
 
         setChoosers(knownLocations);
 
@@ -76,14 +83,6 @@ public class Autons {
             // Handle exception as needed
             e.printStackTrace();
         }
-
-        // // HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live your Constants class
-        // //         new PIDConstants(TRANSLATION_P, 0.0, 0.0), // Translation PID constants
-        // //         new PIDConstants(ROTATION_P, 0.0, 0.0), // Rotation PID constants
-        // //         SWERVE.MAX_SPEED_METERS_PER_SECOND, // Max module speed, in m/s
-        // //         SWERVE.WHEEL_RADIUS, // Drive base radius in meters. Distance from robot center to furthest module.
-        // //         new ReplanningConfig(true, true) // Default path replanning config. See the API for the options here
-        // // );
 
         // Configure AutoBuilder last
         AutoBuilder.configure(
@@ -115,34 +114,22 @@ public class Autons {
         return this.autonCommand;
     }
 
-    public AutonTypes getAutonType() {
-        return this.autonType;
+
+    public Command buildAutonCommand(KnownLocations knownLocations) {
+        // SET OUR INITIAL POSE
+        drivetrain.resetPose(startingPose);
+
+        SequentialCommandGroup autonCommand = new SequentialCommandGroup();
+
+        return autonCommand;
     }
-
-    // public Command buildAutonCommand(KnownLocations knownLocations) {
-    //     // SET OUR INITIAL POSE
-    //     drivetrain.resetPose(startingPose);
-
-    //     // if (startingPose == knownLocations.DO_NOTHING) {
-    //     //     SmartDashboard.putBoolean("isDoNothing", true);
-    //     //     drivetrain.setTrajectorySmartdash(new Trajectory(), "traj1");
-    //     //     drivetrain.setTrajectorySmartdash(new Trajectory(), "traj2");
-    //     //     return DO_NOTHING;
-    //     // }
-    //     SequentialCommandGroup autonCommand = new SequentialCommandGroup();
-
-    //     PathPlannerPath path;
-    //     int pathIndex = 1;
-
-    // }
 
 
     /**
      * Rebuilds the autonCommand when ONE of the following conditions changes:
      * - Alliance Color
      * - Starting Pose
-     * - Auton Type
-     * - Multi Note Type
+     * - like all the things we do
      */
 
     public void updateDash() {
@@ -159,62 +146,117 @@ public class Autons {
         }
 
         Pose2d startingPose = startingPoseChooser.getSelected();
-        AutonTypes autonType = autonTypeChooser.getSelected();
-        // AutonTypes multiNoteType = multiNoteChooser.getSelected();
+
+        Pose2d firstBranch = firstBranchChooser.getSelected();
+        Pose2d secondBranch = secondBranchChooser.getSelected();
+        Pose2d thirdBranch = thirdBranchChooser.getSelected();
+        Pose2d fourthBranch = fourthBranchChooser.getSelected();
+
+        Pose2d firstStation = firstStationChooser.getSelected();
+        Pose2d secondStation = secondStationChooser.getSelected();
+        Pose2d thirdStation = thirdStationChooser.getSelected();
 
         if (startingPose != this.startingPose) {
             this.startingPose = startingPose;
             rebuildAutonCommand = true;
         }
 
-        if (autonType != this.autonType) {
-            this.autonType = autonType;
+        if (firstBranch != this.firstBranch) {
+            this.firstBranch = firstBranch;
             rebuildAutonCommand = true;
         }
 
-        // if (multiNoteType != this.multiNoteType) {
-        // this.multiNoteType = multiNoteType;
-        // rebuildAutonCommand = true;
-        // }
+        if (secondBranch != this.secondBranch) {
+            this.secondBranch = secondBranch;
+            rebuildAutonCommand = true;
+        }
 
-        // if (rebuildAutonCommand) {
-        //     this.autonCommand = buildAutonCommand(knownLocations);
-        // }
+        if (thirdBranch != this.thirdBranch) {
+            this.thirdBranch = thirdBranch;
+            rebuildAutonCommand = true;
+        }
+
+        if (fourthBranch != this.fourthBranch) {
+            this.fourthBranch = fourthBranch;
+            rebuildAutonCommand = true;
+        }
+
+        if (firstStation != this.firstStation) {
+            this.firstStation = firstStation;
+            rebuildAutonCommand = true;
+        }
+
+        if (secondStation != this.secondStation) {
+            this.secondBranch = secondBranch;
+            rebuildAutonCommand = true;
+        }
+
+        if (thirdStation != this.thirdStation) {
+            this.thirdStation = thirdStation;
+            rebuildAutonCommand = true;
+        }
+
+        if (rebuildAutonCommand) {
+            this.autonCommand = buildAutonCommand(knownLocations);
+        }
     }
 
     public void setChoosers(KnownLocations knownLocations) {
         // select the MANUAL STARTING POSITION of the robot
         this.startingPoseChooser = new SendableChooser<Pose2d>();
-        //this.startingPoseChooser.setDefaultOption("DO NOTHING", knownLocations.DO_NOTHING);
-        SmartDashboard.putData("Starting Pose", startingPoseChooser);
+        startingPoseChooser.setDefaultOption("Bottom", KnownLocations.bottomMostStart);
+        startingPoseChooser.addOption("Middle", KnownLocations.middleStart);
+        startingPoseChooser.addOption("Top", KnownLocations.topMostStart);
 
-        // select whether to visit charging station or score 2nd piece (or leave
-        // community)
-        this.autonTypeChooser = new SendableChooser<AutonTypes>();
-        autonTypeChooser.setDefaultOption("LEAVE STARTING ZONE", AutonTypes.LEAVE_STARTING_ZONE);
-        autonTypeChooser.addOption("2ND NOTE SCORE", AutonTypes.SCORE_2ND_NOTE);
-        autonTypeChooser.addOption("MULTI NOTE SCORE", AutonTypes.MULTI_NOTE_SCORE);
-        autonTypeChooser.addOption("CENTER LINE NOTE AUTO", AutonTypes.CENTER_LINE_NOTES);
-        SmartDashboard.putData("Auton Type", autonTypeChooser);
+        firstBranchChooser = getBranchChooser();
+        secondBranchChooser = getBranchChooser();
+        thirdBranchChooser = getBranchChooser();
+        fourthBranchChooser = getBranchChooser();
+        firstStationChooser = getCoralStationChooser();
+        secondStationChooser = getCoralStationChooser();
+        thirdStationChooser = getCoralStationChooser();
+    }
 
-        // select the ELEMENT to visit during auton (or DO NOTHING)
-        // multiNoteChooser = new SendableChooser<AutonTypes>();
-        // multiNoteChooser.setDefaultOption("DO NOTHING", AutonTypes.MULTI_NOTE_SCORE);
-        // multiNoteChooser.addOption("WING NOTES", AutonTypes.WING_NOTES);
-        // multiNoteChooser.addOption("CENTER LINE NOTES",
-        // AutonTypes.CENTER_LINE_NOTES);
-        // SmartDashboard.putData("Auton Element Chooser", multiNoteChooser);
+    private SendableChooser<Pose2d> getBranchChooser() {
+        SendableChooser<Pose2d> branchChooser = new SendableChooser<Pose2d>();
+        branchChooser.setDefaultOption("Right Zone Right Branch", KnownLocations.rightBranchInRightZone);
+        branchChooser.addOption("Bottom Right Zone Left Branch", KnownLocations.leftBranchInBottomRightZone);
+        branchChooser.addOption("Bottom Right Zone Right Branch", KnownLocations.rightBranchInBottomRightZone);
+        branchChooser.addOption("Bottom Left Zone Right Branch", KnownLocations.rightBranchInBottomLeftZone);
+        branchChooser.addOption("Bottom Left Zone Left Branch", KnownLocations.leftBranchInBottomLeftZone);
+        branchChooser.addOption("Left Zone Right Branch", KnownLocations.rightBranchInLeftZone);
+        branchChooser.addOption("Left Zone Left Branch", KnownLocations.leftBranchInLeftZone);
+        branchChooser.addOption("Top Left Zone Right Branch", KnownLocations.rightBranchInTopLeftZone);
+        branchChooser.addOption("Top Left Zone Left Branch", KnownLocations.leftBranchInTopLeftZone);
+        branchChooser.addOption("Top Right Zone Left Branch", KnownLocations.leftBranchInTopRightZone);
+        branchChooser.addOption("Top Right Zone Right Branch", KnownLocations.rightBranchInTopRightZone);
+        branchChooser.addOption("Right Zone Left Branch", KnownLocations.leftBranchInRightZone);
+        return branchChooser;
+    }
+
+    private SendableChooser<Pose2d> getCoralStationChooser() {
+        SendableChooser<Pose2d> coralStationChooser = new SendableChooser<Pose2d>();
+        coralStationChooser.setDefaultOption("Outside Right", KnownLocations.rightCoralStationOutside);
+        coralStationChooser.addOption("Inside Right", KnownLocations.rightCoralStationInside);
+        coralStationChooser.addOption("Inside Left", KnownLocations.leftCoralStationInside);
+        coralStationChooser.addOption("Outside Left", KnownLocations.leftCoralStationOutside);
+        return coralStationChooser;
     }
 
     /**
      * Determines what we after scoring initial note
      */
-    public enum AutonTypes {
-        DO_NOT_MOVE, // Do nothing after scoring first note
-        LEAVE_STARTING_ZONE, // Leave the starting area after scoring first note
-        SCORE_2ND_NOTE, // Score a second NOTE
-        MULTI_NOTE_SCORE, // Score multiple NOTES
-        WING_NOTES, // Score additional WING NOTES
-        CENTER_LINE_NOTES // Score CENTER LINE NOTES
-    }
+    // public enum AutonTypes {
+    //     DO_NOT_MOVE, // Do nothing after scoring first note
+    //     LEAVE_STARTING_ZONE, // Leave the starting area after scoring first note
+    //     SCORE_2ND_NOTE, // Score a second NOTE
+    //     MULTI_NOTE_SCORE, // Score multiple NOTES
+    //     WING_NOTES, // Score additional WING NOTES
+    //     CENTER_LINE_NOTES // Score CENTER LINE NOTES
+    // }
+
+    //TODO: figure out how to do auton locations (choosers as pose or as enum?)
+    // public enum AutonLocations {
+
+    // }
 }
