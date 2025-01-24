@@ -31,9 +31,9 @@ public class Elevator extends SubsystemBase {
     ARM_NORMAL_I_VAL = 0.0,
     ARM_NORMAL_D_VAL = 0.0;
 
-  private static final float ARM_SOFT_LIMIT_FWD = (float) 147;
+  private static final float ARM_SOFT_LIMIT_FWD = (float) 120;
 
-  private static final float ARM_SOFT_LIMIT_BKW = (float) 45.3;
+  private static final float ARM_SOFT_LIMIT_REV = (float) 50;
 
   private static final double ANGLE_OFFSET = -3.5;
 
@@ -61,8 +61,8 @@ public class Elevator extends SubsystemBase {
     leftConfig.softLimit
       .forwardSoftLimitEnabled(true)
       .forwardSoftLimit(ARM_SOFT_LIMIT_FWD)
-      .reverseSoftLimitEnabled(false)
-      .reverseSoftLimit(ARM_SOFT_LIMIT_BKW);
+      .reverseSoftLimitEnabled(true)
+      .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
     leftConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
       .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
@@ -80,9 +80,9 @@ public class Elevator extends SubsystemBase {
 
     armClosedLoopController = leftMotor.getClosedLoopController();
 
+    armAbsoluteEncoder = leftMotor.getAbsoluteEncoder();
     setPosition = getArmPosition();
 
-    SmartDashboard.putNumber("Arm/Position", getArmPosition());
   }
   
   public void resetEncoders() {
@@ -130,6 +130,8 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Arm/Position", getArmPosition());
+
   }
   
 
@@ -138,11 +140,12 @@ public class Elevator extends SubsystemBase {
     // HOME(ARM_SOFT_LIMIT_BKW),
     // SHUTTLE(78.0),
     // PICKUP_FLOOR(ARM_SOFT_LIMIT_BKW);
-    LEVEL4(150.0),
-    LEVEL3(120.0),
-    LEVEL2(90.0),
+    LEVEL4(120.0),
+    LEVEL3(100.0),
+    LEVEL2(80.0),
     LEVEL1(60.0);
   
+    //this.setDefaultCommand(new RunCommand(() -> elevator.setPosition(LEVEL1), elevator));
     
     public final double degreePos;
       ArmPosition(double degreePos) {
