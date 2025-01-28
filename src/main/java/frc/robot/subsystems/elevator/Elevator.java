@@ -6,6 +6,7 @@ package frc.robot.subsystems.elevator;
 import java.util.function.Supplier;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -43,7 +44,7 @@ public class Elevator extends SubsystemBase {
   
   private SparkMax leftMotor, rightMotor;
   private SparkClosedLoopController armClosedLoopController;
-  private AbsoluteEncoder armAbsoluteEncoder;
+  private RelativeEncoder relativeEncoder;
   private double setPosition;
 
   public Elevator() {
@@ -56,23 +57,26 @@ public class Elevator extends SubsystemBase {
     leftConfig
       .idleMode(IdleMode.kBrake)
       .inverted(false);
-    leftConfig.absoluteEncoder
-      .positionConversionFactor(360.0); // multiplied by native units
-    leftConfig.softLimit
-      .forwardSoftLimitEnabled(true)
-      .forwardSoftLimit(ARM_SOFT_LIMIT_FWD)
-      .reverseSoftLimitEnabled(true)
-      .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
+   // leftConfig.absoluteEncoder
+    //  .positionConversionFactor(360.0); // multiplied by native units
+    // leftConfig.softLimit
+    //   .forwardSoftLimitEnabled(true)
+    //   .forwardSoftLimit(ARM_SOFT_LIMIT_FWD)
+    //   .reverseSoftLimitEnabled(true)
+    //   .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
     leftConfig.closedLoop
-      .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-      .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
-      .positionWrappingEnabled(false);
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    //  .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
+      .pid(0.085,0,0)
+      .positionWrappingEnabled(false)
+      .outputRange(-1,1);
     //leftConfig.closedLoop.maxMotion
       //.maxVelocity(7.5)
       //.maxAcceleration(15);
     leftConfig.closedLoop.maxMotion
-      .maxVelocity(5000)
-      .maxAcceleration(3000);
+      .maxVelocity(4200)
+      .maxAcceleration(12000)
+      .allowedClosedLoopError(0.2);
     rightConfig
       .idleMode(IdleMode.kBrake)
       .follow(Constants.CAN.ARM_LEFT,true);
@@ -85,13 +89,13 @@ public class Elevator extends SubsystemBase {
 
     armClosedLoopController = leftMotor.getClosedLoopController();
 
-    armAbsoluteEncoder = leftMotor.getAbsoluteEncoder();
+    relativeEncoder = leftMotor.getEncoder();
     setPosition = getArmPosition();
 
   }
   
   public void resetEncoders() {
-    armClosedLoopController.setReference(0, SparkMax.ControlType.kPosition);
+    armClosedLoopController.setReference(0, SparkMax.ControlType.kMAXMotionPositionControl);
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
@@ -129,7 +133,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getArmPosition() {
-    return armAbsoluteEncoder.getPosition();
+    return relativeEncoder.getPosition();
   }
 
   @Override
@@ -145,10 +149,10 @@ public class Elevator extends SubsystemBase {
     // HOME(ARM_SOFT_LIMIT_BKW),
     // SHUTTLE(78.0),
     // PICKUP_FLOOR(ARM_SOFT_LIMIT_BKW);
-    LEVEL4(120.0),
+    LEVEL4(150.0),
     LEVEL3(100.0),
-    LEVEL2(80.0),
-    LEVEL1(60.0);
+    LEVEL2(50.0),
+    LEVEL1(0.0);
   
     //this.setDefaultCommand(new RunCommand(() -> elevator.setPosition(LEVEL1), elevator));
     
