@@ -67,7 +67,12 @@ public class Elevator extends SubsystemBase {
       .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
       .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
       .positionWrappingEnabled(false);
-
+    //leftConfig.closedLoop.maxMotion
+      //.maxVelocity(7.5)
+      //.maxAcceleration(15);
+    leftConfig.closedLoop.maxMotion
+      .maxVelocity(5000)
+      .maxAcceleration(3000);
     rightConfig
       .idleMode(IdleMode.kBrake)
       .follow(Constants.CAN.ARM_LEFT,true);
@@ -103,7 +108,7 @@ public class Elevator extends SubsystemBase {
 
   public void setPosition(double pos) {
     setPosition = pos;
-    armClosedLoopController.setReference(pos, SparkMax.ControlType.kPosition);
+    armClosedLoopController.setReference(pos, SparkMax.ControlType.kMAXMotionPositionControl);
   }
 
   public double getPosToTarget(double distance) {
