@@ -4,11 +4,13 @@
 
 package frc.robot.subsystems.drivetrain;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.opencv.core.RotatedRect;
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -57,7 +59,7 @@ public class Drivetrain extends SubsystemBase {
   private PIDController rotationPIDController, xPIDController, yPIDController;
   private PathPlannerPath pathToNote, pathToAmp;
 
-  private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.0, I = 0.0, D = 0.0;
+  private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.25, I = 0.0, D = 0.0;
   private final double THRESHOLD_DEGREES = 3.0;
   private final double THRESHOLD_SPEED = 0.5;
 
@@ -393,6 +395,16 @@ public class Drivetrain extends SubsystemBase {
     return isAtPose(ReefscapeUtils.getPreferredBranch());
   }
 
+  public double getMinimumAbiguity(List<PhotonTrackedTarget> targetsUsed) {
+    double min = 1.0;
+      
+    for (PhotonTrackedTarget photonTrackedTarget : targetsUsed) {
+      min = Math.min(min, photonTrackedTarget.getPoseAmbiguity());
+    }
+      
+    return min;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -406,7 +418,7 @@ public class Drivetrain extends SubsystemBase {
     });
     
     Optional<EstimatedRobotPose> result = photonCam.getGlobalPose();
-    if (result.isPresent()) {
+    if (result.isPresent() && getMinimumAbiguity(result.get().targetsUsed) < 0.20 && photonCam.getDistanceToClosestTag(result.get()) < 4.0) {
       // Uncomment the following to check camera position on robot
       // Pose3d estimatedPose = result.get().estimatedPose;
       // SmartDashboard.putNumber("Cam/Yaw", estimatedPose.getRotation().getZ());
@@ -416,7 +428,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     Optional<EstimatedRobotPose> backResult = photonCam2.getGlobalPose();
-    if (backResult.isPresent()) {
+    if (backResult.isPresent() && getMinimumAbiguity(backResult.get().targetsUsed) < 0.20 && photonCam2.getDistanceToClosestTag(backResult.get()) < 4.0) {
       // Uncomment the following to check camera position on robot
       // Pose3d estimatedPose = result.get().estimatedPose;
       // SmartDashboard.putNumber("Cam/Yaw", estimatedPose.getRotation().getZ());

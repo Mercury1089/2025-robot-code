@@ -93,6 +93,8 @@ public class RobotContainer {
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
     right1.onTrue(new RunCommand(() -> drivetrain.getDefaultCommand(), drivetrain));
 
+    left3.onTrue(drivetrain.getDefaultCommand());
+
     right4.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
     right5.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
 
