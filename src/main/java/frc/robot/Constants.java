@@ -40,32 +40,6 @@ public final class Constants {
     }
   }
 
-  public static class APRILTAGS {
-
-    // in relation to standing at (0,0) and facing the red speaker
-    public static final int LEFT_BLUE_SOURCE = 1; 
-    public static final int RIGHT_BLUE_SOURCE = 2;
-    public static final int RIGHT_RED_SPEAKER = 3;
-    public static final int MIDDLE_RED_SPEAKER = 4;
-    public static final int RED_AMP = 5;
-    public static final int BLUE_AMP = 6;
-    public static final int MIDDLE_BLUE_SPEAKER = 7;
-    public static final int RIGHT_BLUE_SPEAKER = 8;
-    public static final int LEFT_BLUE_SOURCET_RED_SOURCE = 9;
-    public static final int RIGHT_RED_SOURCE = 10;
-    public static final int RIGHT_RED_TRAP = 11;
-    public static final int LEFT_RED_TRAP = 12;
-    public static final int CENTER_RED_TRAP = 13;
-    public static final int CENTER_BLUE_TRAP = 14;
-    public static final int LEFT_BLUE_TRAP = 15;
-    public static final int RIGHT_BLUE_TRAP = 16;
-    
-
-
-    public APRILTAGS() {
-    }
-  }
-
   public static class SWERVE {
     // // 2024 robot
     // public static final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
@@ -151,9 +125,9 @@ public final class Constants {
     // public static final int SHOOTER_BACK_SPARKMAX = 12;
     public static final int ARM_LEFT = 13;
     public static final int ARM_RIGHT = 14;
-    public static final int INTAKE= 15;
+    public static final int INTAKE = 15;
     
-    
+    public static final int LASER_CAN = 16;
     private CAN() {} 
   }
 

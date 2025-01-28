@@ -13,10 +13,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADXL345_I2C.AllAxes;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Robot;
-import frc.robot.Constants.APRILTAGS;
 import frc.robot.commands.Autons;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.drivetrain.Drivetrain.FieldPosition;
 
 public class TargetUtils {
 
@@ -32,14 +30,6 @@ public class TargetUtils {
         return distance;
     }
 
-    public static double getDistanceToSpeaker(Pose2d robotPose) {
-        Alliance alliance = KnownLocations.getKnownLocations().alliance;
-        if (alliance == Alliance.Blue) {
-            return getDistanceToFieldPos(robotPose, APRILTAGS.MIDDLE_BLUE_SPEAKER);
-        } else {
-            return getDistanceToFieldPos(robotPose, APRILTAGS.MIDDLE_RED_SPEAKER);
-        }
-    }
 
     // Following is based off https://www.chiefdelphi.com/t/is-there-a-builtin-function-to-find-the-angle-needed-to-get-one-pose2d-to-face-another-pose2d/455972
     public static double getTargetHeadingToAprilTag(Pose2d robotPose, int tagId) {

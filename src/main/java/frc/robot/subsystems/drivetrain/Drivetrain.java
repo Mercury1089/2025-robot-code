@@ -37,8 +37,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.Constants.APRILTAGS;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.SWERVE;
 import frc.robot.sensors.AprilTagCamera;
@@ -48,6 +46,9 @@ import frc.robot.util.SwerveUtils;
 import frc.robot.util.TargetUtils;
 import frc.robot.util.ReefscapeUtils;
 
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.ConfigurationFailedException;
+
 public class Drivetrain extends SubsystemBase {
 
   private MAXSwerveModule frontLeftModule, frontRightModule, backLeftModule, backRightModule;
@@ -55,6 +56,7 @@ public class Drivetrain extends SubsystemBase {
   private SwerveDrivePoseEstimator odometry;
   private SwerveDriveKinematics swerveKinematics;
   private AprilTagCamera photonCam, photonCam2;
+  private LaserCan laserCan;
   private Field2d smartdashField;
   private PIDController rotationPIDController, xPIDController, yPIDController;
   private PathPlannerPath pathToNote, pathToAmp;
@@ -125,6 +127,16 @@ public class Drivetrain extends SubsystemBase {
     photonCam = new AprilTagCamera("AprilTagCamera" , frontCam);
 
     photonCam2 = new AprilTagCamera("BackTagCamera" , backCam);
+
+    laserCan = new LaserCan(CAN.LASER_CAN);
+    // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook
+    try {
+      laserCan.setRangingMode(LaserCan.RangingMode.SHORT);
+      laserCan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+      laserCan.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+    } catch (ConfigurationFailedException e) {
+      System.out.println("Configuration failed! " + e);
+    } //i copied this whole thing
 
     smartdashField = new Field2d();
     SmartDashboard.putData("Swerve Odometry", smartdashField);
@@ -450,13 +462,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drivetrain/CurrentPose X", getPose().getX());
     SmartDashboard.putNumber("Drivetrain/CurrentPose Y", getPose().getY());
     SmartDashboard.putNumber("Drivetrain/getRotation", getRotation().getDegrees());
-    SmartDashboard.putNumber("Drivetrain/distanceToAMP", TargetUtils.getDistanceToFieldPos(getPose(), APRILTAGS.BLUE_AMP));
     SmartDashboard.putBoolean("Drivetrain/isNotMoving", isNotMoving());
     SmartDashboard.putNumber("Drivetrain/CurrentPose Rotation", getPose().getRotation().getDegrees());
     SmartDashboard.putNumber("Drivetrain/Drive Angle", getRotation().getDegrees());
-    SmartDashboard.putNumber("Drivetrain/distanceToSpeaker", Units.metersToInches(TargetUtils.getDistanceToFieldPos(getPose(), APRILTAGS.MIDDLE_BLUE_SPEAKER)));
-    SmartDashboard.putNumber("Drivetrain/New Func (angle to red)", TargetUtils.getTargetHeadingToAprilTag(getPose(), APRILTAGS.MIDDLE_RED_SPEAKER));
-    SmartDashboard.putNumber("Drivetrain/Angle Offset", 0);
     SmartDashboard.putString("Drivetrain/robotZone", ReefscapeUtils.getCurrentRobotZone().robotZone);
     SmartDashboard.putString("Drivetrain/preferredZone", ReefscapeUtils.preferredZone().robotZone);
     SmartDashboard.putString("Drivetrain/branchSide", ReefscapeUtils.branchSide().side);
@@ -464,10 +472,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredStation", isAtPreferredCoralStation());
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredBranch", isAtPreferredBranch());
 
-  }
-
-  public enum FieldPosition {
-    AMP,
-    SPEAKER;
+    LaserCan.Measurement measurement = laserCan.getMeasurement();
+    if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+      SmartDashboard.putNumber("Laser Distance", measurement.distance_mm*1000); //convert to meters
+    }
   }
 }
