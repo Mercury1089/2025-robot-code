@@ -100,6 +100,8 @@ public class Drivetrain extends SubsystemBase {
   private SlewRateLimiter angularSpeedLimiter = new SlewRateLimiter(SWERVE.ROTATIONAL_SLEW_RATE);
   private double prevTime = WPIUtilJNI.now() * 1e-6;
 
+  private double laserCanMeasurement = 0.0;
+
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     // configure swerve modules
@@ -471,10 +473,11 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Drivetrain/coralStation", ReefscapeUtils.preferredCoralStation().coralStation);
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredStation", isAtPreferredCoralStation());
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredBranch", isAtPreferredBranch());
+    SmartDashboard.putNumber("Drivetrain/laserCanDistance", laserCanMeasurement);
 
     LaserCan.Measurement measurement = laserCan.getMeasurement();
     if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-      SmartDashboard.putNumber("Laser Distance", measurement.distance_mm*1000); //convert to meters
+      laserCanMeasurement = laserCan.getMeasurement().distance_mm;
     }
   }
 }
