@@ -127,7 +127,8 @@ public final class Constants {
     public static final int ARM_RIGHT = 14;
     public static final int INTAKE = 15;
     
-    public static final int LASER_CAN = 16;
+    public static final int LEFT_LASER_CAN = 16;
+    public static final int RIGHT_LASER_CAN = 17;
     private CAN() {} 
   }
 

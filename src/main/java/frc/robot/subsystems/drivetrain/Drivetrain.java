@@ -40,6 +40,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.SWERVE;
 import frc.robot.sensors.AprilTagCamera;
+import frc.robot.sensors.ProximitySensor;
+import frc.robot.sensors.ProximitySensor.ProxSensor;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.PathUtils;
 import frc.robot.util.SwerveUtils;
@@ -56,7 +58,6 @@ public class Drivetrain extends SubsystemBase {
   private SwerveDrivePoseEstimator odometry;
   private SwerveDriveKinematics swerveKinematics;
   private AprilTagCamera photonCam, photonCam2;
-  private LaserCan laserCan;
   private Field2d smartdashField;
   private PIDController rotationPIDController, xPIDController, yPIDController;
   private PathPlannerPath pathToNote, pathToAmp;
@@ -101,15 +102,18 @@ public class Drivetrain extends SubsystemBase {
   private double prevTime = WPIUtilJNI.now() * 1e-6;
 
   private double laserCanMeasurement = 0.0;
+  private double laserCanMeasurement2 = 0.0;
+  private ProximitySensor sensors;
 
   /** Creates a new Drivetrain. */
-  public Drivetrain() {
+  public Drivetrain(ProximitySensor proximitySensor) {
     // configure swerve modules
     frontLeftModule = new MAXSwerveModule(CAN.DRIVING_FRONT_LEFT, CAN.TURNING_FRONT_LEFT, -Math.PI / 2);
     frontRightModule = new MAXSwerveModule(CAN.DRIVING_FRONT_RIGHT, CAN.TURNING_FRONT_RIGHT, 0);
     backLeftModule = new MAXSwerveModule(CAN.DRIVING_BACK_LEFT, CAN.TURNING_BACK_LEFT, Math.PI);
     backRightModule = new MAXSwerveModule(CAN.DRIVING_BACK_RIGHT, CAN.TURNING_BACK_RIGHT, Math.PI / 2);
 
+    sensors = proximitySensor;
     //configure gyro
     pigeon = new Pigeon2(CAN.PIGEON_DRIVETRAIN);
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
@@ -130,15 +134,6 @@ public class Drivetrain extends SubsystemBase {
 
     photonCam2 = new AprilTagCamera("BackTagCamera" , backCam);
 
-    laserCan = new LaserCan(CAN.LASER_CAN);
-    // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook
-    try {
-      laserCan.setRangingMode(LaserCan.RangingMode.SHORT);
-      laserCan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
-      laserCan.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
-    } catch (ConfigurationFailedException e) {
-      System.out.println("Configuration failed! " + e);
-    } //i copied this whole thing
 
     smartdashField = new Field2d();
     SmartDashboard.putData("Swerve Odometry", smartdashField);
@@ -452,6 +447,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     smartdashField.setRobotPose(getPose());
+
   
     // KnownLocations knownLocations = KnownLocations.getKnownLocations();
     // pathToAmp = PathUtils.generatePath(Rotation2d.fromDegrees(-90.0), getPose(), knownLocations.AMP);
@@ -473,11 +469,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Drivetrain/coralStation", ReefscapeUtils.preferredCoralStation().coralStation);
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredStation", isAtPreferredCoralStation());
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredBranch", isAtPreferredBranch());
-    SmartDashboard.putNumber("Drivetrain/laserCanDistance", laserCanMeasurement);
-
-    LaserCan.Measurement measurement = laserCan.getMeasurement();
-    if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-      laserCanMeasurement = laserCan.getMeasurement().distance_mm;
-    }
+    SmartDashboard.putNumber("Drivetrain/laserCanDistance", sensors.getSensorDistance(ProxSensor.OUTER_LEFT_SENSOR));
+    SmartDashboard.putNumber("Drivetrain/laserCanDistance2", sensors.getSensorDistance(ProxSensor.INNER_LEFT_SENSOR));
+    SmartDashboard.putNumber("Drivetrain/laserCanDifference", Math.abs(laserCanMeasurement - laserCanMeasurement2));
+    SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensors", sensors.isAtReefSide());
   }
 }

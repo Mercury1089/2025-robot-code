@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.SWERVE;
+import frc.robot.sensors.ProximitySensor;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
@@ -77,11 +78,23 @@ public class DriveCommands {
           , drivetrain);
     }
 
-    public static Command goTopreferredBranch(Drivetrain drivetrain) {
+    public static Command goTopreferredBranch(Drivetrain drivetrain, ProximitySensor proximitySensor) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredZone(),
-            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()).until(() -> drivetrain.isAtPreferredBranch())
+            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()).until(() -> drivetrain.isAtPreferredBranch()),
+            alignwithSensors(drivetrain, proximitySensor)
         );
+    }
+
+    public static Command alignwithSensors(Drivetrain drivetrain, ProximitySensor proximitySensor) {
+        double invert = ReefscapeUtils.branchSide() == ReefscapeUtils.BranchSide.LEFT ? 1.0 : -1.0;
+        return new RunCommand(
+            () -> drivetrain.drive(
+              0.0, 
+              invert * 0.1,
+              0.0,
+              false)
+        ).until(() -> proximitySensor.isAtReefSide());
     }
 
     public static Command goTopreferredCoralStation(Drivetrain drivetrain) {
@@ -101,6 +114,7 @@ public class DriveCommands {
     public static Command followPath(Supplier<PathPlannerPath> pathSupplier, Drivetrain drivetrain) {
         return drivetrain.defer(() -> AutoBuilder.followPath(pathSupplier.get()));
     }
+    //The
 
 
 }

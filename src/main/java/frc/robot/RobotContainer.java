@@ -8,6 +8,7 @@ import frc.robot.Constants.DS_USB;
 import frc.robot.Constants.JOYSTICK_BUTTONS;
 import frc.robot.commands.Autons;
 import frc.robot.commands.DriveCommands;
+import frc.robot.sensors.ProximitySensor;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.util.KnownLocations;
@@ -53,6 +54,7 @@ public class RobotContainer {
 
   private Autons auton;
   private Drivetrain drivetrain;
+  private ProximitySensor proximitySensor;
   private Elevator elevator; 
 
 
@@ -66,10 +68,12 @@ public class RobotContainer {
     gamepadHID = new GenericHID(DS_USB.GAMEPAD);
     configureBindings();
 
-    drivetrain = new Drivetrain();
+    proximitySensor = new ProximitySensor();
+    drivetrain = new Drivetrain(proximitySensor);
     drivetrain.setDefaultCommand(DriveCommands.joyStickDrive(leftJoystickY, leftJoystickX, rightJoystickX, drivetrain));
     drivetrain.resetGyro();
     elevator = new Elevator(); 
+    
 
     elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
     gamepadA.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL1), elevator));
@@ -78,7 +82,7 @@ public class RobotContainer {
     gamepadY.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL4), elevator));
 
     
-    auton = new Autons(drivetrain);
+    auton = new Autons(drivetrain, proximitySensor);
 
     Map<String, Command> commands = new HashMap<String, Command>();
 
@@ -98,7 +102,8 @@ public class RobotContainer {
     right4.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
     right5.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
 
-    gamepadLB.onTrue(DriveCommands.goTopreferredBranch(drivetrain));
+    //gamepadLB.onTrue(DriveCommands.goTopreferredBranch(drivetrain, proximitySensor));
+    gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain, proximitySensor));
     gamepadRB.onTrue(DriveCommands.goTopreferredCoralStation(drivetrain));
 
     gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.LEFT)));
