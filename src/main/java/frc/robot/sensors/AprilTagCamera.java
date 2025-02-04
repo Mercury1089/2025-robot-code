@@ -4,6 +4,7 @@
 
 package frc.robot.sensors;
 
+import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import frc.robot.util.KnownLocations;
+import frc.robot.util.TargetUtils;
 
 /** Wrapper for PhotonCamera class */
 public class AprilTagCamera extends PhotonCamera {
@@ -75,10 +77,15 @@ public class AprilTagCamera extends PhotonCamera {
 
     public double getDistanceToClosestTag(EstimatedRobotPose pose) {
         Pose2d camPose2d = pose.estimatedPose.toPose2d();
+        int aprilTag;
 
-        Pose2d aprilTagPose2d = fieldLayout.getTagPose((int) getApriltagID()).get().toPose2d();
+        if (pose.targetsUsed.size() > 0) {
+            aprilTag = pose.targetsUsed.get(0).getFiducialId();
+        } else {
+            return Double.MAX_VALUE;
+        }
 
-        return PhotonUtils.getDistanceToPose(camPose2d, aprilTagPose2d);
+        return TargetUtils.getDistanceToFieldPos(camPose2d, aprilTag);
     }
     /**
      * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard

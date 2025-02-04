@@ -16,13 +16,14 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.SWERVE;
-import frc.robot.sensors.ProximitySensor;
+import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
 import frc.robot.util.PathUtils;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
+import frc.robot.util.ReefscapeUtils.BranchSide;
 
 public class DriveCommands {
 
@@ -78,23 +79,27 @@ public class DriveCommands {
           , drivetrain);
     }
 
-    public static Command goTopreferredBranch(Drivetrain drivetrain, ProximitySensor proximitySensor) {
+    public static Command goTopreferredBranch(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
-            ReefscapeUtils.getPathToPreferredZone(),
+            ReefscapeUtils.getPathToPreferredBranch(),
             goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()).until(() -> drivetrain.isAtPreferredBranch()),
-            alignwithSensors(drivetrain, proximitySensor)
+            alignwithSensors(drivetrain)
         );
     }
 
-    public static Command alignwithSensors(Drivetrain drivetrain, ProximitySensor proximitySensor) {
-        double invert = ReefscapeUtils.branchSide() == ReefscapeUtils.BranchSide.LEFT ? 1.0 : -1.0;
+    public static Command alignwithSensors(Drivetrain drivetrain) {
+        Supplier<DistanceSensors> proximitySensor = () -> ReefscapeUtils.branchSide() == BranchSide.LEFT ?
+                                                        drivetrain.getLeftSensors() :
+                                                        drivetrain.getRightSensors();
+        Supplier<Double> invert = () -> !proximitySensor.get().isTooFarLeft() ? 1.0 : -1.0;
+
         return new RunCommand(
             () -> drivetrain.drive(
               0.0, 
-              invert * 0.1,
+              invert.get() * 0.1,
               0.0,
               false)
-        ).until(() -> proximitySensor.isAtReefSide());
+        ).until(() -> proximitySensor.get().isAtReefSide());
     }
 
     public static Command goTopreferredCoralStation(Drivetrain drivetrain) {

@@ -98,27 +98,46 @@ public class ReefscapeUtils {
         return zone;
     }
 
-    public static Command getPathToPreferredZone() {
-        Supplier<Double> goalEndSupplier = () -> 0.5;
-        return new ConditionalCommand(
-            PathUtils.getPathToPose(() -> KnownLocations.rightZone, goalEndSupplier),
-            new ConditionalCommand(
-                PathUtils.getPathToPose(() -> KnownLocations.leftZone, goalEndSupplier), 
+    public static Command getPathToPreferredBranch() {
+            Supplier<Double> goalEndSupplier = () -> 0.5;
+    
+            return new ConditionalCommand(
+                PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.LEFT), goalEndSupplier), 
                 new ConditionalCommand(
-                    PathUtils.getPathToPose(() -> KnownLocations.bottomLeftZone, goalEndSupplier), 
+                    PathUtils.getPathToPose(() -> getRightBranch(RobotZone.LEFT), goalEndSupplier),
                     new ConditionalCommand(
-                        PathUtils.getPathToPose(() -> KnownLocations.bottomRightZone, goalEndSupplier), 
+                        PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.BOTTOM_LEFT), goalEndSupplier),
                         new ConditionalCommand(
-                            PathUtils.getPathToPose(() -> KnownLocations.topRightZone, goalEndSupplier), 
+                            PathUtils.getPathToPose(() -> getRightBranch(RobotZone.BOTTOM_LEFT), goalEndSupplier),
                             new ConditionalCommand(
-                                PathUtils.getPathToPose(() -> KnownLocations.topLeftZone, goalEndSupplier), 
-                                    PathUtils.getPathToPose(() -> KnownLocations.leftZone, goalEndSupplier), 
-                                () -> preferredZone == RobotZone.TOP_LEFT),
-                            () -> preferredZone == RobotZone.TOP_RIGHT),
-                        () -> preferredZone == RobotZone.BOTTOM_RIGHT), 
-                    () -> preferredZone == RobotZone.BOTTOM_LEFT), 
-                () -> preferredZone == RobotZone.LEFT), 
-            () -> preferredZone == RobotZone.RIGHT);
+                                PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.BOTTOM_RIGHT), goalEndSupplier),
+                                new ConditionalCommand(
+                                    PathUtils.getPathToPose(() -> getRightBranch(RobotZone.BOTTOM_RIGHT), goalEndSupplier),
+                                    new ConditionalCommand(
+                                        PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.RIGHT), goalEndSupplier),
+                                        new ConditionalCommand(
+                                            PathUtils.getPathToPose(() -> getRightBranch(RobotZone.RIGHT), goalEndSupplier),
+                                            new ConditionalCommand(
+                                                PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.TOP_RIGHT), goalEndSupplier),
+                                                new ConditionalCommand(
+                                                    PathUtils.getPathToPose(() -> getRightBranch(RobotZone.TOP_RIGHT), goalEndSupplier),
+                                                    new ConditionalCommand(
+                                                        PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.TOP_LEFT), goalEndSupplier),
+                                                        new ConditionalCommand(
+                                                            PathUtils.getPathToPose(() -> getRightBranch(RobotZone.TOP_LEFT), goalEndSupplier),
+                                                            PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.LEFT), goalEndSupplier), 
+                                                            () -> preferredZone == RobotZone.TOP_LEFT && preferredBranchSide == BranchSide.RIGHT),
+                                                        () -> preferredZone == RobotZone.TOP_LEFT && preferredBranchSide == BranchSide.LEFT),
+                                                    () -> preferredZone == RobotZone.TOP_RIGHT && preferredBranchSide == BranchSide.RIGHT),
+                                                () -> preferredZone == RobotZone.TOP_RIGHT && preferredBranchSide == BranchSide.LEFT),
+                                            () -> preferredZone == RobotZone.RIGHT && preferredBranchSide == BranchSide.RIGHT),
+                                        () -> preferredZone == RobotZone.RIGHT && preferredBranchSide == BranchSide.LEFT),
+                                    () -> preferredZone == RobotZone.BOTTOM_RIGHT && preferredBranchSide == BranchSide.RIGHT),
+                                () -> preferredZone == RobotZone.BOTTOM_RIGHT && preferredBranchSide == BranchSide.LEFT),
+                            () -> preferredZone == RobotZone.BOTTOM_LEFT && preferredBranchSide == BranchSide.RIGHT),
+                        () -> preferredZone == RobotZone.BOTTOM_LEFT && preferredBranchSide == BranchSide.LEFT),
+                    () -> preferredZone == RobotZone.LEFT && preferredBranchSide == BranchSide.RIGHT), 
+                () -> preferredZone == RobotZone.LEFT && preferredBranchSide == BranchSide.LEFT);
     }
 
     public static Command getPathToPreferredCoralStation() {

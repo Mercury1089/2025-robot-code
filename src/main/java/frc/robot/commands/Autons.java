@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.SWERVE;
-import frc.robot.sensors.ProximitySensor;
+import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
@@ -70,10 +70,10 @@ public class Autons {
 
     private final Command DO_NOTHING = new PrintCommand("Do Nothing Auton");
     private Drivetrain drivetrain;
-    private ProximitySensor proximitySensor;
+    private DistanceSensors proximitySensor;
     private RobotConfig config;
 
-    public Autons(Drivetrain drivetrain, ProximitySensor proximitySensor) {
+    public Autons(Drivetrain drivetrain) {
 
         this.drivetrain = drivetrain;
         this.proximitySensor = proximitySensor;
@@ -131,28 +131,28 @@ public class Autons {
 
         autonCommandGroup.addCommands(
             new InstantCommand(() -> changePreferredScoringLocation(firstBranch)),
-            DriveCommands.goTopreferredBranch(drivetrain, proximitySensor),
+            DriveCommands.goTopreferredBranch(drivetrain),
             new WaitCommand(1.0),
 
             new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(firstStation)),
             DriveCommands.goTopreferredCoralStation(drivetrain),
             new WaitCommand(1.0),
             new InstantCommand(() -> changePreferredScoringLocation(secondBranch)),
-            DriveCommands.goTopreferredBranch(drivetrain, proximitySensor),
+            DriveCommands.goTopreferredBranch(drivetrain),
             new WaitCommand(1.0),
 
             new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(secondStation)),
             DriveCommands.goTopreferredCoralStation(drivetrain),
             new WaitCommand(1.0),
             new InstantCommand(() -> changePreferredScoringLocation(thirdBranch)),
-            DriveCommands.goTopreferredBranch(drivetrain, proximitySensor),
+            DriveCommands.goTopreferredBranch(drivetrain),
             new WaitCommand(1.0),
 
             new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(thirdStation)),
             DriveCommands.goTopreferredCoralStation(drivetrain),
             new WaitCommand(1.0),
             new InstantCommand(() -> changePreferredScoringLocation(fourthBranch)),
-            DriveCommands.goTopreferredBranch(drivetrain, proximitySensor),
+            DriveCommands.goTopreferredBranch(drivetrain),
             new WaitCommand(1.0)
         );
 

@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.commands.PathfindingCommand;
+import com.reduxrobotics.canand.CanandEventLoop;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -31,6 +32,7 @@ public class Robot extends TimedRobot {
     // CanBridge.runTCP();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    CanandEventLoop.getInstance();
     m_robotContainer = new RobotContainer();
 
     PathfindingCommand.warmupCommand().schedule();

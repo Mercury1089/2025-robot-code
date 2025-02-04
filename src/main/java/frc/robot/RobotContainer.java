@@ -8,12 +8,14 @@ import frc.robot.Constants.DS_USB;
 import frc.robot.Constants.JOYSTICK_BUTTONS;
 import frc.robot.commands.Autons;
 import frc.robot.commands.DriveCommands;
-import frc.robot.sensors.ProximitySensor;
+import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
+import frc.robot.util.ReefscapeUtils.BranchSide;
 import frc.robot.util.ReefscapeUtils.CoralStation;
 import frc.robot.util.ReefscapeUtils.RobotZone;
 
@@ -54,8 +56,8 @@ public class RobotContainer {
 
   private Autons auton;
   private Drivetrain drivetrain;
-  private ProximitySensor proximitySensor;
   private Elevator elevator; 
+  private CoralIntake coralIntake;
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -68,8 +70,7 @@ public class RobotContainer {
     gamepadHID = new GenericHID(DS_USB.GAMEPAD);
     configureBindings();
 
-    proximitySensor = new ProximitySensor();
-    drivetrain = new Drivetrain(proximitySensor);
+    drivetrain = new Drivetrain();
     drivetrain.setDefaultCommand(DriveCommands.joyStickDrive(leftJoystickY, leftJoystickX, rightJoystickX, drivetrain));
     drivetrain.resetGyro();
     elevator = new Elevator(); 
@@ -81,8 +82,10 @@ public class RobotContainer {
     gamepadX.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL3), elevator));
     gamepadY.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL4), elevator));
 
+    coralIntake = new CoralIntake();
+
     
-    auton = new Autons(drivetrain, proximitySensor);
+    auton = new Autons(drivetrain);
 
     Map<String, Command> commands = new HashMap<String, Command>();
 
@@ -102,8 +105,8 @@ public class RobotContainer {
     right4.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
     right5.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
 
-    //gamepadLB.onTrue(DriveCommands.goTopreferredBranch(drivetrain, proximitySensor));
-    gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain, proximitySensor));
+    gamepadLB.onTrue(DriveCommands.goTopreferredBranch(drivetrain));
+    // gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain));
     gamepadRB.onTrue(DriveCommands.goTopreferredCoralStation(drivetrain));
 
     gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.LEFT)));
@@ -114,6 +117,8 @@ public class RobotContainer {
     gamepadPOVRight.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.OUTSIDERIGHT)));
     gamepadPOVLeft.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.INSIDERIGHT)));
 
+    left6.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.LEFT)));
+    left7.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.RIGHT)));
   }
 
   /**

@@ -15,6 +15,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.reduxrobotics.sensors.canandcolor.Canandcolor;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -40,8 +41,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.SWERVE;
 import frc.robot.sensors.AprilTagCamera;
+import frc.robot.sensors.DistanceSensors;
 import frc.robot.sensors.ProximitySensor;
-import frc.robot.sensors.ProximitySensor.ProxSensor;
+import frc.robot.sensors.DistanceSensors.ProxSensor;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.PathUtils;
 import frc.robot.util.SwerveUtils;
@@ -103,17 +105,19 @@ public class Drivetrain extends SubsystemBase {
 
   private double laserCanMeasurement = 0.0;
   private double laserCanMeasurement2 = 0.0;
-  private ProximitySensor sensors;
+  private DistanceSensors leftSensors, rightSensors;
 
   /** Creates a new Drivetrain. */
-  public Drivetrain(ProximitySensor proximitySensor) {
+  public Drivetrain() {
     // configure swerve modules
     frontLeftModule = new MAXSwerveModule(CAN.DRIVING_FRONT_LEFT, CAN.TURNING_FRONT_LEFT, -Math.PI / 2);
     frontRightModule = new MAXSwerveModule(CAN.DRIVING_FRONT_RIGHT, CAN.TURNING_FRONT_RIGHT, 0);
     backLeftModule = new MAXSwerveModule(CAN.DRIVING_BACK_LEFT, CAN.TURNING_BACK_LEFT, Math.PI);
     backRightModule = new MAXSwerveModule(CAN.DRIVING_BACK_RIGHT, CAN.TURNING_BACK_RIGHT, Math.PI / 2);
 
-    sensors = proximitySensor;
+    leftSensors = new DistanceSensors(CAN.LEFT_INNER_LASER_CAN, CAN.LEFT_OUTER_LASER_CAN);
+    rightSensors = new DistanceSensors(CAN.RIGHT_INNER_LASER_CAN, CAN.RIGHT_OUTER_LASER_CAN);
+
     //configure gyro
     pigeon = new Pigeon2(CAN.PIGEON_DRIVETRAIN);
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
@@ -177,6 +181,14 @@ public class Drivetrain extends SubsystemBase {
 
   public PIDController getYController() {
     return yPIDController;
+  }
+
+  public DistanceSensors getLeftSensors() {
+    return leftSensors;
+  }
+
+  public DistanceSensors getRightSensors() {
+    return rightSensors;
   }
 
   /**
@@ -469,9 +481,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Drivetrain/coralStation", ReefscapeUtils.preferredCoralStation().coralStation);
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredStation", isAtPreferredCoralStation());
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredBranch", isAtPreferredBranch());
-    SmartDashboard.putNumber("Drivetrain/laserCanDistance", sensors.getSensorDistance(ProxSensor.OUTER_LEFT_SENSOR));
-    SmartDashboard.putNumber("Drivetrain/laserCanDistance2", sensors.getSensorDistance(ProxSensor.INNER_LEFT_SENSOR));
+    SmartDashboard.putNumber("Drivetrain/leftInner", leftSensors.getSensorDistance(leftSensors.getInnerSensor()));
+    SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getSensorDistance(leftSensors.getOuterSensor()));
     SmartDashboard.putNumber("Drivetrain/laserCanDifference", Math.abs(laserCanMeasurement - laserCanMeasurement2));
-    SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensors", sensors.isAtReefSide());
+    SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsLEFT", leftSensors.isAtReefSide());
   }
 }
