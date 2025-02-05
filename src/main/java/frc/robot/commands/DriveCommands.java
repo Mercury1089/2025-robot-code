@@ -76,13 +76,13 @@ public class DriveCommands {
               drivetrain.getYController().calculate(drivetrain.getPose().getY(), desiredPose.get().getY()),
               drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), desiredPose.get().getRotation().getDegrees()),
               true)
-          , drivetrain);
+          , drivetrain).until(() -> drivetrain.isAtPose(desiredPose.get()));
     }
 
-    public static Command goTopreferredBranch(Drivetrain drivetrain) {
+    public static Command goToPreferredBranch(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredBranch(),
-            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()).until(() -> drivetrain.isAtPreferredBranch()),
+            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()),
             alignwithSensors(drivetrain)
         );
     }
@@ -102,7 +102,7 @@ public class DriveCommands {
         ).until(() -> proximitySensor.get().isAtReefSide());
     }
 
-    public static Command goTopreferredCoralStation(Drivetrain drivetrain) {
+    public static Command goToPreferredCoralStation(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredCoralStation(),
             goToPose(drivetrain, () -> ReefscapeUtils.getPreferredCoralStation()).until(() -> drivetrain.isAtPreferredCoralStation())

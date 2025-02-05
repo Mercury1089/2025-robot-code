@@ -439,7 +439,7 @@ public class Drivetrain extends SubsystemBase {
     });
     
     Optional<EstimatedRobotPose> result = photonCam.getGlobalPose();
-    if (result.isPresent() && getMinimumAbiguity(result.get().targetsUsed) < 0.20 && photonCam.getDistanceToClosestTag(result.get()) < 4.0) {
+    if (result.isPresent() && /* getMinimumAbiguity(result.get().targetsUsed) < 0.20 && photonCam.getDistanceToClosestTag(result.get()) < 4.0 */  !photonCam.rejectUpdate(result.get())) {
       // Uncomment the following to check camera position on robot
       // Pose3d estimatedPose = result.get().estimatedPose;
       // SmartDashboard.putNumber("Cam/Yaw", estimatedPose.getRotation().getZ());
@@ -449,7 +449,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     Optional<EstimatedRobotPose> backResult = photonCam2.getGlobalPose();
-    if (backResult.isPresent() && getMinimumAbiguity(backResult.get().targetsUsed) < 0.20 && photonCam2.getDistanceToClosestTag(backResult.get()) < 4.0) {
+    if (backResult.isPresent() && /*getMinimumAbiguity(backResult.get().targetsUsed) < 0.20 && photonCam2.getDistanceToClosestTag(backResult.get()) < 4.0)/* */  !photonCam2.rejectUpdate(backResult.get())){
       // Uncomment the following to check camera position on robot
       // Pose3d estimatedPose = result.get().estimatedPose;
       // SmartDashboard.putNumber("Cam/Yaw", estimatedPose.getRotation().getZ());

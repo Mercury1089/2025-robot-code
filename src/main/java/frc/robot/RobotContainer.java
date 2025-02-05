@@ -9,6 +9,7 @@ import frc.robot.Constants.JOYSTICK_BUTTONS;
 import frc.robot.commands.Autons;
 import frc.robot.commands.DriveCommands;
 import frc.robot.sensors.DistanceSensors;
+import frc.robot.subsystems.RobotModeLEDs;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
@@ -17,6 +18,7 @@ import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
 import frc.robot.util.ReefscapeUtils.BranchSide;
 import frc.robot.util.ReefscapeUtils.CoralStation;
+import frc.robot.util.ReefscapeUtils.Level;
 import frc.robot.util.ReefscapeUtils.RobotZone;
 
 import java.util.HashMap;
@@ -24,6 +26,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.TriggerEvent;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -58,6 +62,9 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Elevator elevator; 
   private CoralIntake coralIntake;
+  private RobotModeLEDs leds;
+
+  private double manualThreshold = 0.2;
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -73,41 +80,51 @@ public class RobotContainer {
     drivetrain = new Drivetrain();
     drivetrain.setDefaultCommand(DriveCommands.joyStickDrive(leftJoystickY, leftJoystickX, rightJoystickX, drivetrain));
     drivetrain.resetGyro();
-    elevator = new Elevator(); 
-    
 
+    elevator = new Elevator(); 
     elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
-    gamepadA.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL1), elevator));
-    gamepadB.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL2), elevator));
-    gamepadX.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL3), elevator));
-    gamepadY.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ArmPosition.LEVEL4), elevator));
+    // gamepadA.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL1), elevator));
+    // gamepadB.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL2), elevator));
+    // gamepadX.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL3), elevator));
+    // gamepadY.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL4), elevator));
 
     coralIntake = new CoralIntake();
+    // gamepadA.onTrue(new RunCommand(() -> coralIntake.intakeCoral().until(() -> coralIntake.hasCoral())));
 
-    
+    leds = new RobotModeLEDs();
+
     auton = new Autons(drivetrain);
 
     Map<String, Command> commands = new HashMap<String, Command>();
 
 
     NamedCommands.registerCommands(commands); 
+    
+    Trigger takeControl = new Trigger(() -> (Math.abs(leftJoystickY.get()) > manualThreshold || Math.abs(leftJoystickX.get()) > manualThreshold || Math.abs(rightJoystickX.get()) > manualThreshold));
+    Trigger fidoOn = new Trigger(() -> leds.isFIDOEnabled());
+    Trigger fidoOff = new Trigger(() -> !leds.isFIDOEnabled());
 
-    right11.onTrue(new InstantCommand(() -> drivetrain.drive(0.0, 0.0, 0.0), drivetrain));
+    takeControl.onTrue(drivetrain.getDefaultCommand());
+    left3.onTrue(new InstantCommand(() -> leds.enableFIDO()));
     
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
-    left11.onTrue(new RunCommand(() -> drivetrain.lockSwerve(), drivetrain));
 
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
-    right1.onTrue(new RunCommand(() -> drivetrain.getDefaultCommand(), drivetrain));
 
-    left3.onTrue(drivetrain.getDefaultCommand());
+    right4.onTrue(
+      new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.LEFT)).andThen(
+      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()).andThen(
+      DriveCommands.alignwithSensors(drivetrain))
+    ));
+    right5.onTrue(
+      new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.RIGHT)).andThen(
+      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()).andThen(
+      DriveCommands.alignwithSensors(drivetrain))
+    ));
 
-    right4.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
-    right5.onTrue(DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
-
-    gamepadLB.onTrue(DriveCommands.goTopreferredBranch(drivetrain));
+    gamepadLB.onTrue(DriveCommands.goToPreferredBranch(drivetrain));
     // gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain));
-    gamepadRB.onTrue(DriveCommands.goTopreferredCoralStation(drivetrain));
+    gamepadRB.onTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
 
     gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.LEFT)));
     gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BOTTOM_LEFT)));

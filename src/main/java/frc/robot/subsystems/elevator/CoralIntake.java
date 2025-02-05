@@ -9,6 +9,8 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.BREAKBEAM;
 import frc.robot.Constants;
@@ -18,7 +20,7 @@ import frc.robot.sensors.ProximitySensor;
 public class CoralIntake extends SubsystemBase {
 
     private SparkMax coralIntake;
-    private ProximitySensor coralSensor;
+    private ProximitySensor frontCoralSensor, backCoralSensor;
     private final double coralTriggerValue = 0.1; // TODO: need to test for this
 
     /** Creates a new intake. */
@@ -33,8 +35,8 @@ public class CoralIntake extends SubsystemBase {
         coralIntake.configure(intakeConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
-
-        coralSensor = new ProximitySensor(CAN.CORAL_SENSOR, coralTriggerValue);
+        frontCoralSensor = new ProximitySensor(CAN.FRONT_CORAL_SENSOR, coralTriggerValue);
+        backCoralSensor = new ProximitySensor(CAN.BACK_CORAL_SENSOR, coralTriggerValue);
 
     }
 
@@ -42,15 +44,29 @@ public class CoralIntake extends SubsystemBase {
         coralIntake.set(intakeSpeed.speed);
     }
 
-    public boolean hasCoral() {
-        return coralSensor.isTriggered();
+    public boolean hasCoralEntered() {
+        return frontCoralSensor.isTriggered();
     }
 
-    public enum IntakeSpeed {
+    public boolean hasCoral() {
+        return backCoralSensor.isTriggered();
+    }
+
+    public boolean noCoralPresent() {
+        return !backCoralSensor.isTriggered() && !frontCoralSensor.isTriggered();
+    }
+
+    public Command spitCoral() {
+        return intakeCoral();
+    }
+
+    public Command intakeCoral() {
+        return new RunCommand(() -> setSpeed(IntakeSpeed.INTAKE), this);
+    }
+
+    public enum IntakeSpeed {//TODO: fix these enums? shouldnt intake and outtake be the same
         INTAKE(1.0),
         OUTTAKE(-1.0),
-        SHOOT(1.0),
-        AMP(0.75),
         STOP(0.0);
 
         public final double speed;
@@ -62,6 +78,6 @@ public class CoralIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Intake/hasCoral", hasCoral());
+        SmartDashboard.putBoolean("Intake/hasCoral", hasCoralEntered());
     }
 }

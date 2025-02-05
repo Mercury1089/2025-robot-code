@@ -123,16 +123,18 @@ public final class Constants {
     // public static final int WRIST_SPARKMAX = 10;
     public static final int SHOOTER = 11;
     // public static final int SHOOTER_BACK_SPARKMAX = 12;
-    public static final int ARM_LEFT = 13;
-    public static final int ARM_RIGHT = 14;
+    public static final int ELEVATOR_LEFT = 13;
+    public static final int ELEVATOR_RIGHT = 14;
     public static final int INTAKE = 15;
-    
-    public static final int LEFT_INNER_LASER_CAN = 17;
+
     public static final int LEFT_OUTER_LASER_CAN = 16;
+    public static final int LEFT_INNER_LASER_CAN = 17;
+ 
     public static final int RIGHT_INNER_LASER_CAN = 18;
     public static final int RIGHT_OUTER_LASER_CAN = 19;
 
-    public static final int CORAL_SENSOR = 20;
+    public static final int FRONT_CORAL_SENSOR = 20;
+    public static final int BACK_CORAL_SENSOR = 21;
 
     private CAN() {} 
   }

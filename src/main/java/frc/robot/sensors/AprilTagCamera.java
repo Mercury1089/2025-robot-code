@@ -136,6 +136,25 @@ public class AprilTagCamera extends PhotonCamera {
         }
     }
 
+    public boolean rejectUpdate(EstimatedRobotPose estimatedPose) {
+        double tagArea = 0.0;
+        List<PhotonTrackedTarget> usedTags = estimatedPose.targetsUsed;
+
+        for (PhotonTrackedTarget t : usedTags) {
+            tagArea += t.getArea();
+        }
+
+        if (tagArea < 0.15) {
+            return true;
+        }
+        
+        if (usedTags.size() == 1 && usedTags.get(0).getPoseAmbiguity() > 0.2) {
+            return true;
+        }
+
+        return false;
+    }
+
     public double getYaw() {
         /* The yaw of the target in degrees (positive right). */
         return getLatestResult().getBestTarget().getYaw();

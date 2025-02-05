@@ -131,28 +131,28 @@ public class Autons {
 
         autonCommandGroup.addCommands(
             new InstantCommand(() -> changePreferredScoringLocation(firstBranch)),
-            DriveCommands.goTopreferredBranch(drivetrain),
+            DriveCommands.goToPreferredBranch(drivetrain),
             new WaitCommand(1.0),
 
             new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(firstStation)),
-            DriveCommands.goTopreferredCoralStation(drivetrain),
+            DriveCommands.goToPreferredCoralStation(drivetrain),
             new WaitCommand(1.0),
             new InstantCommand(() -> changePreferredScoringLocation(secondBranch)),
-            DriveCommands.goTopreferredBranch(drivetrain),
+            DriveCommands.goToPreferredBranch(drivetrain),
             new WaitCommand(1.0),
 
             new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(secondStation)),
-            DriveCommands.goTopreferredCoralStation(drivetrain),
+            DriveCommands.goToPreferredCoralStation(drivetrain),
             new WaitCommand(1.0),
             new InstantCommand(() -> changePreferredScoringLocation(thirdBranch)),
-            DriveCommands.goTopreferredBranch(drivetrain),
+            DriveCommands.goToPreferredBranch(drivetrain),
             new WaitCommand(1.0),
 
             new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(thirdStation)),
-            DriveCommands.goTopreferredCoralStation(drivetrain),
+            DriveCommands.goToPreferredCoralStation(drivetrain),
             new WaitCommand(1.0),
             new InstantCommand(() -> changePreferredScoringLocation(fourthBranch)),
-            DriveCommands.goTopreferredBranch(drivetrain),
+            DriveCommands.goToPreferredBranch(drivetrain),
             new WaitCommand(1.0)
         );
 

@@ -10,10 +10,12 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,17 +44,17 @@ public class Elevator extends SubsystemBase {
   public final double THRESHOLD_DEGREES = 0.5;
 
   
-  private SparkMax leftMotor, rightMotor;
-  private SparkClosedLoopController armClosedLoopController;
+  private SparkFlex leftMotor, rightMotor;
+  private SparkClosedLoopController elevatorClosedLoopController;
   private RelativeEncoder relativeEncoder;
   private double setPosition;
 
   public Elevator() {
-    leftMotor = new SparkMax(CAN.ARM_LEFT, MotorType.kBrushless);
-    rightMotor = new SparkMax(CAN.ARM_RIGHT, MotorType.kBrushless);
+    leftMotor = new SparkFlex(CAN.ELEVATOR_LEFT, MotorType.kBrushless);
+    rightMotor = new SparkFlex(CAN.ELEVATOR_RIGHT, MotorType.kBrushless);
 
-    SparkMaxConfig leftConfig = new SparkMaxConfig();
-    SparkMaxConfig rightConfig = new SparkMaxConfig();
+    SparkFlexConfig leftConfig = new SparkFlexConfig();
+    SparkFlexConfig rightConfig = new SparkFlexConfig();
 
     leftConfig
       .idleMode(IdleMode.kBrake)
@@ -79,7 +81,7 @@ public class Elevator extends SubsystemBase {
       .allowedClosedLoopError(0.2);
     rightConfig
       .idleMode(IdleMode.kBrake)
-      .follow(Constants.CAN.ARM_LEFT,true);
+      .follow(Constants.CAN.ELEVATOR_LEFT,true);
 
     leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
@@ -87,7 +89,7 @@ public class Elevator extends SubsystemBase {
         PersistMode.kPersistParameters);
 
 
-    armClosedLoopController = leftMotor.getClosedLoopController();
+    elevatorClosedLoopController = leftMotor.getClosedLoopController();
 
     relativeEncoder = leftMotor.getEncoder();
     setPosition = getArmPosition();
@@ -95,14 +97,14 @@ public class Elevator extends SubsystemBase {
   }
   
   public void resetEncoders() {
-    armClosedLoopController.setReference(0, SparkMax.ControlType.kMAXMotionPositionControl);
+    elevatorClosedLoopController.setReference(0, SparkMax.ControlType.kMAXMotionPositionControl);
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
     leftMotor.set((speedSupplier.get() * 0.5));
   }
 
-  public void setPosition(ArmPosition pos) {
+  public void setPosition(ElevatorPosition pos) {
     setPosition(pos.degreePos);
   }
 
@@ -112,7 +114,7 @@ public class Elevator extends SubsystemBase {
 
   public void setPosition(double pos) {
     setPosition = pos;
-    armClosedLoopController.setReference(pos, SparkMax.ControlType.kMAXMotionPositionControl);
+    elevatorClosedLoopController.setReference(pos, SparkMax.ControlType.kMAXMotionPositionControl);
   }
 
   public double getPosToTarget(double distance) {
@@ -124,7 +126,7 @@ public class Elevator extends SubsystemBase {
     return Math.abs(getArmPosition() - pos) < THRESHOLD_DEGREES;
   }
 
-  public boolean isAtPosition(ArmPosition pos) {
+  public boolean isAtPosition(ElevatorPosition pos) {
     return isAtPosition(pos.degreePos);
   }
 
@@ -144,7 +146,7 @@ public class Elevator extends SubsystemBase {
   }
   
 
-  public enum ArmPosition {
+  public enum ElevatorPosition {
     // AMP(150.0),
     // HOME(ARM_SOFT_LIMIT_BKW),
     // SHUTTLE(78.0),
@@ -152,12 +154,14 @@ public class Elevator extends SubsystemBase {
     LEVEL4(150.0),
     LEVEL3(100.0),
     LEVEL2(50.0),
-    LEVEL1(0.0);
+    LEVEL1(0.0),
+    HOME(0.0),
+    CORAL_STATION(0.0);
   
     //this.setDefaultCommand(new RunCommand(() -> elevator.setPosition(LEVEL1), elevator));
     
     public final double degreePos;
-      ArmPosition(double degreePos) {
+      ElevatorPosition(double degreePos) {
         this.degreePos = degreePos;
       }
   }

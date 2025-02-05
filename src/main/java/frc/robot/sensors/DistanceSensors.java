@@ -99,9 +99,7 @@ public class DistanceSensors {
             tooLeft = true;
         }
 
-        return ReefscapeUtils.branchSide() == BranchSide.LEFT ?
-            tooLeft :
-            !tooLeft;
+        return tooLeft;
     }
 
     // public boolean isTooFarAwayFromReef() {
