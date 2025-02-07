@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.BREAKBEAM;
@@ -21,7 +22,7 @@ public class CoralIntake extends SubsystemBase {
 
     private SparkMax coralIntake;
     private ProximitySensor frontCoralSensor, backCoralSensor;
-    private final double coralTriggerValue = 0.1; // TODO: need to test for this
+    private final double coralTriggerValue = 0.2; // TODO: need to test for this
 
     /** Creates a new intake. */
     public CoralIntake() {
@@ -41,15 +42,15 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public void setSpeed(IntakeSpeed intakeSpeed) {
-        coralIntake.set(intakeSpeed.speed);
+        coralIntake.set(intakeSpeed.speed * 0.5);
     }
 
     public boolean hasCoralEntered() {
-        return frontCoralSensor.isTriggered();
+        return backCoralSensor.isTriggered();
     }
 
     public boolean hasCoral() {
-        return backCoralSensor.isTriggered();
+        return frontCoralSensor.isTriggered();
     }
 
     public boolean noCoralPresent() {
@@ -59,14 +60,19 @@ public class CoralIntake extends SubsystemBase {
     public Command spitCoral() {
         return intakeCoral();
     }
-
+ 
     public Command intakeCoral() {
         return new RunCommand(() -> setSpeed(IntakeSpeed.INTAKE), this);
     }
+    
+    public Command stopIntake() {
+        return new RunCommand(() -> setSpeed(IntakeSpeed.STOP), this);
+    }
 
-    public enum IntakeSpeed {//TODO: fix these enums? shouldnt intake and outtake be the same
-        INTAKE(1.0),
-        OUTTAKE(-1.0),
+    public enum IntakeSpeed {
+        INTAKE(0.8),
+        SLOW_INTAKE(0.25),
+        OUTTAKE(1.0),
         STOP(0.0);
 
         public final double speed;
@@ -78,6 +84,8 @@ public class CoralIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Intake/hasCoral", hasCoralEntered());
+        SmartDashboard.putBoolean("Intake/hasCoralEntered", hasCoralEntered());
+        SmartDashboard.putBoolean("Intake/hasCoral", hasCoral());
+        SmartDashboard.putBoolean("Intake/shouldRun",(!hasCoral() && hasCoralEntered()) || (hasCoral() && !hasCoralEntered()));
     }
 }

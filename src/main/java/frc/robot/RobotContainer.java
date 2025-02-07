@@ -13,6 +13,7 @@ import frc.robot.subsystems.RobotModeLEDs;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.CoralIntake.IntakeSpeed;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
@@ -23,6 +24,7 @@ import frc.robot.util.ReefscapeUtils.RobotZone;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -30,6 +32,7 @@ import com.pathplanner.lib.events.TriggerEvent;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -83,14 +86,42 @@ public class RobotContainer {
 
     elevator = new Elevator(); 
     elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
-    // gamepadA.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL1), elevator));
-    // gamepadB.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL2), elevator));
-    // gamepadX.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL3), elevator));
-    // gamepadY.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL4), elevator));
+    gamepadA.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL1), elevator));
+    gamepadB.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL2), elevator));
+    gamepadX.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL3), elevator));
+    gamepadY.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL4), elevator));
 
     coralIntake = new CoralIntake();
-    // gamepadA.onTrue(new RunCommand(() -> coralIntake.intakeCoral().until(() -> coralIntake.hasCoral())));
+    coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
 
+    Trigger hasCoral = new Trigger(() -> coralIntake.hasCoral());
+    Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered());
+
+    (hasCoral.negate().and(hasCoralEntered)).or(hasCoral.and(hasCoralEntered.negate())).onTrue(
+      new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake)
+    );
+
+    (hasCoral.and(hasCoralEntered.negate())).onTrue(
+      new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.INTAKE), coralIntake)
+    );
+    
+    (hasCoral.and(hasCoralEntered)).or(hasCoral.negate().and(hasCoralEntered.negate())).onTrue(
+      new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
+    );
+
+   // gamepadA.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.INTAKE), coralIntake));
+
+    // coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
+    // Trigger coralCommandTrigger = new Trigger(() -> !coralIntake.hasCoral() && coralIntake.hasCoralEntered());
+    // coralCommandTrigger.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW), coralIntake)).onFalse(
+    //   new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
+    // );
+
+    // coralIntake.setDefaultCommand(new RunCommand(() -> new ConditionalCommand(
+    //   new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW), coralIntake),
+    //   new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake),
+    //   () -> true), coralIntake));
+    
     leds = new RobotModeLEDs();
 
     auton = new Autons(drivetrain);

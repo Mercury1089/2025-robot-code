@@ -136,6 +136,8 @@ public final class Constants {
     public static final int FRONT_CORAL_SENSOR = 20;
     public static final int BACK_CORAL_SENSOR = 21;
 
+    public static final int ALGAE_ARTICULATOR = 22;
+
     private CAN() {} 
   }
 

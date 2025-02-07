@@ -23,9 +23,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CAN;
 
-public class Elevator extends SubsystemBase {
+public class AlgaeArticulator extends SubsystemBase {
 
-  /** Creates a new Elevator. */
+  /** Creates a new AlgaeArticulator. */
   public static final int
     ARM_PID_SLOT = 0;
 
@@ -44,19 +44,17 @@ public class Elevator extends SubsystemBase {
   public final double THRESHOLD_DEGREES = 0.5;
 
   
-  private SparkFlex leftMotor, rightMotor;
+  private SparkFlex articulator;
   private SparkClosedLoopController elevatorClosedLoopController;
-  private RelativeEncoder relativeEncoder;
+  private AbsoluteEncoder absoluteEncoder;
   private double setPosition;
 
-  public Elevator() {
-    leftMotor = new SparkFlex(CAN.ELEVATOR_LEFT, MotorType.kBrushless);
-    rightMotor = new SparkFlex(CAN.ELEVATOR_RIGHT, MotorType.kBrushless);
+  public AlgaeArticulator() {
+    articulator = new SparkFlex(CAN.ALGAE_ARTICULATOR, MotorType.kBrushless);
 
-    SparkFlexConfig leftConfig = new SparkFlexConfig();
-    SparkFlexConfig rightConfig = new SparkFlexConfig();
+    SparkFlexConfig articulatorConfig = new SparkFlexConfig();
 
-    leftConfig
+    articulatorConfig
       .idleMode(IdleMode.kBrake)
       .inverted(false);
    // leftConfig.absoluteEncoder
@@ -66,8 +64,8 @@ public class Elevator extends SubsystemBase {
     //   .forwardSoftLimit(ARM_SOFT_LIMIT_FWD)
     //   .reverseSoftLimitEnabled(true)
     //   .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
-    leftConfig.closedLoop
-      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    articulatorConfig.closedLoop
+      .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
     //  .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
       .pid(0.085,0,0)
       .positionWrappingEnabled(false)
@@ -75,24 +73,20 @@ public class Elevator extends SubsystemBase {
     //leftConfig.closedLoop.maxMotion
       //.maxVelocity(7.5)
       //.maxAcceleration(15);
-    leftConfig.closedLoop.maxMotion
+      articulatorConfig.closedLoop.maxMotion
       .maxVelocity(4200)
       .maxAcceleration(12000)
       .allowedClosedLoopError(0.2);
-    rightConfig
-      .idleMode(IdleMode.kBrake)
-      .follow(Constants.CAN.ELEVATOR_LEFT,false);
+    
 
-    leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-    rightMotor.configure(rightConfig, ResetMode.kResetSafeParameters,
+      articulator.configure(articulatorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
 
-    elevatorClosedLoopController = leftMotor.getClosedLoopController();
+    elevatorClosedLoopController = articulator.getClosedLoopController();
 
-    relativeEncoder = leftMotor.getEncoder();
-    setPosition = getArmPosition();
+    absoluteEncoder = articulator.getAbsoluteEncoder();
+    setPosition = getPosition();
 
   }
   
@@ -101,11 +95,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
-    leftMotor.set((speedSupplier.get() * 0.5));
-  }
-
-  public void setPosition(ElevatorPosition pos) {
-    setPosition(pos.degreePos);
+    articulator.set((speedSupplier.get() * 0.5));
   }
 
   public void changePos() {
@@ -118,47 +108,21 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean isAtPosition(double pos) {
-    return Math.abs(getArmPosition() - pos) < THRESHOLD_DEGREES;
+    return Math.abs(getPosition() - pos) < THRESHOLD_DEGREES;
   }
 
-  public boolean isAtPosition(ElevatorPosition pos) {
-    return isAtPosition(pos.degreePos);
-  }
-
-  public boolean isInPosition() {
-    return isAtPosition(setPosition);
-  }
-
-  public double getArmPosition() {
-    return relativeEncoder.getPosition();
+  public double getPosition() {
+    return absoluteEncoder.getPosition();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Arm/Position", getArmPosition());
+    SmartDashboard.putNumber("Arm/Position", getPosition());
 
   }
   
 
-  public enum ElevatorPosition {
-    // AMP(150.0),
-    // HOME(ARM_SOFT_LIMIT_BKW),
-    // SHUTTLE(78.0),
-    // PICKUP_FLOOR(ARM_SOFT_LIMIT_BKW);
-    LEVEL4(150.0),
-    LEVEL3(100.0),
-    LEVEL2(50.0),
-    LEVEL1(0.0),
-    HOME(0.0),
-    CORAL_STATION(0.0);
   
-    //this.setDefaultCommand(new RunCommand(() -> elevator.setPosition(LEVEL1), elevator));
-    
-    public final double degreePos;
-      ElevatorPosition(double degreePos) {
-        this.degreePos = degreePos;
-      }
-  }
 
 }
