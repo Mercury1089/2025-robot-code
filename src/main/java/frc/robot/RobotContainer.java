@@ -11,15 +11,16 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.RobotModeLEDs;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.elevator.AlgaeIntake;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.AlgaeIntake.AlgaeSpeed;
 import frc.robot.subsystems.elevator.CoralIntake.IntakeSpeed;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
 import frc.robot.util.ReefscapeUtils.BranchSide;
 import frc.robot.util.ReefscapeUtils.CoralStation;
-import frc.robot.util.ReefscapeUtils.Level;
 import frc.robot.util.ReefscapeUtils.RobotZone;
 
 import java.util.HashMap;
@@ -65,6 +66,7 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Elevator elevator; 
   private CoralIntake coralIntake;
+  private AlgaeIntake algaeIntake;
   private RobotModeLEDs leds;
 
   private double manualThreshold = 0.2;
@@ -86,10 +88,10 @@ public class RobotContainer {
 
     elevator = new Elevator(); 
     elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
-    gamepadA.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL1), elevator));
-    gamepadB.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL2), elevator));
-    gamepadX.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL3), elevator));
-    gamepadY.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL4), elevator));
+    // gamepadA.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL1), elevator));
+    // gamepadB.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL2), elevator));
+    // gamepadY.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL3), elevator));
+    // gamepadX.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL4), elevator));
 
     coralIntake = new CoralIntake();
     coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
@@ -97,19 +99,26 @@ public class RobotContainer {
     Trigger hasCoral = new Trigger(() -> coralIntake.hasCoral());
     Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered());
 
-    (hasCoral.negate().and(hasCoralEntered)).or(hasCoral.and(hasCoralEntered.negate())).onTrue(
+    (hasCoral.negate().and(hasCoralEntered)).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake)
     );
 
     (hasCoral.and(hasCoralEntered.negate())).onTrue(
-      new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.INTAKE), coralIntake)
+      new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE), coralIntake)
     );
     
     (hasCoral.and(hasCoralEntered)).or(hasCoral.negate().and(hasCoralEntered.negate())).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
     );
 
-   // gamepadA.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.INTAKE), coralIntake));
+  //  gamepadA.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE), coralIntake));
+
+
+    algaeIntake = new AlgaeIntake();
+    algaeIntake.setDefaultCommand(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP), algaeIntake));
+    
+    gamepadB.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
+    gamepadA.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(1.0));
 
     // coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
     // Trigger coralCommandTrigger = new Trigger(() -> !coralIntake.hasCoral() && coralIntake.hasCoralEntered());

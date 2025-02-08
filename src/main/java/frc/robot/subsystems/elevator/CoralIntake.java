@@ -26,7 +26,7 @@ public class CoralIntake extends SubsystemBase {
 
     /** Creates a new intake. */
     public CoralIntake() {
-        coralIntake = new SparkMax(CAN.INTAKE, MotorType.kBrushless);
+        coralIntake = new SparkMax(CAN.CORAL_INTAKE, MotorType.kBrushless);
 
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
 
@@ -57,22 +57,22 @@ public class CoralIntake extends SubsystemBase {
         return !backCoralSensor.isTriggered() && !frontCoralSensor.isTriggered();
     }
 
-    public Command spitCoral() {
-        return intakeCoral();
+    public void spitCoral() {
+        intakeCoral();
     }
  
-    public Command intakeCoral() {
-        return new RunCommand(() -> setSpeed(IntakeSpeed.INTAKE), this);
+    public void intakeCoral() {
+        setSpeed(IntakeSpeed.INTAKE);
     }
     
-    public Command stopIntake() {
-        return new RunCommand(() -> setSpeed(IntakeSpeed.STOP), this);
+    public void stopIntake() {
+        setSpeed(IntakeSpeed.STOP);
     }
 
     public enum IntakeSpeed {
         INTAKE(0.8),
         SLOW_INTAKE(0.25),
-        OUTTAKE(1.0),
+        OUTTAKE(0.8),
         STOP(0.0);
 
         public final double speed;

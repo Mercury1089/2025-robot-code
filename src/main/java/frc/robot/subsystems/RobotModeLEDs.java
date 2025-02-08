@@ -7,9 +7,9 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
-import frc.robot.util.ReefscapeUtils.Level;
 
 public class RobotModeLEDs extends SubsystemBase {
 
@@ -75,23 +75,23 @@ public class RobotModeLEDs extends SubsystemBase {
     SmartDashboard.putBoolean("LEDs/enableAutoShoot", isFIDOEnabled());
 
     if (robotMode == RobotMode.FIDOENABLED) {
-      if (ReefscapeUtils.getPreferredLevel() == Level.L1) {
+      if (ReefscapeUtils.getPreferredLevel() == ElevatorPosition.LEVEL1) {
         blinkin.set(LEDState.FIDO_ON_L1.colorValue);
-      } else if (ReefscapeUtils.getPreferredLevel() == Level.L2) {
+      } else if (ReefscapeUtils.getPreferredLevel() == ElevatorPosition.LEVEL2) {
         blinkin.set(LEDState.FIDO_ON_L2.colorValue);
-      } else if (ReefscapeUtils.getPreferredLevel() == Level.L3) {
+      } else if (ReefscapeUtils.getPreferredLevel() == ElevatorPosition.LEVEL3) {
         blinkin.set(LEDState.FIDO_ON_L3.colorValue);
-      } else if (ReefscapeUtils.getPreferredLevel() == Level.L4) {
+      } else if (ReefscapeUtils.getPreferredLevel() == ElevatorPosition.LEVEL4) {
         blinkin.set(LEDState.FIDO_ON_L4.colorValue);
       }
     } else {
-      if (ReefscapeUtils.getPreferredLevel() == Level.L1) {
+      if (ReefscapeUtils.getPreferredLevel() == ElevatorPosition.LEVEL1) {
         blinkin.set(LEDState.FIDO_OFF_L1.colorValue);
-      } else if (ReefscapeUtils.getPreferredLevel() == Level.L2) {
+      } else if (ReefscapeUtils.getPreferredLevel() == ElevatorPosition.LEVEL2) {
         blinkin.set(LEDState.FIDO_OFF_L2.colorValue);
-      } else if (ReefscapeUtils.getPreferredLevel() == Level.L3) {
+      } else if (ReefscapeUtils.getPreferredLevel() == ElevatorPosition.LEVEL3) {
         blinkin.set(LEDState.FIDO_OFF_L3.colorValue);
-      } else if (ReefscapeUtils.getPreferredLevel() == Level.L4) {
+      } else if (ReefscapeUtils.getPreferredLevel() == ElevatorPosition.LEVEL4) {
         blinkin.set(LEDState.FIDO_OFF_L4.colorValue);
       }
     }

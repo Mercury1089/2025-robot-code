@@ -57,26 +57,11 @@ public class AlgaeArticulator extends SubsystemBase {
     articulatorConfig
       .idleMode(IdleMode.kBrake)
       .inverted(false);
-   // leftConfig.absoluteEncoder
-    //  .positionConversionFactor(360.0); // multiplied by native units
-    // leftConfig.softLimit
-    //   .forwardSoftLimitEnabled(true)
-    //   .forwardSoftLimit(ARM_SOFT_LIMIT_FWD)
-    //   .reverseSoftLimitEnabled(true)
-    //   .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
     articulatorConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-    //  .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
       .pid(0.085,0,0)
       .positionWrappingEnabled(false)
       .outputRange(-1,1);
-    //leftConfig.closedLoop.maxMotion
-      //.maxVelocity(7.5)
-      //.maxAcceleration(15);
-      articulatorConfig.closedLoop.maxMotion
-      .maxVelocity(4200)
-      .maxAcceleration(12000)
-      .allowedClosedLoopError(0.2);
     
 
       articulator.configure(articulatorConfig, ResetMode.kResetSafeParameters,
@@ -91,7 +76,7 @@ public class AlgaeArticulator extends SubsystemBase {
   }
   
   public void resetEncoders() {
-    elevatorClosedLoopController.setReference(0, SparkMax.ControlType.kMAXMotionPositionControl);
+    elevatorClosedLoopController.setReference(0, SparkMax.ControlType.kPosition);
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
@@ -104,7 +89,7 @@ public class AlgaeArticulator extends SubsystemBase {
 
   public void setPosition(double pos) {
     setPosition = pos;
-    elevatorClosedLoopController.setReference(pos, SparkMax.ControlType.kMAXMotionPositionControl);
+    elevatorClosedLoopController.setReference(pos, SparkMax.ControlType.kPosition);
   }
 
   public boolean isAtPosition(double pos) {
@@ -114,6 +99,17 @@ public class AlgaeArticulator extends SubsystemBase {
   public double getPosition() {
     return absoluteEncoder.getPosition();
   }
+
+  public enum IntakeSpeed {
+    IN(0.0),
+    OUT(90.0);
+
+    public final double speed;
+
+    IntakeSpeed(double speed) {
+        this.speed = speed;
+    }
+}
 
   @Override
   public void periodic() {

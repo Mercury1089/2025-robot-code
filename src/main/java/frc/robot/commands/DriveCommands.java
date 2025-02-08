@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.SWERVE;
 import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.elevator.CoralIntake;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
 import frc.robot.util.PathUtils;
@@ -107,6 +110,37 @@ public class DriveCommands {
             ReefscapeUtils.getPathToPreferredCoralStation(),
             goToPose(drivetrain, () -> ReefscapeUtils.getPreferredCoralStation()).until(() -> drivetrain.isAtPreferredCoralStation())
         );
+    }
+
+    public static Command scoreAtPreferredBranch(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) {
+        return new SequentialCommandGroup(
+            ReefscapeUtils.getPathToPreferredBranch(),
+            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()),
+            new ParallelCommandGroup(
+                alignwithSensors(drivetrain),
+                new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
+            ).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel())),
+            new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
+        );
+    }
+
+    public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) {
+        return new SequentialCommandGroup(
+            goToPreferredCoralStation(drivetrain),
+            new RunCommand(() -> elevator.setPosition(ElevatorPosition.CORAL_STATION), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.CORAL_STATION)),
+            new RunCommand(() -> coralIntake.intakeCoral(), coralIntake).until(() -> coralIntake.hasCoralEntered())
+        );
+    }
+
+    public static Command alignToReefSideForAlgae(Drivetrain drivetrain, Supplier<Double> xJoystickSupplier) {
+        Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
+        return new RunCommand(
+            () -> drivetrain.drive(
+              xJoystickSupplier.get(), // make it so if any input, this speed is some constant value
+              drivetrain.getYController().calculate(drivetrain.getPose().getY(), 0.0), //TODO: FIGURE THIS OUT BEFORE USING
+              drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), heading.get()),
+              false)
+          , drivetrain);
     }
     
 

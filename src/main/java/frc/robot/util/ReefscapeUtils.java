@@ -1,19 +1,22 @@
 package frc.robot.util;
 
 import java.nio.file.Path;
+import java.util.Currency;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 
 public class ReefscapeUtils {
     private static RobotZone robotZone = RobotZone.LEFT; // this is your current robotZone
 
     private static RobotZone preferredZone = RobotZone.LEFT; // this is your intended robot zone to go to while in FIDO
     private static CoralStation preferredCoralStation = CoralStation.INSIDERIGHT;
-    private static Level preferredLevel = Level.L4;
+    private static ElevatorPosition preferredLevel = ElevatorPosition.LEVEL1;
     private static BranchSide preferredBranchSide = BranchSide.LEFT;
 
     
@@ -46,7 +49,7 @@ public class ReefscapeUtils {
        }
     }
 
-    public static Level getPreferredLevel() {
+    public static ElevatorPosition getPreferredLevel() {
         return preferredLevel;
     }
 
@@ -96,6 +99,60 @@ public class ReefscapeUtils {
         }
 
         return zone;
+    }
+
+    public int getCurrentRobotZoneAprilTag() {
+        int tag = 0;
+
+        if (KnownLocations.getKnownLocations().alliance == Alliance.Blue) {
+            switch (robotZone) {
+                case LEFT:
+                    tag = 18;
+                    break;
+                case BOTTOM_LEFT:
+                    tag = 17;
+                    break;
+                case BOTTOM_RIGHT:
+                    tag = 22;
+                    break;
+                case RIGHT:
+                    tag = 21;
+                    break;
+                case TOP_RIGHT:
+                    tag = 20;
+                    break;
+                case TOP_LEFT:
+                    tag = 19;
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            switch (robotZone) {
+                case LEFT:
+                    tag = 10;
+                    break;
+                case BOTTOM_LEFT:
+                    tag = 11;
+                    break;
+                case BOTTOM_RIGHT:
+                    tag = 6;
+                    break;
+                case RIGHT:
+                    tag = 7;
+                    break;
+                case TOP_RIGHT:
+                    tag = 8;
+                    break;
+                case TOP_LEFT:
+                    tag = 9;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return tag;
     }
 
     public static Command getPathToPreferredBranch() {
@@ -161,7 +218,7 @@ public class ReefscapeUtils {
         preferredBranchSide = side;
     }
 
-    public static void changepreferredLevel(Level level) {
+    public static void changepreferredLevel(ElevatorPosition level) {
         preferredLevel = level;
     }
 
@@ -290,17 +347,6 @@ public class ReefscapeUtils {
           }
     }
 
-    public enum Level {
-        L1("level1"),
-        L2("level2"),
-        L3("level3"),
-        L4("level4");
-     
-        public String level;
-          Level(String lev) {
-            this.level = lev;
-          }
-    }
 
     public static RobotZone getCurrentRobotZone() {
         return robotZone;
