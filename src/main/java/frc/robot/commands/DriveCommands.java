@@ -72,7 +72,7 @@ public class DriveCommands {
     }
 /**
 * @param : Input is 2 double suppliers and the drivetrain
-* @return : Returns a RunCommand telling the drivetrain to drive 
+* @return : Returns a RunCommand telling the drivetrain to drive and calculates heading degrees required to target reef
 */
     public static Command targetDriveToReef(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
@@ -85,6 +85,8 @@ public class DriveCommands {
           , drivetrain);
     }
 /**
+* @param : Drivetrain, Pose2d Supplier 
+* @return : Outputs a Run Command and calculates the required x,y, rotation to get to the deserired pose
 */
     public static Command goToPose(Drivetrain drivetrain, Supplier<Pose2d> desiredPose) {
         return new RunCommand(
@@ -95,7 +97,11 @@ public class DriveCommands {
               true)
           , drivetrain).until(() -> drivetrain.isAtPose(desiredPose.get()));
     }
-
+/**
+* @param : Drivetrain 
+* Preffered branch (Human Input)
+* @return : Runs a sequential command which makes it go through all the pose options, using the sensor to guide its path
+*/
     public static Command goToPreferredBranch(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredBranch(),
@@ -103,7 +109,11 @@ public class DriveCommands {
             alignwithSensors(drivetrain)
         );
     }
-
+/**
+* @param : Drivetrain, 
+* Sensor Input
+* @return : Outputs a Run Command and calculates if the robot is too far left or right it will adjust itself
+*/
     public static Command alignwithSensors(Drivetrain drivetrain) {
         Supplier<DistanceSensors> proximitySensor = () -> ReefscapeUtils.branchSide() == BranchSide.LEFT ?
                                                         drivetrain.getLeftSensors() :
@@ -118,7 +128,10 @@ public class DriveCommands {
               false)
         ).until(() -> proximitySensor.get().isAtReefSide());
     }
-
+/**
+* @param : Drivetrain 
+* @return : Returns a Sequential Command Group, and starts goToPose command to go to the prefered Station
+*/
     public static Command goToPreferredCoralStation(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredCoralStation(),
