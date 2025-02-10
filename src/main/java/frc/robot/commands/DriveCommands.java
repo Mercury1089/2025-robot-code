@@ -29,7 +29,10 @@ import frc.robot.util.TargetUtils;
 import frc.robot.util.ReefscapeUtils.BranchSide;
 
 public class DriveCommands {
-
+/**
+* @param  :Joy stick values as 3 doubles as well as drivetrain
+* @return  :Drives based on the Joystick values given, as a Run Command
+*/
     public static Command joyStickDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Supplier<Double> angularSpeedSupplier, Drivetrain drivetrain) {
         return new RunCommand(
             () -> drivetrain.drive(
@@ -38,7 +41,11 @@ public class DriveCommands {
               -MercMath.squareInput(MathUtil.applyDeadband(angularSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)))
           , drivetrain);
     }
+/** 
+* @param :Input are the 3 double supplier value, drivetrain, and values of field locations or relativity
+* @return :Drives based on joytick value inputs, as well as field relative data as a RunCommand
 
+*/
     public static Command joyStickDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Supplier<Double> angularSpeedSupplier, boolean fieldRelative, Drivetrain drivetrain) {
         return new RunCommand(
             () -> drivetrain.drive(
@@ -48,7 +55,10 @@ public class DriveCommands {
               false)
           , drivetrain);
     } 
-
+/**
+* @param : Input is the speed, target, and heading suppliers which are doubles, as well as drivetrain
+* @return : Returns PID Command (Pose, Rotation, and Heading Degrees)
+*/
     public static Command targetDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, DoubleSupplier headingSupplier, Drivetrain drivetrain) {
         return new PIDCommand(
             drivetrain.getRotationalController(),
@@ -60,7 +70,10 @@ public class DriveCommands {
             angularSpeed),
             drivetrain);
     }
-
+/**
+* @param : Input is 2 double suppliers and the drivetrain
+* @return : Returns a RunCommand telling the drivetrain to drive 
+*/
     public static Command targetDriveToReef(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
         return new RunCommand(
@@ -71,7 +84,8 @@ public class DriveCommands {
               true)
           , drivetrain);
     }
-
+/**
+*/
     public static Command goToPose(Drivetrain drivetrain, Supplier<Pose2d> desiredPose) {
         return new RunCommand(
             () -> drivetrain.drive(
