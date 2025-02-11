@@ -207,16 +207,24 @@ public class Drivetrain extends SubsystemBase {
     frontRightModule.resetEncoders();
     backRightModule.resetEncoders();
   }
-
+  /**
+  * Resets the Gyro of robot, or facing to 0
+  */
   public void resetGyro() {
     pigeon.reset();
     gyroOffset = Rotation2d.fromDegrees(0.0);
   }
-
+  /**
+  * @param : Double as (xSpeed, ySpeed, angularSpeed)
+  * @return : Assigning values to drive
+  */
   public void drive(double xSpeed, double ySpeed, double angularSpeed) {
     drive(xSpeed, ySpeed, angularSpeed, true);
   }
-
+  /**
+  * @param : Double as (xSpeed, ySpeed, angularSpeed), fieldRelative
+  * @return : Assigning Values to drive
+  */
   public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldRelative) {
     drive(xSpeed, ySpeed, angularSpeed, fieldRelative, false);
   }
