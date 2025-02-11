@@ -31,7 +31,7 @@ import frc.robot.util.ReefscapeUtils.BranchSide;
 
 public class DriveCommands {
     /**
-    * @param  :Joy stick values as 3 doubles as well as drivetrain
+    * @param  : Drivetrain, Suppliers
     * @return  :Drives based on the Joystick values given, as a Run Command
     */
     public static Command joyStickDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Supplier<Double> angularSpeedSupplier, Drivetrain drivetrain) {
@@ -43,8 +43,8 @@ public class DriveCommands {
           , drivetrain);
     }
     /** 
-    * @param :Input are the 3 double supplier value, drivetrain, and values of field locations or relativity
-    * @return :Drives based on joytick value inputs, as well as field relative data as a RunCommand
+    * @param : Suppliers (xSpeed, ySpeed, angularSpeed), Drivetrain, Boolean (Field Relative)
+    * @return : RunCommand
     */
     public static Command joyStickDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Supplier<Double> angularSpeedSupplier, boolean fieldRelative, Drivetrain drivetrain) {
         return new RunCommand(
@@ -56,7 +56,7 @@ public class DriveCommands {
           , drivetrain);
     } 
     /**
-    * @param : Input is the speed, target, and heading suppliers which are doubles, as well as drivetrain
+    * @param : Supplier (xSpeed, ySpeed, heading), Drivetrain
     * @return : Returns PID Command (Pose, Rotation, and Heading Degrees)
     */
     public static Command targetDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, DoubleSupplier headingSupplier, Drivetrain drivetrain) {
@@ -71,7 +71,7 @@ public class DriveCommands {
             drivetrain);
     }
     /**
-    * @param : Input is 2 double suppliers and the drivetrain
+    * @param : Supplier (xSpeed, ySpeed), 
     * @return : Returns a RunCommand telling the drivetrain to drive and calculates heading degrees required to target reef
     */
     public static Command targetDriveToReef(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
@@ -86,7 +86,7 @@ public class DriveCommands {
     }
     /**
     * @param : Drivetrain, Pose2d Supplier 
-    * @return : Outputs a Run Command and calculates the required x,y, rotation to get to the deserired pose
+    * @return : Outputs a Run Command 
     */
     public static Command goToPose(Drivetrain drivetrain, Supplier<Pose2d> desiredPose) {
         return new RunCommand(
@@ -110,7 +110,7 @@ public class DriveCommands {
         );
     }
     /**
-    * @param : Drivetrain, 
+    * @param : Drivetrain
     * Sensor Input
     * @return : Outputs a Run Command and calculates if the robot is too far left or right it will adjust itself
     */
@@ -167,7 +167,7 @@ public class DriveCommands {
         );
     }
     /**
-    * @param : Drivetrain, Joystick Supplier (Double)
+    * @param : Drivetrain, Joystick Supplier 
     * @return : Calculates necssary X,Y, and Rotational degrees required to align for algae
     * Input : Pose, Rotation, Degrees, Heading
     */
@@ -179,7 +179,10 @@ public class DriveCommands {
           //goCloserToReefForAlgae(drivetrain)
         );
     }
-
+    /**
+    * @param : Drivetrain
+    * @return : Run Command 
+    */
     public static Command goCloserToReefForAlgae(Drivetrain drivetrain) {
         Supplier<DistanceSensors> proximitySensor = () -> drivetrain.getLeftSensors();
         Supplier<Double> invert = () -> proximitySensor.get().isTooFarAwayFromReef() ? 1.0 : -1.0;
