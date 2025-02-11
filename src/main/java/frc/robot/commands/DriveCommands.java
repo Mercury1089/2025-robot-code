@@ -9,6 +9,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
@@ -132,16 +133,28 @@ public class DriveCommands {
         );
     }
 
-    public static Command alignToReefSideForAlgae(Drivetrain drivetrain, Supplier<Double> xJoystickSupplier) {
+    public static Command pickUpAlgaeInCurrentZone(Drivetrain drivetrain) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
+        return new SequentialCommandGroup(
+          goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneSafeAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneSafeAlgaePoint())),
+          goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()))
+          //goCloserToReefForAlgae(drivetrain)
+        );
+    }
+
+    public static Command goCloserToReefForAlgae(Drivetrain drivetrain) {
+        Supplier<DistanceSensors> proximitySensor = () -> drivetrain.getLeftSensors();
+        Supplier<Double> invert = () -> proximitySensor.get().isTooFarAwayFromReef() ? 1.0 : -1.0;
         return new RunCommand(
             () -> drivetrain.drive(
-              xJoystickSupplier.get(), // make it so if any input, this speed is some constant value
-              drivetrain.getYController().calculate(drivetrain.getPose().getY(), 0.0), //TODO: FIGURE THIS OUT BEFORE USING
-              drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), heading.get()),
+              invert.get() * 0.1, // away from reef num
+              0.0,
+              0.0,
               false)
-          , drivetrain);
+          , drivetrain).until(() -> !proximitySensor.get().isTooFarAwayFromReef());
     }
+
+    
     
 
     /**

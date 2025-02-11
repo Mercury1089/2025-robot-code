@@ -5,7 +5,6 @@
 package frc.robot.util;
 
 import java.io.UncheckedIOException;
-import java.nio.file.Path;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -63,6 +62,26 @@ public class KnownLocations {
         topMostStart,
         middleStart,
         bottomMostStart;
+
+    public static Pose2d
+        rightZoneAlgaeSafePoint,
+        bottomRightZoneAlgaeSafePoint,
+        bottomLeftZoneAlgaeSafePoint,
+        leftZoneAlgaeSafePoint,
+        topLeftZoneAlgaeSafePoint,
+        topRightZoneAlgaeSafePoint;
+
+    public static Pose2d
+        rightZoneAlgaeScorePoint,
+        bottomRightZoneAlgaeScorePoint,
+        bottomLeftZoneAlgaeScorePoint,
+        leftZoneAlgaeScorePoint,
+        topLeftZoneAlgaeScorePoint,
+        topRightZoneAlgaeScorePoint;
+
+    public static final double ALGAE_SAFE_DISTANCE = 34.5;
+    public static final double ALGAE_SCORE_DISTANCE = 16.5;
+
     /**
      * Load the field layout for the current year (currently CHARGED UP).
      * 
@@ -129,11 +148,49 @@ public class KnownLocations {
             topRightZone = PathPointInch(206.767, 209.402, -120);
             bottomRightZone = PathPointInch(206.767, 112.848, 120);
 
-            rightCoralStationInside = PathPointInch(30.783, 54.988, -126);
-            rightCoralStationOutside = PathPointInch(62.743, 32.206, -126);
+            rightCoralStationInside = PathPointInch(30.783, 54.988, -126 + 180);
+            rightCoralStationOutside = PathPointInch(62.743, 32.206, -126  + 180);
 
-            leftCoralStationInside = PathPointInch(30.783, 267.262, 126);
-            leftCoralStationOutside = PathPointInch(62.743, 290.044, 126);
+            leftCoralStationInside = PathPointInch(30.783, 267.262, 126 - 180);
+            leftCoralStationOutside = PathPointInch(62.743, 290.044, 126 - 180);
+
+            Rotation2d bottomLeftRotation = getFieldLayout().getTagPose(17).get().getRotation().toRotation2d();
+            bottomLeftZoneAlgaeSafePoint = PathPointInch(160.39 + ALGAE_SAFE_DISTANCE*bottomLeftRotation.getCos(),
+                                                        130.17 + ALGAE_SAFE_DISTANCE*bottomLeftRotation.getSin(),
+                                                        60);
+            bottomLeftZoneAlgaeScorePoint = PathPointInch(160.39 + ALGAE_SCORE_DISTANCE*bottomLeftRotation.getCos(),
+                                                        130.17 + ALGAE_SCORE_DISTANCE*bottomLeftRotation.getSin(),
+                                                        60);
+
+            Rotation2d bottomRightRotation = getFieldLayout().getTagPose(22).get().getRotation().toRotation2d();
+            bottomRightZoneAlgaeSafePoint = PathPointInch(193.10 + ALGAE_SAFE_DISTANCE*bottomRightRotation.getCos(),
+                                                        130.17 + ALGAE_SAFE_DISTANCE*bottomRightRotation.getSin(),
+                                                        120);
+            bottomRightZoneAlgaeScorePoint = PathPointInch(193.10 + ALGAE_SCORE_DISTANCE*bottomRightRotation.getCos(),
+                                                        130.17 + ALGAE_SCORE_DISTANCE*bottomRightRotation.getSin(),
+                                                        120);    
+
+            Rotation2d topLeftRotation = getFieldLayout().getTagPose(19).get().getRotation().toRotation2d();
+            topLeftZoneAlgaeSafePoint = PathPointInch(160.39 + ALGAE_SAFE_DISTANCE*topLeftRotation.getCos(),
+                                                        186.83 + ALGAE_SAFE_DISTANCE*topLeftRotation.getSin(),
+                                                        -60);
+            topLeftZoneAlgaeScorePoint = PathPointInch(160.39 + ALGAE_SCORE_DISTANCE*topLeftRotation.getCos(),
+                                                        186.83 + ALGAE_SCORE_DISTANCE*topLeftRotation.getSin(),
+                                                        -60);
+
+            Rotation2d topRightRotation = getFieldLayout().getTagPose(20).get().getRotation().toRotation2d();
+            topRightZoneAlgaeSafePoint = PathPointInch(193.10 + ALGAE_SAFE_DISTANCE*topRightRotation.getCos(),
+                                                        186.83 + ALGAE_SAFE_DISTANCE*topRightRotation.getSin(),
+                                                        -120);
+            topRightZoneAlgaeScorePoint = PathPointInch(193.10 + ALGAE_SCORE_DISTANCE*topRightRotation.getCos(),
+                                                        186.83 + ALGAE_SCORE_DISTANCE*topRightRotation.getSin(),
+                                                        -120); 
+
+            rightZoneAlgaeScorePoint = PathPointInch(209.49 + ALGAE_SCORE_DISTANCE, 158.50, 180);
+            leftZoneAlgaeScorePoint = PathPointInch(144.00 - ALGAE_SCORE_DISTANCE, 158.50, 0);
+            
+            rightZoneAlgaeSafePoint = PathPointInch(209.49 + ALGAE_SAFE_DISTANCE, 158.50, 180);
+            leftZoneAlgaeSafePoint = PathPointInch(144.00 - ALGAE_SAFE_DISTANCE, 158.50, 0);
                 
             REEF = PathPointInch(176.75, 158.5, 0);
 
@@ -163,11 +220,46 @@ public class KnownLocations {
             bottomRightZone = PathPointInch(544.152, 112.848, 120);
 
             
-            rightCoralStationInside = PathPointInch(664.391, 267.262, 54);
-            rightCoralStationOutside = PathPointInch(632.431, 290.044, 54);
+            rightCoralStationInside = PathPointInch(664.391, 267.262, 54 - 180);
+            rightCoralStationOutside = PathPointInch(632.431, 290.044, 54 - 180);
 
-            leftCoralStationInside = PathPointInch(664.391, 54.988, -54);
-            leftCoralStationOutside = PathPointInch(632.431, 54.988, -54);
+            leftCoralStationInside = PathPointInch(664.391, 54.988, -54 + 180);
+            leftCoralStationOutside = PathPointInch(632.431, 54.988, -54 + 180);
+
+            Rotation2d bottomLeftRotation = getFieldLayout().getTagPose(11).get().getRotation().toRotation2d();
+            bottomLeftZoneAlgaeSafePoint = PathPointInch(497.77 + ALGAE_SAFE_DISTANCE*bottomLeftRotation.getCos(),
+                                                        130.17 + ALGAE_SAFE_DISTANCE*bottomLeftRotation.getSin(),
+                                                        60);
+            bottomLeftZoneAlgaeScorePoint = PathPointInch(497.77 + ALGAE_SCORE_DISTANCE*bottomLeftRotation.getCos(),
+                                                        130.17 + ALGAE_SCORE_DISTANCE*bottomLeftRotation.getSin(),
+                                                        60);
+            Rotation2d bottomRightRotation = getFieldLayout().getTagPose(6).get().getRotation().toRotation2d();
+            bottomRightZoneAlgaeSafePoint = PathPointInch(530.49 + ALGAE_SAFE_DISTANCE*bottomRightRotation.getCos(),
+                                                        530.49 + ALGAE_SAFE_DISTANCE*bottomRightRotation.getSin(),
+                                                        120);
+            bottomRightZoneAlgaeScorePoint = PathPointInch(193.10 + ALGAE_SCORE_DISTANCE*bottomRightRotation.getCos(),
+                                                        130.17 + ALGAE_SCORE_DISTANCE*bottomRightRotation.getSin(),
+                                                        120);    
+            Rotation2d topLeftRotation = getFieldLayout().getTagPose(9).get().getRotation().toRotation2d();
+            topLeftZoneAlgaeSafePoint = PathPointInch(497.77 + ALGAE_SAFE_DISTANCE*topLeftRotation.getCos(),
+                                                        186.83 + ALGAE_SAFE_DISTANCE*topLeftRotation.getSin(),
+                                                        -60);
+            topLeftZoneAlgaeScorePoint = PathPointInch(497.77 + ALGAE_SCORE_DISTANCE*topLeftRotation.getCos(),
+                                                        186.83 + ALGAE_SCORE_DISTANCE*topLeftRotation.getSin(),
+                                                        -60);
+            Rotation2d topRightRotation = getFieldLayout().getTagPose(8).get().getRotation().toRotation2d();
+            topRightZoneAlgaeSafePoint = PathPointInch(530.49 + ALGAE_SAFE_DISTANCE*topRightRotation.getCos(),
+                                                        186.83 + ALGAE_SAFE_DISTANCE*topRightRotation.getSin(),
+                                                        -120);
+            topRightZoneAlgaeScorePoint = PathPointInch(530.49 + ALGAE_SCORE_DISTANCE*topRightRotation.getCos(),
+                                                        186.83 + ALGAE_SCORE_DISTANCE*topRightRotation.getSin(),
+                                                        -120); 
+            
+            rightZoneAlgaeScorePoint = PathPointInch(546.87 + ALGAE_SCORE_DISTANCE, 158.50, 180);
+            leftZoneAlgaeScorePoint = PathPointInch(481.39 - ALGAE_SCORE_DISTANCE, 158.50, 0);
+                                                        
+            rightZoneAlgaeSafePoint = PathPointInch(546.87 + ALGAE_SAFE_DISTANCE, 158.50, 180);
+            leftZoneAlgaeSafePoint = PathPointInch(481.390 - ALGAE_SAFE_DISTANCE, 158.50, 0);
 
             REEF = PathPointInch(514.14, 158.5, 0);
             

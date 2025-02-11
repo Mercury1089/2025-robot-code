@@ -33,13 +33,13 @@ public class PathUtils {
 
     public static final PathConstraints fastPathConstraints = new PathConstraints(
         SWERVE.MAX_SPEED_METERS_PER_SECOND,
-        SWERVE.MAX_ACCELERATION * 1.0,
+        SWERVE.MAX_ACCELERATION * 0.7,
         SWERVE.MAX_ROTATIONAL_SPEED,
         SWERVE.MAX_ANGULAR_SPEED
     );
 
     public static Command getPathToPose(Supplier<Pose2d> desiredPose, Supplier<Double> goalEndVel) {
-        return AutoBuilder.pathfindToPose(desiredPose.get(), pathConstraints, goalEndVel.get());
+        return AutoBuilder.pathfindToPose(desiredPose.get(), fastPathConstraints, goalEndVel.get());
     }
 
     /**

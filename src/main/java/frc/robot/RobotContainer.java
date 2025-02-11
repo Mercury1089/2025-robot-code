@@ -145,7 +145,8 @@ public class RobotContainer {
     Trigger fidoOff = new Trigger(() -> !leds.isFIDOEnabled());
 
     takeControl.onTrue(drivetrain.getDefaultCommand());
-    left3.onTrue(new InstantCommand(() -> leds.enableFIDO()));
+    //left3.onTrue(new InstantCommand(() -> leds.enableFIDO()));
+    left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain));
     
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
 

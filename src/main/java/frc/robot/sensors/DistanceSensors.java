@@ -17,6 +17,8 @@ public class DistanceSensors {
     private double outerTrigger = 380;
     private double innerTrigger = 340;
 
+    private double awayFromReefError = 135;
+
     // private double awayFromReefError = innerTrigger;
     
     public DistanceSensors(int innerCANID, int outerCANID) {
@@ -102,15 +104,11 @@ public class DistanceSensors {
         return tooLeft;
     }
 
-    // public boolean isTooFarAwayFromReef() {
-    //     ProxSensor otherInnerSensor = !(ReefscapeUtils.branchSide() == BranchSide.LEFT) ?
-    //         ProxSensor.INNER_LEFT_SENSOR :
-    //         ProxSensor.INNER_RIGHT_SENSOR;
-        
-    //     double yComp = Math.sin(60.0) * getSensorDistance(otherInnerSensor);
+    public boolean isTooFarAwayFromReef() {
+        double yComp = Math.sin(60.0) * getSensorDistance(innerSensor);
 
-    //     return yComp > awayFromReefError;
-    // }   
+        return getSensorDistance(innerSensor) > awayFromReefError;
+    }   
 
     public enum ProxSensor {
         OUTER_LEFT_SENSOR,

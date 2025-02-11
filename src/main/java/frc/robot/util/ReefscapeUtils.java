@@ -101,7 +101,63 @@ public class ReefscapeUtils {
         return zone;
     }
 
-    public int getCurrentRobotZoneAprilTag() {
+    public static Pose2d getCurrentZoneSafeAlgaePoint() {
+        Pose2d result;
+        switch (robotZone) {
+            case LEFT:
+                result = KnownLocations.leftZoneAlgaeSafePoint;
+                break;
+            case BOTTOM_LEFT:
+                result = KnownLocations.bottomLeftZoneAlgaeSafePoint;
+                break;
+            case BOTTOM_RIGHT:
+                result = KnownLocations.bottomRightZoneAlgaeSafePoint;
+                break;
+            case RIGHT:
+                result = KnownLocations.rightZoneAlgaeSafePoint;
+                break;
+            case TOP_RIGHT:
+                result = KnownLocations.topRightZoneAlgaeSafePoint;
+                break;
+            case TOP_LEFT:
+                result = KnownLocations.topLeftZoneAlgaeSafePoint;
+                break;
+            default:
+                result = new Pose2d();
+                break;
+        }
+        return result;
+    }
+
+    public static Pose2d getCurrentZoneScoreAlgaePoint() {
+        Pose2d result;
+        switch (robotZone) {
+            case LEFT:
+                result = KnownLocations.leftZoneAlgaeScorePoint;
+                break;
+            case BOTTOM_LEFT:
+                result = KnownLocations.bottomLeftZoneAlgaeScorePoint;
+                break;
+            case BOTTOM_RIGHT:
+                result = KnownLocations.bottomRightZoneAlgaeScorePoint;
+                break;
+            case RIGHT:
+                result = KnownLocations.rightZoneAlgaeScorePoint;
+                break;
+            case TOP_RIGHT:
+                result = KnownLocations.topRightZoneAlgaeScorePoint;
+                break;
+            case TOP_LEFT:
+                result = KnownLocations.topLeftZoneAlgaeScorePoint;
+                break;
+            default:
+                result = new Pose2d();
+                break;
+        }
+        return result;
+    }
+
+    public static int getCurrentRobotZoneAprilTag() {
         int tag = 0;
 
         if (KnownLocations.getKnownLocations().alliance == Alliance.Blue) {

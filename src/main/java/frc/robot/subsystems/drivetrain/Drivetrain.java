@@ -34,6 +34,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -64,7 +65,7 @@ public class Drivetrain extends SubsystemBase {
   private PIDController rotationPIDController, xPIDController, yPIDController;
   private PathPlannerPath pathToNote, pathToAmp;
 
-  private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.25, I = 0.0, D = 0.0;
+  private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.125, I = 0.0, D = 0.0;
   private final double THRESHOLD_DEGREES = 3.0;
   private final double THRESHOLD_SPEED = 0.5;
 
@@ -128,10 +129,10 @@ public class Drivetrain extends SubsystemBase {
     rotationPIDController.setTolerance(1.0);
 
     xPIDController = new PIDController(DIRECTION_P, I, D);
-    xPIDController.setTolerance(0.07);
+    xPIDController.setTolerance(0.05);
     
     yPIDController = new PIDController(DIRECTION_P, I, D);
-    yPIDController.setTolerance(0.07);
+    yPIDController.setTolerance(0.05);
 
     // photonvision wrapper
     photonCam = new AprilTagCamera("AprilTagCamera" , frontCam);
@@ -404,8 +405,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public boolean isAtPose(Pose2d target) {
-    return Math.abs(target.getX() - getPose().getX()) < 0.1
-        && Math.abs(target.getY() - getPose().getY()) < 0.1;
+    return Math.abs(target.getX() - getPose().getX()) < getXController().getErrorTolerance()
+        && Math.abs(target.getY() - getPose().getY()) < getYController().getErrorTolerance();
   } 
 
   public boolean isAtPreferredCoralStation() {
@@ -485,5 +486,8 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getSensorDistance(leftSensors.getOuterSensor()));
     SmartDashboard.putNumber("Drivetrain/laserCanDifference", Math.abs(laserCanMeasurement - laserCanMeasurement2));
     SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsLEFT", leftSensors.isAtReefSide());
+    SmartDashboard.putBoolean("Drivetrain/isAtScoreCoralPoint",isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()));
+    SmartDashboard.putNumber("Drivetrain/tempX",KnownLocations.bottomLeftZoneAlgaeScorePoint.getX());
+    SmartDashboard.putNumber("Drivetrain/tempY",KnownLocations.bottomLeftZoneAlgaeScorePoint.getY());
   }
 }

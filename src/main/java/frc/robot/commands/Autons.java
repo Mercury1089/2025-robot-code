@@ -249,6 +249,25 @@ public class Autons {
         startingPoseChooser.addOption("Middle", KnownLocations.middleStart);
         startingPoseChooser.addOption("Top", KnownLocations.topMostStart);
 
+        startingPoseChooser.addOption("BRSAFE", KnownLocations.bottomRightZoneAlgaeSafePoint);
+        startingPoseChooser.addOption("BRSCORE", KnownLocations.bottomRightZoneAlgaeScorePoint);
+        
+        startingPoseChooser.addOption("BLSAFE", KnownLocations.bottomLeftZoneAlgaeSafePoint);
+        startingPoseChooser.addOption("BLSCORE", KnownLocations.bottomLeftZoneAlgaeScorePoint);
+        
+        startingPoseChooser.addOption("RSAFE", KnownLocations.rightZoneAlgaeSafePoint);
+        startingPoseChooser.addOption("RSCORE", KnownLocations.rightZoneAlgaeScorePoint);
+        
+        startingPoseChooser.addOption("TRSAFE", KnownLocations.topRightZoneAlgaeSafePoint);
+        startingPoseChooser.addOption("TRSCORE", KnownLocations.topRightZoneAlgaeScorePoint);
+        
+        startingPoseChooser.addOption("TLSAFE", KnownLocations.topLeftZoneAlgaeSafePoint);
+        startingPoseChooser.addOption("TLSCORE", KnownLocations.topLeftZoneAlgaeScorePoint);
+        
+        startingPoseChooser.addOption("LSAFE", KnownLocations.leftZoneAlgaeSafePoint);
+        startingPoseChooser.addOption("LSCORE", KnownLocations.leftZoneAlgaeScorePoint);
+        
+
         firstBranchChooser = getBranchChooser();
         secondBranchChooser = getBranchChooser();
         thirdBranchChooser = getBranchChooser();
