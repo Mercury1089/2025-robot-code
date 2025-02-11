@@ -29,10 +29,10 @@ import frc.robot.util.TargetUtils;
 import frc.robot.util.ReefscapeUtils.BranchSide;
 
 public class DriveCommands {
-/**
-* @param  :Joy stick values as 3 doubles as well as drivetrain
-* @return  :Drives based on the Joystick values given, as a Run Command
-*/
+    /**
+    * @param  :Joy stick values as 3 doubles as well as drivetrain
+    * @return  :Drives based on the Joystick values given, as a Run Command
+    */
     public static Command joyStickDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Supplier<Double> angularSpeedSupplier, Drivetrain drivetrain) {
         return new RunCommand(
             () -> drivetrain.drive(
@@ -41,11 +41,10 @@ public class DriveCommands {
               -MercMath.squareInput(MathUtil.applyDeadband(angularSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)))
           , drivetrain);
     }
-/** 
-* @param :Input are the 3 double supplier value, drivetrain, and values of field locations or relativity
-* @return :Drives based on joytick value inputs, as well as field relative data as a RunCommand
-
-*/
+    /** 
+    * @param :Input are the 3 double supplier value, drivetrain, and values of field locations or relativity
+    * @return :Drives based on joytick value inputs, as well as field relative data as a RunCommand
+    */
     public static Command joyStickDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Supplier<Double> angularSpeedSupplier, boolean fieldRelative, Drivetrain drivetrain) {
         return new RunCommand(
             () -> drivetrain.drive(
@@ -55,10 +54,10 @@ public class DriveCommands {
               false)
           , drivetrain);
     } 
-/**
-* @param : Input is the speed, target, and heading suppliers which are doubles, as well as drivetrain
-* @return : Returns PID Command (Pose, Rotation, and Heading Degrees)
-*/
+    /**
+    * @param : Input is the speed, target, and heading suppliers which are doubles, as well as drivetrain
+    * @return : Returns PID Command (Pose, Rotation, and Heading Degrees)
+    */
     public static Command targetDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, DoubleSupplier headingSupplier, Drivetrain drivetrain) {
         return new PIDCommand(
             drivetrain.getRotationalController(),
@@ -70,10 +69,10 @@ public class DriveCommands {
             angularSpeed),
             drivetrain);
     }
-/**
-* @param : Input is 2 double suppliers and the drivetrain
-* @return : Returns a RunCommand telling the drivetrain to drive and calculates heading degrees required to target reef
-*/
+    /**
+    * @param : Input is 2 double suppliers and the drivetrain
+    * @return : Returns a RunCommand telling the drivetrain to drive and calculates heading degrees required to target reef
+    */
     public static Command targetDriveToReef(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
         return new RunCommand(
@@ -84,10 +83,10 @@ public class DriveCommands {
               true)
           , drivetrain);
     }
-/**
-* @param : Drivetrain, Pose2d Supplier 
-* @return : Outputs a Run Command and calculates the required x,y, rotation to get to the deserired pose
-*/
+    /**
+    * @param : Drivetrain, Pose2d Supplier 
+    * @return : Outputs a Run Command and calculates the required x,y, rotation to get to the deserired pose
+    */
     public static Command goToPose(Drivetrain drivetrain, Supplier<Pose2d> desiredPose) {
         return new RunCommand(
             () -> drivetrain.drive(
@@ -97,11 +96,11 @@ public class DriveCommands {
               true)
           , drivetrain).until(() -> drivetrain.isAtPose(desiredPose.get()));
     }
-/**
-* @param : Drivetrain 
-* Preffered branch (Human Input)
-* @return : Runs a sequential command which makes it go through all the pose options, using the sensor to guide its path
-*/
+    /**
+    * @param : Drivetrain 
+    * Preffered branch (Human Input)
+    * @return : Runs a sequential command which makes it go through all the pose options, using the sensor to guide its path
+    */
     public static Command goToPreferredBranch(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredBranch(),
@@ -109,11 +108,11 @@ public class DriveCommands {
             alignwithSensors(drivetrain)
         );
     }
-/**
-* @param : Drivetrain, 
-* Sensor Input
-* @return : Outputs a Run Command and calculates if the robot is too far left or right it will adjust itself
-*/
+    /**
+    * @param : Drivetrain, 
+    * Sensor Input
+    * @return : Outputs a Run Command and calculates if the robot is too far left or right it will adjust itself
+    */
     public static Command alignwithSensors(Drivetrain drivetrain) {
         Supplier<DistanceSensors> proximitySensor = () -> ReefscapeUtils.branchSide() == BranchSide.LEFT ?
                                                         drivetrain.getLeftSensors() :
@@ -128,17 +127,21 @@ public class DriveCommands {
               false)
         ).until(() -> proximitySensor.get().isAtReefSide());
     }
-/**
-* @param : Drivetrain 
-* @return : Returns a Sequential Command Group, and starts goToPose command to go to the prefered Station
-*/
+    /**
+    * @param : Drivetrain 
+    * @return : Returns a Sequential Command Group, and starts goToPose command to go to the prefered Station
+    */
     public static Command goToPreferredCoralStation(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredCoralStation(),
             goToPose(drivetrain, () -> ReefscapeUtils.getPreferredCoralStation()).until(() -> drivetrain.isAtPreferredCoralStation())
         );
     }
-
+    /**
+    * @param : Drivetrain, Elevator, and Coral Intake
+    * input: Sensors, Human Input (Preferred Branch), Human Input (Preferred Level)
+    * @return : Returns Sequential Command Group 
+    */
     public static Command scoreAtPreferredBranch(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredBranch(),
@@ -150,7 +153,11 @@ public class DriveCommands {
             new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
         );
     }
-
+    /**
+    * @param : Drivetrain, Elevator, Coral Intake
+    * @return : Returns Sequential Command Group 
+    * Input : Elevator Set Position, Coral Intake, Coral Intake Detection
+    */
     public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) {
         return new SequentialCommandGroup(
             goToPreferredCoralStation(drivetrain),
@@ -158,7 +165,11 @@ public class DriveCommands {
             new RunCommand(() -> coralIntake.intakeCoral(), coralIntake).until(() -> coralIntake.hasCoralEntered())
         );
     }
-
+    /**
+    * @param : Drivetrain, Joystick Supplier (Double)
+    * @return : Calculates necssary X,Y, and Rotational degrees required to align for algae
+    * Input : Pose, Rotation, Degrees, Heading
+    */
     public static Command alignToReefSideForAlgae(Drivetrain drivetrain, Supplier<Double> xJoystickSupplier) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
         return new RunCommand(
@@ -175,12 +186,12 @@ public class DriveCommands {
      * Construct a command that will follow a path provided when the command initializes.
      * @param pathSupplier Supplier that provides the path to follow.
      * @param drivetrain Drivetrain subsystem that will follow the path
-     * @return The 
+     * @return The Druvetrain path follows form path supplier
      */
     public static Command followPath(Supplier<PathPlannerPath> pathSupplier, Drivetrain drivetrain) {
         return drivetrain.defer(() -> AutoBuilder.followPath(pathSupplier.get()));
     }
-    //The
+   
 
 
 }
