@@ -37,7 +37,7 @@ public class TargetUtils {
     // Following is based off https://www.chiefdelphi.com/t/is-there-a-builtin-function-to-find-the-angle-needed-to-get-one-pose2d-to-face-another-pose2d/455972
     /**
     * @param : robot pose, tagID
-    * @return : Heading
+    * @return : Heading degrees required to face the April Tag
     */
     public static double getTargetHeadingToAprilTag(Pose2d robotPose, int tagId) {
         double heading = 0.0;
