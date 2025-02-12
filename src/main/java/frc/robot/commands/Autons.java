@@ -249,23 +249,23 @@ public class Autons {
         startingPoseChooser.addOption("Middle", KnownLocations.middleStart);
         startingPoseChooser.addOption("Top", KnownLocations.topMostStart);
 
-        startingPoseChooser.addOption("BRSAFE", KnownLocations.bottomRightZoneAlgaeSafePoint);
-        startingPoseChooser.addOption("BRSCORE", KnownLocations.bottomRightZoneAlgaeScorePoint);
+        startingPoseChooser.addOption("BRSAFE", KnownLocations.rightBargeSideAlgaeSafePoint);
+        startingPoseChooser.addOption("BRSCORE", KnownLocations.rightBargeSideALgaeScorePoint);
         
-        startingPoseChooser.addOption("BLSAFE", KnownLocations.bottomLeftZoneAlgaeSafePoint);
-        startingPoseChooser.addOption("BLSCORE", KnownLocations.bottomLeftZoneAlgaeScorePoint);
+        startingPoseChooser.addOption("BLSAFE", KnownLocations.rightCloseSideAlgaeSafePoint);
+        startingPoseChooser.addOption("BLSCORE", KnownLocations.rightCloseSideAlgaeScorePoint);
         
-        startingPoseChooser.addOption("RSAFE", KnownLocations.rightZoneAlgaeSafePoint);
-        startingPoseChooser.addOption("RSCORE", KnownLocations.rightZoneAlgaeScorePoint);
+        startingPoseChooser.addOption("RSAFE", KnownLocations.bargeSideAlgaeSafePoint);
+        startingPoseChooser.addOption("RSCORE", KnownLocations.bargeSideAlgaeScorePoint);
         
-        startingPoseChooser.addOption("TRSAFE", KnownLocations.topRightZoneAlgaeSafePoint);
-        startingPoseChooser.addOption("TRSCORE", KnownLocations.topRightZoneAlgaeScorePoint);
+        startingPoseChooser.addOption("TRSAFE", KnownLocations.leftBargeSideAlgaeSafePoint);
+        startingPoseChooser.addOption("TRSCORE", KnownLocations.leftBargeSideAlgaeScorePoint);
         
-        startingPoseChooser.addOption("TLSAFE", KnownLocations.topLeftZoneAlgaeSafePoint);
-        startingPoseChooser.addOption("TLSCORE", KnownLocations.topLeftZoneAlgaeScorePoint);
+        startingPoseChooser.addOption("TLSAFE", KnownLocations.leftCloseSideAlgaeSafePoint);
+        startingPoseChooser.addOption("TLSCORE", KnownLocations.leftCloseSideAlgaeScorePoint);
         
-        startingPoseChooser.addOption("LSAFE", KnownLocations.leftZoneAlgaeSafePoint);
-        startingPoseChooser.addOption("LSCORE", KnownLocations.leftZoneAlgaeScorePoint);
+        startingPoseChooser.addOption("LSAFE", KnownLocations.closeSideAlgaeSafePoint);
+        startingPoseChooser.addOption("LSCORE", KnownLocations.closeSideAlgaeScorePoint);
         
 
         firstBranchChooser = getBranchChooser();
@@ -313,18 +313,18 @@ public class Autons {
     }
 
     public enum AutonLocations {
-        LEFTINRIGHTZONE(RobotZone.RIGHT, BranchSide.LEFT),
-        RIGHTINRIGTHZONE(RobotZone.RIGHT, BranchSide.RIGHT),
-        LEFTINBOTTOMRIGHTZONE(RobotZone.BOTTOM_RIGHT, BranchSide.LEFT),
-        RIGHTINLBOTTOMRIGHTZONE(RobotZone.BOTTOM_RIGHT, BranchSide.RIGHT),
-        LEFTINBOTTOMLEFTZONE(RobotZone.BOTTOM_LEFT, BranchSide.LEFT),
-        RIGHTINBOTTOMLEFTZONE(RobotZone.BOTTOM_LEFT, BranchSide.RIGHT),
-        LEFTINLEFTZONE(RobotZone.LEFT, BranchSide.LEFT),
-        RIGHTINLEFTZONE(RobotZone.LEFT, BranchSide.RIGHT),
-        LEFTINTOPLEFTZONE(RobotZone.TOP_LEFT, BranchSide.LEFT),
-        RIGHTINTOPLEFTZONE(RobotZone.TOP_LEFT, BranchSide.RIGHT),
-        LEFTINTOPRIGHTZONE(RobotZone.TOP_RIGHT, BranchSide.LEFT),
-        RIGHTINTOPRIGHTZONE(RobotZone.TOP_RIGHT, BranchSide.RIGHT);
+        LEFTINRIGHTZONE(RobotZone.BARGE, BranchSide.LEFT),
+        RIGHTINRIGTHZONE(RobotZone.BARGE, BranchSide.RIGHT),
+        LEFTINBOTTOMRIGHTZONE(RobotZone.BARGE_RIGHT, BranchSide.LEFT),
+        RIGHTINLBOTTOMRIGHTZONE(RobotZone.BARGE_RIGHT, BranchSide.RIGHT),
+        LEFTINBOTTOMLEFTZONE(RobotZone.CLOSE_RIGHT, BranchSide.LEFT),
+        RIGHTINBOTTOMLEFTZONE(RobotZone.CLOSE_RIGHT, BranchSide.RIGHT),
+        LEFTINLEFTZONE(RobotZone.CLOSE, BranchSide.LEFT),
+        RIGHTINLEFTZONE(RobotZone.CLOSE, BranchSide.RIGHT),
+        LEFTINTOPLEFTZONE(RobotZone.CLOSE_LEFT, BranchSide.LEFT),
+        RIGHTINTOPLEFTZONE(RobotZone.CLOSE_LEFT, BranchSide.RIGHT),
+        LEFTINTOPRIGHTZONE(RobotZone.BARGE_LEFT, BranchSide.LEFT),
+        RIGHTINTOPRIGHTZONE(RobotZone.BARGE_LEFT, BranchSide.RIGHT);
 
         private RobotZone zone;
         private BranchSide side;

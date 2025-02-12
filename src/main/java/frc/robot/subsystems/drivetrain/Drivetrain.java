@@ -487,7 +487,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drivetrain/laserCanDifference", Math.abs(laserCanMeasurement - laserCanMeasurement2));
     SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsLEFT", leftSensors.isAtReefSide());
     SmartDashboard.putBoolean("Drivetrain/isAtScoreCoralPoint",isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()));
-    SmartDashboard.putNumber("Drivetrain/tempX",KnownLocations.bottomLeftZoneAlgaeScorePoint.getX());
-    SmartDashboard.putNumber("Drivetrain/tempY",KnownLocations.bottomLeftZoneAlgaeScorePoint.getY());
+    SmartDashboard.putNumber("Drivetrain/tempX",KnownLocations.rightCloseSideAlgaeScorePoint.getX());
+    SmartDashboard.putNumber("Drivetrain/tempY",KnownLocations.rightCloseSideAlgaeScorePoint.getY());
   }
 }

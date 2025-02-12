@@ -4,6 +4,7 @@ import java.sql.Driver;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.mechanisms.DifferentialMechanism.DisabledReason;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -28,6 +29,7 @@ import frc.robot.util.PathUtils;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
 import frc.robot.util.ReefscapeUtils.BranchSide;
+import frc.robot.util.ReefscapeUtils.RobotZone;
 
 public class DriveCommands {
     /**
@@ -115,9 +117,24 @@ public class DriveCommands {
     * @return : Outputs a Run Command and calculates if the robot is too far left or right it will adjust itself
     */
     public static Command alignwithSensors(Drivetrain drivetrain) {
-        Supplier<DistanceSensors> proximitySensor = () -> ReefscapeUtils.branchSide() == BranchSide.LEFT ?
-                                                        drivetrain.getLeftSensors() :
-                                                        drivetrain.getRightSensors();
+
+        Supplier<DistanceSensors> proximitySensor;
+
+        Supplier<RobotZone> currentPref = () -> ReefscapeUtils.preferredZone();
+
+        proximitySensor = () -> currentPref.get() == RobotZone.BARGE || currentPref.get() == RobotZone.BARGE_LEFT || currentPref.get() == RobotZone.BARGE_RIGHT ?
+                                ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
+                                ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
+
+        // if (currentPref == RobotZone.BARGE || currentPref == RobotZone.BARGE_LEFT || currentPref == RobotZone.BARGE_RIGHT) {
+        //     proximitySensor = () -> !(ReefscapeUtils.branchSide() == BranchSide.LEFT) ?
+        //                             drivetrain.getLeftSensors() :
+        //                             drivetrain.getRightSensors();
+        // } else {
+        //     proximitySensor = () -> ReefscapeUtils.branchSide() == BranchSide.LEFT ?
+        //                             drivetrain.getLeftSensors() :
+        //                             drivetrain.getRightSensors();
+        // }
         Supplier<Double> invert = () -> !proximitySensor.get().isTooFarLeft() ? 1.0 : -1.0;
 
         return new RunCommand(
@@ -171,12 +188,12 @@ public class DriveCommands {
     * @return : Calculates necssary X,Y, and Rotational degrees required to align for algae
     * Input : Pose, Rotation, Degrees, Heading
     */
-    public static Command alignToReefSideForAlgae(Drivetrain drivetrain, Supplier<Double> xJoystickSupplier) {
+    public static Command pickUpAlgaeInCurrentZone(Drivetrain drivetrain) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
         return new SequentialCommandGroup(
           goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneSafeAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneSafeAlgaePoint())),
-          goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()))
-          //goCloserToReefForAlgae(drivetrain)
+          goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint())),
+          goCloserToReefForAlgae(drivetrain)
         );
     }
 

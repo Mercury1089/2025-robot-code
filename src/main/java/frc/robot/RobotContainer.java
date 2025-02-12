@@ -98,20 +98,23 @@ public class RobotContainer {
 
     Trigger hasCoral = new Trigger(() -> coralIntake.hasCoral());
     Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered());
+    Trigger ejecting = new Trigger(() -> coralIntake.getEjecting());
 
-    (hasCoral.negate().and(hasCoralEntered)).onTrue(
+    (hasCoral.negate().and(hasCoralEntered)).and(ejecting.negate()).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake)
     );
 
-    (hasCoral.and(hasCoralEntered.negate())).onTrue(
-      new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE), coralIntake)
+    (hasCoral.and(hasCoralEntered.negate())).and(ejecting.negate()).onTrue(
+      new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.BRING_BACK), coralIntake)
     );
     
-    (hasCoral.and(hasCoralEntered)).or(hasCoral.negate().and(hasCoralEntered.negate())).onTrue(
+    (hasCoral.and(hasCoralEntered)).or(hasCoral.negate().and(hasCoralEntered.negate())).and(ejecting.negate()).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
     );
 
-  //  gamepadA.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE), coralIntake));
+    gamepadA.onTrue(new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent()).andThen(
+      new InstantCommand(() -> coralIntake.setEjecting(false))
+    ));
 
 
     algaeIntake = new AlgaeIntake();
@@ -167,10 +170,10 @@ public class RobotContainer {
     // gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain));
     gamepadRB.onTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
 
-    gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.LEFT)));
-    gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BOTTOM_LEFT)));
-    gamepadY.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BOTTOM_RIGHT)));
-    gamepadX.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.RIGHT)));
+    gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE)));
+    gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE_RIGHT)));
+    gamepadY.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE_RIGHT)));
+    gamepadX.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE)));
 
     gamepadPOVRight.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.OUTSIDERIGHT)));
     gamepadPOVLeft.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.INSIDERIGHT)));

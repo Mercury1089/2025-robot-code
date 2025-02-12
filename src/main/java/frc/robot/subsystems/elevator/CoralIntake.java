@@ -22,6 +22,7 @@ public class CoralIntake extends SubsystemBase {
 
     private SparkMax coralIntake;
     private ProximitySensor frontCoralSensor, backCoralSensor;
+    private boolean ejecting = false;
     private final double coralTriggerValue = 0.2; // TODO: need to test for this
 
     /** Creates a new intake. */
@@ -58,7 +59,16 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public void spitCoral() {
+        ejecting = true;
         intakeCoral();
+    }
+
+    public void setEjecting(boolean eject) {
+        ejecting = eject;
+    }
+
+    public boolean getEjecting() {
+        return ejecting;
     }
  
     public void intakeCoral() {
@@ -72,6 +82,7 @@ public class CoralIntake extends SubsystemBase {
     public enum IntakeSpeed {
         INTAKE(0.8),
         SLOW_INTAKE(0.25),
+        BRING_BACK(-0.25),
         OUTTAKE(0.8),
         STOP(0.0);
 

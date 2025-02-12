@@ -4,8 +4,11 @@ import au.grapplerobotics.LaserCan;
 import frc.robot.Constants.CAN;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.ReefscapeUtils.BranchSide;
+import frc.robot.util.ReefscapeUtils.RobotZone;
 
 import java.util.function.Supplier;
+
+import com.ctre.phoenix6.signals.RobotEnableValue;
 
 import au.grapplerobotics.ConfigurationFailedException;
 
@@ -100,6 +103,12 @@ public class DistanceSensors {
         } else if (!isInnerSensorTriggered() && isOuterSensorTriggered()) {
             tooLeft = true;
         }
+
+        // RobotZone currentPref = ReefscapeUtils.preferredZone();
+
+        // if (currentPref == RobotZone.BARGE || currentPref == RobotZone.BARGE_LEFT || currentPref == RobotZone.BARGE_RIGHT) {
+        //     tooLeft = !tooLeft;
+        // }
 
         return tooLeft;
     }

@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 
 public class ReefscapeUtils {
-    private static RobotZone robotZone = RobotZone.LEFT; // this is your current robotZone
+    private static RobotZone robotZone = RobotZone.CLOSE; // this is your current robotZone
 
-    private static RobotZone preferredZone = RobotZone.LEFT; // this is your intended robot zone to go to while in FIDO
+    private static RobotZone preferredZone = RobotZone.CLOSE; // this is your intended robot zone to go to while in FIDO
     private static CoralStation preferredCoralStation = CoralStation.INSIDERIGHT;
     private static ElevatorPosition preferredLevel = ElevatorPosition.LEVEL1;
     private static BranchSide preferredBranchSide = BranchSide.LEFT;
@@ -78,23 +78,23 @@ public class ReefscapeUtils {
         Pose2d zone = new Pose2d();
 
         switch (preferredZone) {
-            case RIGHT:
-                zone = KnownLocations.rightZone;
+            case BARGE:
+                zone = KnownLocations.bargeSide;
                 break;
-            case BOTTOM_RIGHT:
-                zone = KnownLocations.bottomRightZone;
+            case BARGE_RIGHT:
+                zone = KnownLocations.rightBargeSide;
                 break;
-            case BOTTOM_LEFT:
-                zone = KnownLocations.bottomLeftZone;
+            case CLOSE_RIGHT:
+                zone = KnownLocations.rightCloseSide;
                 break;
-            case LEFT:
-                zone = KnownLocations.leftZone;
+            case CLOSE:
+                zone = KnownLocations.closeSide;
                 break;
-            case TOP_LEFT:
-                zone = KnownLocations.topLeftZone;
+            case CLOSE_LEFT:
+                zone = KnownLocations.leftCloseSide;
                 break;
-            case TOP_RIGHT:
-                zone = KnownLocations.topRightZone;
+            case BARGE_LEFT:
+                zone = KnownLocations.leftBargeSide;
                 break;    
         }
 
@@ -104,23 +104,23 @@ public class ReefscapeUtils {
     public static Pose2d getCurrentZoneSafeAlgaePoint() {
         Pose2d result;
         switch (robotZone) {
-            case LEFT:
-                result = KnownLocations.leftZoneAlgaeSafePoint;
+            case CLOSE:
+                result = KnownLocations.closeSideAlgaeSafePoint;
                 break;
-            case BOTTOM_LEFT:
-                result = KnownLocations.bottomLeftZoneAlgaeSafePoint;
+            case CLOSE_RIGHT:
+                result = KnownLocations.rightCloseSideAlgaeSafePoint;
                 break;
-            case BOTTOM_RIGHT:
-                result = KnownLocations.bottomRightZoneAlgaeSafePoint;
+            case BARGE_RIGHT:
+                result = KnownLocations.rightBargeSideAlgaeSafePoint;
                 break;
-            case RIGHT:
-                result = KnownLocations.rightZoneAlgaeSafePoint;
+            case BARGE:
+                result = KnownLocations.bargeSideAlgaeSafePoint;
                 break;
-            case TOP_RIGHT:
-                result = KnownLocations.topRightZoneAlgaeSafePoint;
+            case BARGE_LEFT:
+                result = KnownLocations.leftBargeSideAlgaeSafePoint;
                 break;
-            case TOP_LEFT:
-                result = KnownLocations.topLeftZoneAlgaeSafePoint;
+            case CLOSE_LEFT:
+                result = KnownLocations.leftCloseSideAlgaeSafePoint;
                 break;
             default:
                 result = new Pose2d();
@@ -132,23 +132,23 @@ public class ReefscapeUtils {
     public static Pose2d getCurrentZoneScoreAlgaePoint() {
         Pose2d result;
         switch (robotZone) {
-            case LEFT:
-                result = KnownLocations.leftZoneAlgaeScorePoint;
+            case CLOSE:
+                result = KnownLocations.closeSideAlgaeScorePoint;
                 break;
-            case BOTTOM_LEFT:
-                result = KnownLocations.bottomLeftZoneAlgaeScorePoint;
+            case CLOSE_RIGHT:
+                result = KnownLocations.rightCloseSideAlgaeScorePoint;
                 break;
-            case BOTTOM_RIGHT:
-                result = KnownLocations.bottomRightZoneAlgaeScorePoint;
+            case BARGE_RIGHT:
+                result = KnownLocations.rightBargeSideALgaeScorePoint;
                 break;
-            case RIGHT:
-                result = KnownLocations.rightZoneAlgaeScorePoint;
+            case BARGE:
+                result = KnownLocations.bargeSideAlgaeScorePoint;
                 break;
-            case TOP_RIGHT:
-                result = KnownLocations.topRightZoneAlgaeScorePoint;
+            case BARGE_LEFT:
+                result = KnownLocations.leftBargeSideAlgaeScorePoint;
                 break;
-            case TOP_LEFT:
-                result = KnownLocations.topLeftZoneAlgaeScorePoint;
+            case CLOSE_LEFT:
+                result = KnownLocations.leftCloseSideAlgaeScorePoint;
                 break;
             default:
                 result = new Pose2d();
@@ -162,22 +162,22 @@ public class ReefscapeUtils {
 
         if (KnownLocations.getKnownLocations().alliance == Alliance.Blue) {
             switch (robotZone) {
-                case LEFT:
+                case CLOSE:
                     tag = 18;
                     break;
-                case BOTTOM_LEFT:
+                case CLOSE_RIGHT:
                     tag = 17;
                     break;
-                case BOTTOM_RIGHT:
+                case BARGE_RIGHT:
                     tag = 22;
                     break;
-                case RIGHT:
+                case BARGE:
                     tag = 21;
                     break;
-                case TOP_RIGHT:
+                case BARGE_LEFT:
                     tag = 20;
                     break;
-                case TOP_LEFT:
+                case CLOSE_LEFT:
                     tag = 19;
                     break;
                 default:
@@ -185,22 +185,22 @@ public class ReefscapeUtils {
             }
         } else {
             switch (robotZone) {
-                case LEFT:
+                case CLOSE:
                     tag = 10;
                     break;
-                case BOTTOM_LEFT:
+                case CLOSE_RIGHT:
                     tag = 11;
                     break;
-                case BOTTOM_RIGHT:
+                case BARGE_RIGHT:
                     tag = 6;
                     break;
-                case RIGHT:
+                case BARGE:
                     tag = 7;
                     break;
-                case TOP_RIGHT:
+                case BARGE_LEFT:
                     tag = 8;
                     break;
-                case TOP_LEFT:
+                case CLOSE_LEFT:
                     tag = 9;
                     break;
                 default:
@@ -215,42 +215,42 @@ public class ReefscapeUtils {
             Supplier<Double> goalEndSupplier = () -> 0.5;
     
             return new ConditionalCommand(
-                PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.LEFT), goalEndSupplier), 
+                PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.CLOSE), goalEndSupplier), 
                 new ConditionalCommand(
-                    PathUtils.getPathToPose(() -> getRightBranch(RobotZone.LEFT), goalEndSupplier),
+                    PathUtils.getPathToPose(() -> getRightBranch(RobotZone.CLOSE), goalEndSupplier),
                     new ConditionalCommand(
-                        PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.BOTTOM_LEFT), goalEndSupplier),
+                        PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.CLOSE_RIGHT), goalEndSupplier),
                         new ConditionalCommand(
-                            PathUtils.getPathToPose(() -> getRightBranch(RobotZone.BOTTOM_LEFT), goalEndSupplier),
+                            PathUtils.getPathToPose(() -> getRightBranch(RobotZone.CLOSE_RIGHT), goalEndSupplier),
                             new ConditionalCommand(
-                                PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.BOTTOM_RIGHT), goalEndSupplier),
+                                PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.BARGE_RIGHT), goalEndSupplier),
                                 new ConditionalCommand(
-                                    PathUtils.getPathToPose(() -> getRightBranch(RobotZone.BOTTOM_RIGHT), goalEndSupplier),
+                                    PathUtils.getPathToPose(() -> getRightBranch(RobotZone.BARGE_RIGHT), goalEndSupplier),
                                     new ConditionalCommand(
-                                        PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.RIGHT), goalEndSupplier),
+                                        PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.BARGE), goalEndSupplier),
                                         new ConditionalCommand(
-                                            PathUtils.getPathToPose(() -> getRightBranch(RobotZone.RIGHT), goalEndSupplier),
+                                            PathUtils.getPathToPose(() -> getRightBranch(RobotZone.BARGE), goalEndSupplier),
                                             new ConditionalCommand(
-                                                PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.TOP_RIGHT), goalEndSupplier),
+                                                PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.BARGE_LEFT), goalEndSupplier),
                                                 new ConditionalCommand(
-                                                    PathUtils.getPathToPose(() -> getRightBranch(RobotZone.TOP_RIGHT), goalEndSupplier),
+                                                    PathUtils.getPathToPose(() -> getRightBranch(RobotZone.BARGE_LEFT), goalEndSupplier),
                                                     new ConditionalCommand(
-                                                        PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.TOP_LEFT), goalEndSupplier),
+                                                        PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.CLOSE_LEFT), goalEndSupplier),
                                                         new ConditionalCommand(
-                                                            PathUtils.getPathToPose(() -> getRightBranch(RobotZone.TOP_LEFT), goalEndSupplier),
-                                                            PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.LEFT), goalEndSupplier), 
-                                                            () -> preferredZone == RobotZone.TOP_LEFT && preferredBranchSide == BranchSide.RIGHT),
-                                                        () -> preferredZone == RobotZone.TOP_LEFT && preferredBranchSide == BranchSide.LEFT),
-                                                    () -> preferredZone == RobotZone.TOP_RIGHT && preferredBranchSide == BranchSide.RIGHT),
-                                                () -> preferredZone == RobotZone.TOP_RIGHT && preferredBranchSide == BranchSide.LEFT),
-                                            () -> preferredZone == RobotZone.RIGHT && preferredBranchSide == BranchSide.RIGHT),
-                                        () -> preferredZone == RobotZone.RIGHT && preferredBranchSide == BranchSide.LEFT),
-                                    () -> preferredZone == RobotZone.BOTTOM_RIGHT && preferredBranchSide == BranchSide.RIGHT),
-                                () -> preferredZone == RobotZone.BOTTOM_RIGHT && preferredBranchSide == BranchSide.LEFT),
-                            () -> preferredZone == RobotZone.BOTTOM_LEFT && preferredBranchSide == BranchSide.RIGHT),
-                        () -> preferredZone == RobotZone.BOTTOM_LEFT && preferredBranchSide == BranchSide.LEFT),
-                    () -> preferredZone == RobotZone.LEFT && preferredBranchSide == BranchSide.RIGHT), 
-                () -> preferredZone == RobotZone.LEFT && preferredBranchSide == BranchSide.LEFT);
+                                                            PathUtils.getPathToPose(() -> getRightBranch(RobotZone.CLOSE_LEFT), goalEndSupplier),
+                                                            PathUtils.getPathToPose(() -> getLeftBranch(RobotZone.CLOSE), goalEndSupplier), 
+                                                            () -> preferredZone == RobotZone.CLOSE_LEFT && preferredBranchSide == BranchSide.RIGHT),
+                                                        () -> preferredZone == RobotZone.CLOSE_LEFT && preferredBranchSide == BranchSide.LEFT),
+                                                    () -> preferredZone == RobotZone.BARGE_LEFT && preferredBranchSide == BranchSide.RIGHT),
+                                                () -> preferredZone == RobotZone.BARGE_LEFT && preferredBranchSide == BranchSide.LEFT),
+                                            () -> preferredZone == RobotZone.BARGE && preferredBranchSide == BranchSide.RIGHT),
+                                        () -> preferredZone == RobotZone.BARGE && preferredBranchSide == BranchSide.LEFT),
+                                    () -> preferredZone == RobotZone.BARGE_RIGHT && preferredBranchSide == BranchSide.RIGHT),
+                                () -> preferredZone == RobotZone.BARGE_RIGHT && preferredBranchSide == BranchSide.LEFT),
+                            () -> preferredZone == RobotZone.CLOSE_RIGHT && preferredBranchSide == BranchSide.RIGHT),
+                        () -> preferredZone == RobotZone.CLOSE_RIGHT && preferredBranchSide == BranchSide.LEFT),
+                    () -> preferredZone == RobotZone.CLOSE && preferredBranchSide == BranchSide.RIGHT), 
+                () -> preferredZone == RobotZone.CLOSE && preferredBranchSide == BranchSide.LEFT);
     }
 
     public static Command getPathToPreferredCoralStation() {
@@ -292,25 +292,25 @@ public class ReefscapeUtils {
 
         if (rawHeading >= -30.0 && rawHeading <= 30.0) {
             finalHeading = 0.0;
-            robotZone = RobotZone.LEFT;
+            robotZone = RobotZone.CLOSE;
         } else if (rawHeading > 30.0 && rawHeading <= 90.0) {
             finalHeading = 60.0;
-            robotZone = RobotZone.BOTTOM_LEFT;
+            robotZone = RobotZone.CLOSE_RIGHT;
         } else if (rawHeading > 90.0 && rawHeading <= 150.0) {
             finalHeading = 120.0;
-            robotZone = RobotZone.BOTTOM_RIGHT;
+            robotZone = RobotZone.BARGE_RIGHT;
         } else if (rawHeading > 150.0 && rawHeading <= 180.0) {
             finalHeading = 180.0;
-            robotZone = RobotZone.RIGHT;
+            robotZone = RobotZone.BARGE;
         } else if (rawHeading >= -180.0 && rawHeading < -150.0) {
             finalHeading = 180.0;
-            robotZone = RobotZone.RIGHT;
+            robotZone = RobotZone.BARGE;
         } else if (rawHeading >= -150.0 && rawHeading < -90.0) {
             finalHeading = -120.0;
-            robotZone = RobotZone.TOP_RIGHT;
+            robotZone = RobotZone.BARGE_LEFT;
         } else if (rawHeading >= -90.0 && rawHeading < -30.0) {
             finalHeading = -60.0;
-            robotZone = RobotZone.TOP_LEFT;
+            robotZone = RobotZone.CLOSE_LEFT;
         }        
 
         return finalHeading;
@@ -319,23 +319,23 @@ public class ReefscapeUtils {
     public static Pose2d getLeftBranch(RobotZone zone) {
         Pose2d leftBranch = new Pose2d();
         switch (zone) {
-            case RIGHT:
-                leftBranch = KnownLocations.leftBranchInRightZone;
+            case BARGE:
+                leftBranch = KnownLocations.bargeSideLeftBranch;
                 break;
-            case BOTTOM_RIGHT:
-                leftBranch = KnownLocations.leftBranchInBottomRightZone;
+            case BARGE_RIGHT:
+                leftBranch = KnownLocations.rightBargeSideLeftBranch;
                 break;
-            case BOTTOM_LEFT:
-                leftBranch = KnownLocations.leftBranchInBottomLeftZone;
+            case CLOSE_RIGHT:
+                leftBranch = KnownLocations.closeRightSideLeftBranch;
                 break;
-            case LEFT:
-                leftBranch = KnownLocations.leftBranchInLeftZone;
+            case CLOSE:
+                leftBranch = KnownLocations.closeSideLeftBranch;
                 break;
-            case TOP_LEFT:
-                leftBranch = KnownLocations.leftBranchInTopLeftZone;
+            case CLOSE_LEFT:
+                leftBranch = KnownLocations.leftCloseSideLeftBranch;
                 break;
-            case TOP_RIGHT:
-                leftBranch = KnownLocations.leftBranchInTopRightZone;
+            case BARGE_LEFT:
+                leftBranch = KnownLocations.leftBargeSideLeftBranch;
                 break;    
         }
         return leftBranch; //should get here (:
@@ -344,23 +344,23 @@ public class ReefscapeUtils {
     public static Pose2d getRightBranch(RobotZone zone)  {
         Pose2d rightBranch = new Pose2d();
         switch (zone) {
-            case RIGHT:
-                rightBranch = KnownLocations.rightBranchInRightZone;
+            case BARGE:
+                rightBranch = KnownLocations.bargeSideRightBranch;
                 break;
-            case BOTTOM_RIGHT:
-                rightBranch = KnownLocations.rightBranchInBottomRightZone;
+            case BARGE_RIGHT:
+                rightBranch = KnownLocations.rightBargeSideRightBranch;
                 break;
-            case BOTTOM_LEFT:
-                rightBranch = KnownLocations.rightBranchInBottomLeftZone;
+            case CLOSE_RIGHT:
+                rightBranch = KnownLocations.closeRightSideRightBranch;
                 break;
-            case LEFT:
-                rightBranch = KnownLocations.rightBranchInLeftZone;
+            case CLOSE:
+                rightBranch = KnownLocations.closeSideRightBranch;
                 break;
-            case TOP_LEFT:
-                rightBranch = KnownLocations.rightBranchInTopLeftZone;
+            case CLOSE_LEFT:
+                rightBranch = KnownLocations.leftCloseSideRightBranch;
                 break;
-            case TOP_RIGHT:
-                rightBranch = KnownLocations.rightBranchInTopRightZone;  
+            case BARGE_LEFT:
+                rightBranch = KnownLocations.leftBargeSideRightBranch;  
                 break;
                      
         }
@@ -368,12 +368,12 @@ public class ReefscapeUtils {
     }
 
     public enum RobotZone {
-        LEFT("left"),
-        BOTTOM_LEFT("bottomLeft"),
-        BOTTOM_RIGHT("bottomRight"),
-        TOP_LEFT("topLeft"),
-        TOP_RIGHT("topRight"),
-        RIGHT("right");
+        CLOSE("close"),
+        CLOSE_RIGHT("closeRight"),
+        BARGE_RIGHT("bargeRight"),
+        CLOSE_LEFT("closeLeft"),
+        BARGE_LEFT("bargeLeft"),
+        BARGE("barge");
      
         public String robotZone;
           RobotZone(String zone) {
