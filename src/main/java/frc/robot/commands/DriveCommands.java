@@ -100,6 +100,7 @@ public class DriveCommands {
     /**
     * @param : Drivetrain 
     * Preffered branch (Human Input)
+    * SELECT BRANCH AND ZONE BEFORE USING
     * @return : Runs a sequential command which makes it go through all the pose options, using the sensor to guide its path
     */
     public static Command goToPreferredBranch(Drivetrain drivetrain) {
@@ -113,6 +114,7 @@ public class DriveCommands {
     * @param : Drivetrain
     * Sensor Input
     * @return : Outputs a Run Command and calculates if the robot is too far left or right it will adjust itself
+    * SELECT BRANCH AND ZONE BEFORE USING
     */
     public static Command alignwithSensors(Drivetrain drivetrain) {
         Supplier<DistanceSensors> proximitySensor = () -> ReefscapeUtils.branchSide() == BranchSide.LEFT ?
@@ -131,6 +133,7 @@ public class DriveCommands {
     /**
     * @param : Drivetrain 
     * @return : Returns a Sequential Command Group, and starts goToPose command to go to the prefered Station
+    * SELECT SIDE AND CORAL STATION BEFOR USING
     */
     public static Command goToPreferredCoralStation(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
@@ -141,6 +144,7 @@ public class DriveCommands {
     /**
     * @param : Drivetrain, Elevator, and Coral Intake
     * input: Sensors, Human Input (Preferred Branch), Human Input (Preferred Level)
+    * SELECT BRANCH AND ZONE BEFORE USING
     * @return : Returns Sequential Command Group 
     */
     public static Command scoreAtPreferredBranch(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) {
@@ -170,6 +174,7 @@ public class DriveCommands {
     * @param : Drivetrain, Joystick Supplier 
     * @return : Calculates necssary X,Y, and Rotational degrees required to align for algae
     * Input : Pose, Rotation, Degrees, Heading
+    * SELECT BRANCH AND ZONE BEFORE USING
     */
     public static Command alignToReefSideForAlgae(Drivetrain drivetrain, Supplier<Double> xJoystickSupplier) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
@@ -182,6 +187,7 @@ public class DriveCommands {
     /**
     * @param : Drivetrain
     * @return : Run Command 
+    * SELECT BRANCH AND ZONE BEFORE USING
     */
     public static Command goCloserToReefForAlgae(Drivetrain drivetrain) {
         Supplier<DistanceSensors> proximitySensor = () -> drivetrain.getLeftSensors();
