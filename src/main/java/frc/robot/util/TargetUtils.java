@@ -18,7 +18,10 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 
 public class TargetUtils {
 
-
+    /**
+    * @param : robotPose and apriltags as int
+    * @return : returns distance between robot and apriltag if apriltag is present
+    */
     public static double getDistanceToFieldPos(Pose2d robotPose, int apriltag) {
         double distance = 0.0;
         Optional<Pose3d> tagPose = KnownLocations.getFieldLayout().getTagPose(apriltag);
@@ -32,6 +35,10 @@ public class TargetUtils {
 
 
     // Following is based off https://www.chiefdelphi.com/t/is-there-a-builtin-function-to-find-the-angle-needed-to-get-one-pose2d-to-face-another-pose2d/455972
+    /**
+    * @param : robot pose, tagID
+    * @return : Heading degrees required to face the April Tag
+    */
     public static double getTargetHeadingToAprilTag(Pose2d robotPose, int tagId) {
         double heading = 0.0;
         Optional<Pose3d> tagPose = KnownLocations.getFieldLayout().getTagPose(tagId);
@@ -42,7 +49,10 @@ public class TargetUtils {
         }
         return heading;
     }
-
+    /** 
+    * @param : robotPose, point
+    * @return : Target Rotation
+    */
     public static Rotation2d getTargetHeadingToPoint(Pose2d robotPose, Translation2d point) {
         Rotation2d targetRotation = point.minus(robotPose.getTranslation()).getAngle();
         return  targetRotation.rotateBy(Rotation2d.fromDegrees(180.0));

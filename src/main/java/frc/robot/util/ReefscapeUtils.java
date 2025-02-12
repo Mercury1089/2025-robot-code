@@ -210,7 +210,9 @@ public class ReefscapeUtils {
 
         return tag;
     }
-
+    /**
+    * @return : Returns a ComditionalCommand
+    */
     public static Command getPathToPreferredBranch() {
             Supplier<Double> goalEndSupplier = () -> 0.5;
     
@@ -285,7 +287,10 @@ public class ReefscapeUtils {
     public static void changepreferredZone(RobotZone zone) {
         preferredZone = zone;
     }
-
+    /**
+    * @param : robotPose
+    * @return : finalHeading
+    */
     public static double getTargetHeadingToReef(Pose2d robotPose) {
         double rawHeading = TargetUtils.getTargetHeadingToPoint(robotPose, KnownLocations.REEF.getTranslation()).rotateBy(Rotation2d.fromDegrees(180.0)).getDegrees();
         double finalHeading = 0.0;
@@ -315,7 +320,10 @@ public class ReefscapeUtils {
 
         return finalHeading;
     }
-
+    /**
+    * @param : current robot zone
+    * @return : left branch
+    */
     public static Pose2d getLeftBranch(RobotZone zone) {
         Pose2d leftBranch = new Pose2d();
         switch (zone) {
