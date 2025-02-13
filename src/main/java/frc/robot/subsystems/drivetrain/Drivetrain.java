@@ -85,7 +85,7 @@ public class Drivetrain extends SubsystemBase {
   //private final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
   //private final double WHEEL_LENGTH = 28.5; // distance between left/right wheels (in inches)
 
-  // // 2023 - Bolt
+  // // distance between wheels
   private final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
   private final double WHEEL_LENGTH = 23.5; // distance between left/right wheels (in inches)
 
