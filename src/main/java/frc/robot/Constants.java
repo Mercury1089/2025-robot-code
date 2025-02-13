@@ -45,7 +45,7 @@ public final class Constants {
     // public static final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
     // public static final double WHEEL_LENGTH = 28.5; // distance between left/right wheels (in inches)
 
-    // bolt
+    // wheel distances
     public static final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
     public static final double WHEEL_LENGTH = 23.5; // distance between left/right wheels (in inches)
 
