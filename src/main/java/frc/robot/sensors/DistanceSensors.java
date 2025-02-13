@@ -96,15 +96,25 @@ public class DistanceSensors {
     }
 
     public boolean isTooFarLeft() {
+        RobotZone currentPref = ReefscapeUtils.preferredZone();
         boolean tooLeft = false;
 
-        if (isInnerSensorTriggered() && !isOuterSensorTriggered()) {
-            tooLeft = false;
-        } else if (!isInnerSensorTriggered() && isOuterSensorTriggered()) {
-            tooLeft = true;
+        if (((currentPref == RobotZone.BARGE || currentPref == RobotZone.BARGE_LEFT || currentPref == RobotZone.BARGE_RIGHT) && ReefscapeUtils.branchSide() == BranchSide.RIGHT) || 
+            ((currentPref == RobotZone.CLOSE || currentPref == RobotZone.CLOSE_LEFT || currentPref == RobotZone.CLOSE_RIGHT) && ReefscapeUtils.branchSide() == BranchSide.LEFT)) {
+            if (isInnerSensorTriggered() && !isOuterSensorTriggered()) {
+                tooLeft = false;
+            } else if (!isInnerSensorTriggered() && isOuterSensorTriggered()) {
+                tooLeft = true;
+            }
+        } else {
+            if (isInnerSensorTriggered() && !isOuterSensorTriggered()) {
+                tooLeft = true;
+            } else if (!isInnerSensorTriggered() && isOuterSensorTriggered()) {
+                tooLeft = false;
+            }
         }
 
-        // RobotZone currentPref = ReefscapeUtils.preferredZone();
+        
 
         // if (currentPref == RobotZone.BARGE || currentPref == RobotZone.BARGE_LEFT || currentPref == RobotZone.BARGE_RIGHT) {
         //     tooLeft = !tooLeft;
@@ -114,15 +124,6 @@ public class DistanceSensors {
     }
 
     public boolean isTooFarAwayFromReef() {
-        double yComp = Math.sin(60.0) * getSensorDistance(innerSensor);
-
         return getSensorDistance(innerSensor) > awayFromReefError;
-    }   
-
-    public enum ProxSensor {
-        OUTER_LEFT_SENSOR,
-        INNER_LEFT_SENSOR,
-        INNER_RIGHT_SENSOR,
-        OUTER_RIGHT_SENSOR;
-    }
+    }  
 }
