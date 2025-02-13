@@ -111,6 +111,9 @@ public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     // configure swerve modules
+    /**
+    * Configuring Driving and Turning motors for each Swerve Module
+    */
     frontLeftModule = new MAXSwerveModule(CAN.DRIVING_FRONT_LEFT, CAN.TURNING_FRONT_LEFT, -Math.PI / 2);
     frontRightModule = new MAXSwerveModule(CAN.DRIVING_FRONT_RIGHT, CAN.TURNING_FRONT_RIGHT, 0);
     backLeftModule = new MAXSwerveModule(CAN.DRIVING_BACK_LEFT, CAN.TURNING_BACK_LEFT, Math.PI);
