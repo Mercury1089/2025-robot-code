@@ -122,7 +122,10 @@ public class Autons {
         return this.autonCommand;
     }
 
-
+    /**
+    * @param : Known Locations
+    * @return : Returns autonCommandGroup
+    */
     public Command buildAutonCommand(KnownLocations knownLocations) {
         // SET OUR INITIAL POSE
         drivetrain.resetPose(startingPose);
@@ -171,7 +174,8 @@ public class Autons {
      * - Starting Pose
      * - like all the things we do
      */
-
+ 
+    
     public void updateDash() {
 
         boolean rebuildAutonCommand = false;
@@ -241,7 +245,10 @@ public class Autons {
             this.autonCommand = buildAutonCommand(knownLocations);
         }
     }
-
+    /**
+    * @param : Known Locations
+    * Gives options for robot scoring, takes input of coral locations and sets Bottom as default option
+    */
     public void setChoosers(KnownLocations knownLocations) {
         // select the MANUAL STARTING POSITION of the robot
         this.startingPoseChooser = new SendableChooser<Pose2d>();
@@ -285,7 +292,9 @@ public class Autons {
         SmartDashboard.putData("Second Coral Station", secondStationChooser);
         SmartDashboard.putData("Third Coral Station", thirdStationChooser);
     }
-
+    /**
+    * (For Coral Scoring, Sets RightZone, RightBranch as default and adds options for branch choosing
+    */
     private SendableChooser<AutonLocations> getBranchChooser() {
         SendableChooser<AutonLocations> branchChooser = new SendableChooser<AutonLocations>();
         branchChooser.setDefaultOption("Right Zone Right Branch", AutonLocations.RIGHTINRIGTHZONE);
@@ -302,7 +311,9 @@ public class Autons {
         branchChooser.addOption("Right Zone Left Branch", AutonLocations.LEFTINRIGHTZONE);
         return branchChooser;
     }
-
+    /**
+    * Returns Coral Station options
+    */
     private SendableChooser<CoralStation> getCoralStationChooser() {
         SendableChooser<CoralStation> coralStationChooser = new SendableChooser<CoralStation>();
         coralStationChooser.setDefaultOption("Outside Right", CoralStation.OUTSIDERIGHT);
@@ -311,7 +322,9 @@ public class Autons {
         coralStationChooser.addOption("Outside Left", CoralStation.OUTSIDELEFT);
         return coralStationChooser;
     }
-
+/**
+* Grouping Branches into one zone, with 12 zones made (As constants)
+*/
     public enum AutonLocations {
         LEFTINRIGHTZONE(RobotZone.BARGE, BranchSide.LEFT),
         RIGHTINRIGTHZONE(RobotZone.BARGE, BranchSide.RIGHT),
