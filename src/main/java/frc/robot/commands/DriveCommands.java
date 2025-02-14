@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -57,47 +58,55 @@ public class DriveCommands {
               false)
           , drivetrain);
     } 
-    /**
-    * @param : Supplier (xSpeed, ySpeed, heading), Drivetrain
-    * @return : Returns PID Command (Pose, Rotation, and Heading Degrees)
-    */
-    public static Command targetDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, DoubleSupplier headingSupplier, Drivetrain drivetrain) {
-        return new PIDCommand(
-            drivetrain.getRotationalController(),
-            () -> drivetrain.getPose().getRotation().getDegrees(),
-            headingSupplier,
-            (angularSpeed) -> drivetrain.drive(
-              -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-              -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-            angularSpeed),
-            drivetrain);
-    }
+    // /**
+    // * @param : Supplier (xSpeed, ySpeed, heading), Drivetrain
+    // * @return : Returns PID Command (Pose, Rotation, and Heading Degrees)
+    // */
+    // public static Command targetDrive(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, DoubleSupplier headingSupplier, Drivetrain drivetrain) {
+    //     return new PIDCommand(
+    //         drivetrain.getRotationalController(),
+    //         () -> drivetrain.getPose().getRotation().getDegrees(),
+    //         headingSupplier,
+    //         (angularSpeed) -> drivetrain.drive(
+    //           -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+    //           -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+    //         angularSpeed),
+    //         drivetrain);
+    // }
     /**
     * @param : Supplier (xSpeed, ySpeed), 
     * @return : Returns a RunCommand telling the drivetrain to drive and calculates heading degrees required to target reef
     */
     public static Command targetDriveToReef(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
-        return new RunCommand(
-            () -> drivetrain.drive(
-              -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-              -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-              drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), heading.get()),
-              true)
-          , drivetrain);
+        return new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getPose().getRotation().getDegrees())).andThen(
+            new RunCommand(
+                () -> drivetrain.drive(
+                  -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+                  -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+                  drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), heading.get()),
+                  true)
+              , drivetrain) 
+        ) ;
     }
     /**
     * @param : Drivetrain, Pose2d Supplier 
     * @return : Outputs a Run Command 
     */
     public static Command goToPose(Drivetrain drivetrain, Supplier<Pose2d> desiredPose) {
-        return new RunCommand(
+        return new ParallelCommandGroup(
+            new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getRotation().getDegrees())),
+            new InstantCommand(() -> drivetrain.getXController().reset(drivetrain.getPose().getX())),
+            new InstantCommand(() -> drivetrain.getYController().reset(drivetrain.getPose().getY()))
+        ).andThen(
+            new RunCommand(
             () -> drivetrain.drive(
               drivetrain.getXController().calculate(drivetrain.getPose().getX(), desiredPose.get().getX()),
               drivetrain.getYController().calculate(drivetrain.getPose().getY(), desiredPose.get().getY()),
               drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), desiredPose.get().getRotation().getDegrees()),
               true)
-          , drivetrain).until(() -> drivetrain.isAtPose(desiredPose.get()));
+          , drivetrain).until(() -> drivetrain.isAtPose(desiredPose.get()))
+        );
     }
     /**
     * @param : Drivetrain 
@@ -128,15 +137,6 @@ public class DriveCommands {
                                 ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
                                 ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
 
-        // if (currentPref == RobotZone.BARGE || currentPref == RobotZone.BARGE_LEFT || currentPref == RobotZone.BARGE_RIGHT) {
-        //     proximitySensor = () -> !(ReefscapeUtils.branchSide() == BranchSide.LEFT) ?
-        //                             drivetrain.getLeftSensors() :
-        //                             drivetrain.getRightSensors();
-        // } else {
-        //     proximitySensor = () -> ReefscapeUtils.branchSide() == BranchSide.LEFT ?
-        //                             drivetrain.getLeftSensors() :
-        //                             drivetrain.getRightSensors();
-        // }
         Supplier<Double> invert = () -> !proximitySensor.get().isTooFarLeft() ? 1.0 : -1.0;
 
         return new RunCommand(

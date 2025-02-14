@@ -18,6 +18,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.reduxrobotics.sensors.canandcolor.Canandcolor;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -31,6 +32,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -44,7 +46,6 @@ import frc.robot.Constants.SWERVE;
 import frc.robot.sensors.AprilTagCamera;
 import frc.robot.sensors.DistanceSensors;
 import frc.robot.sensors.ProximitySensor;
-import frc.robot.sensors.DistanceSensors.ProxSensor;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.PathUtils;
 import frc.robot.util.SwerveUtils;
@@ -62,7 +63,7 @@ public class Drivetrain extends SubsystemBase {
   private SwerveDriveKinematics swerveKinematics;
   private AprilTagCamera photonCam, photonCam2;
   private Field2d smartdashField;
-  private PIDController rotationPIDController, xPIDController, yPIDController;
+  private ProfiledPIDController rotationPIDController, xPIDController, yPIDController;
   private PathPlannerPath pathToNote, pathToAmp;
 
   private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.125, I = 0.0, D = 0.0;
@@ -124,14 +125,14 @@ public class Drivetrain extends SubsystemBase {
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.getYaw().setUpdateFrequency(10);
 
-    rotationPIDController = new PIDController(ROTATION_P, I, D);
+    rotationPIDController = new ProfiledPIDController(ROTATION_P, I, D, new TrapezoidProfile.Constraints(Units.radiansToDegrees(4.75),720));
     rotationPIDController.enableContinuousInput(-180, 180);
     rotationPIDController.setTolerance(1.0);
 
-    xPIDController = new PIDController(DIRECTION_P, I, D);
+    xPIDController = new ProfiledPIDController(DIRECTION_P, I, D, new TrapezoidProfile.Constraints(SWERVE.MAX_DIRECTION_SPEED,SWERVE.MAX_ACCELERATION));
     xPIDController.setTolerance(0.05);
     
-    yPIDController = new PIDController(DIRECTION_P, I, D);
+    yPIDController = new ProfiledPIDController(DIRECTION_P, I, D, new TrapezoidProfile.Constraints(SWERVE.MAX_DIRECTION_SPEED,SWERVE.MAX_ACCELERATION));
     yPIDController.setTolerance(0.05);
 
     // photonvision wrapper
@@ -172,15 +173,15 @@ public class Drivetrain extends SubsystemBase {
     );
   }
 
-  public PIDController getRotationalController() {
+  public ProfiledPIDController getRotationalController() {
     return rotationPIDController;
   }
 
-  public PIDController getXController() {
+  public ProfiledPIDController getXController() {
     return xPIDController;
   }
 
-  public PIDController getYController() {
+  public ProfiledPIDController getYController() {
     return yPIDController;
   }
 
@@ -413,8 +414,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public boolean isAtPose(Pose2d target) {
-    return Math.abs(target.getX() - getPose().getX()) < getXController().getErrorTolerance()
-        && Math.abs(target.getY() - getPose().getY()) < getYController().getErrorTolerance();
+    return Math.abs(target.getX() - getPose().getX()) < getXController().getPositionTolerance()
+        && Math.abs(target.getY() - getPose().getY()) < getYController().getPositionTolerance();
   } 
 
   public boolean isAtPreferredCoralStation() {
@@ -492,10 +493,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredBranch", isAtPreferredBranch());
     SmartDashboard.putNumber("Drivetrain/leftInner", leftSensors.getSensorDistance(leftSensors.getInnerSensor()));
     SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getSensorDistance(leftSensors.getOuterSensor()));
-    SmartDashboard.putNumber("Drivetrain/laserCanDifference", Math.abs(laserCanMeasurement - laserCanMeasurement2));
     SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsLEFT", leftSensors.isAtReefSide());
     SmartDashboard.putBoolean("Drivetrain/isAtScoreCoralPoint",isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()));
-    SmartDashboard.putNumber("Drivetrain/tempX",KnownLocations.rightCloseSideAlgaeScorePoint.getX());
-    SmartDashboard.putNumber("Drivetrain/tempY",KnownLocations.rightCloseSideAlgaeScorePoint.getY());
+    SmartDashboard.putNumber("Drivetrain/rightInner", rightSensors.getSensorDistance(rightSensors.getInnerSensor()));
+    SmartDashboard.putNumber("Drivetrain/rightOuter", rightSensors.getSensorDistance(rightSensors.getOuterSensor()));
   }
 }

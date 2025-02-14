@@ -166,8 +166,8 @@ public class RobotContainer {
       DriveCommands.alignwithSensors(drivetrain))
     ));
 
-    gamepadLB.onTrue(DriveCommands.goToPreferredBranch(drivetrain));
-    // gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain));
+    // gamepadLB.onTrue(DriveCommands.goToPreferredBranch(drivetrain));
+    gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain));
     gamepadRB.onTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
 
     gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE)));
