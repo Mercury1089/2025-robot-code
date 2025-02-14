@@ -23,7 +23,7 @@ public class CoralIntake extends SubsystemBase {
     private SparkMax coralIntake;
     private ProximitySensor frontCoralSensor, backCoralSensor;
     private boolean ejecting = false;
-    private final double coralTriggerValue = 0.2; // TODO: need to test for this
+    private final double coralTriggerValue = 0.1; // TODO: need to test for this
 
     /** Creates a new intake. */
     public CoralIntake() {
@@ -80,10 +80,10 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public enum IntakeSpeed {
-        INTAKE(0.8),
-        SLOW_INTAKE(0.25),
-        BRING_BACK(-0.25),
-        OUTTAKE(0.8),
+        INTAKE(0.4),
+        SLOW_INTAKE(0.1),
+        BRING_BACK(-0.1),
+        OUTTAKE(0.4),
         STOP(0.0);
 
         public final double speed;

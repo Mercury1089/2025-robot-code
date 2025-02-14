@@ -120,8 +120,8 @@ public class RobotContainer {
     algaeIntake = new AlgaeIntake();
     algaeIntake.setDefaultCommand(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP), algaeIntake));
     
-    gamepadB.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
-    gamepadA.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(1.0));
+    // gamepadB.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
+    // gamepadA.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(1.0));
 
     // coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
     // Trigger coralCommandTrigger = new Trigger(() -> !coralIntake.hasCoral() && coralIntake.hasCoralEntered());
@@ -170,10 +170,10 @@ public class RobotContainer {
     gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain));
     gamepadRB.onTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
 
-    gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE)));
-    gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE_RIGHT)));
-    gamepadY.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE_RIGHT)));
-    gamepadX.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE)));
+    // gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE)));
+    // gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE_RIGHT)));
+    // gamepadY.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE_RIGHT)));
+    // gamepadX.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE)));
 
     gamepadPOVRight.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.OUTSIDERIGHT)));
     gamepadPOVLeft.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.INSIDERIGHT)));
