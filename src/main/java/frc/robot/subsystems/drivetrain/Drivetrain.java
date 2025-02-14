@@ -86,7 +86,7 @@ public class Drivetrain extends SubsystemBase {
   //private final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
   //private final double WHEEL_LENGTH = 28.5; // distance between left/right wheels (in inches)
 
-  // // 2023 - Bolt
+  // // distance between wheels
   private final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
   private final double WHEEL_LENGTH = 23.5; // distance between left/right wheels (in inches)
 
@@ -112,6 +112,9 @@ public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     // configure swerve modules
+    /**
+    * Configuring Driving and Turning motors for each Swerve Module
+    */
     frontLeftModule = new MAXSwerveModule(CAN.DRIVING_FRONT_LEFT, CAN.TURNING_FRONT_LEFT, -Math.PI / 2);
     frontRightModule = new MAXSwerveModule(CAN.DRIVING_FRONT_RIGHT, CAN.TURNING_FRONT_RIGHT, 0);
     backLeftModule = new MAXSwerveModule(CAN.DRIVING_BACK_LEFT, CAN.TURNING_BACK_LEFT, Math.PI);
