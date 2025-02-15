@@ -112,7 +112,7 @@ public class RobotContainer {
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
     );
 
-    gamepadA.onTrue(new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent()).andThen(
+    gamepadA.and(hasCoral.and(hasCoralEntered)).onTrue(new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent()).andThen(
       new InstantCommand(() -> coralIntake.setEjecting(false))
     ));
 
@@ -149,26 +149,27 @@ public class RobotContainer {
 
     takeControl.onTrue(drivetrain.getDefaultCommand());
     //left3.onTrue(new InstantCommand(() -> leds.enableFIDO()));
-    left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain));
+    // left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain));
     
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
 
-    right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
+    // right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
+    right3.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain));
 
-    right4.onTrue(
-      new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.LEFT)).andThen(
-      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()).andThen(
-      DriveCommands.alignwithSensors(drivetrain))
-    ));
-    right5.onTrue(
-      new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.RIGHT)).andThen(
-      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()).andThen(
-      DriveCommands.alignwithSensors(drivetrain))
-    ));
+    // ight4.onTrue(
+    //   new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.LEFT)).andThen(
+    //   DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()).andThen(
+    //   DriveCommands.alignwithSensors(drivetrain))
+    // ));
+    // right5.onTrue(
+    //   new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.RIGHT)).andThen(
+    //   DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()).andThen(
+    //   DriveCommands.alignwithSensors(drivetrain))
+    // ));r
 
     // gamepadLB.onTrue(DriveCommands.goToPreferredBranch(drivetrain));
-    gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain));
-    gamepadRB.onTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
+    // gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain));
+    // gamepadRB.onTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
 
     // gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE)));
     // gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE_RIGHT)));

@@ -31,11 +31,12 @@ public class CoralIntake extends SubsystemBase {
 
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
 
-        intakeConfig.idleMode(IdleMode.kBrake)
-        .inverted(false);
+        intakeConfig
+            .idleMode(IdleMode.kBrake)
+            .inverted(false);
 
         coralIntake.configure(intakeConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+            PersistMode.kPersistParameters);
 
         frontCoralSensor = new ProximitySensor(CAN.FRONT_CORAL_SENSOR, coralTriggerValue);
         backCoralSensor = new ProximitySensor(CAN.BACK_CORAL_SENSOR, coralTriggerValue);
@@ -43,7 +44,7 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public void setSpeed(IntakeSpeed intakeSpeed) {
-        coralIntake.set(intakeSpeed.speed * 0.5);
+        coralIntake.set(intakeSpeed.speed);
     }
 
     public boolean hasCoralEntered() {
@@ -60,7 +61,7 @@ public class CoralIntake extends SubsystemBase {
 
     public void spitCoral() {
         ejecting = true;
-        intakeCoral();
+        setSpeed(IntakeSpeed.OUTTAKE);
     }
 
     public void setEjecting(boolean eject) {
@@ -80,10 +81,10 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public enum IntakeSpeed {
-        INTAKE(0.4),
-        SLOW_INTAKE(0.1),
+        INTAKE(0.3),
+        SLOW_INTAKE(0.3),
         BRING_BACK(-0.1),
-        OUTTAKE(0.4),
+        OUTTAKE(1.0),
         STOP(0.0);
 
         public final double speed;

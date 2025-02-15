@@ -71,6 +71,7 @@ public class Drivetrain extends SubsystemBase {
   private final double THRESHOLD_SPEED = 0.5;
 
   private double targetHeadingToReef = 0.0;
+  private double targetHeadingToStation = 0.0;
 
   private Transform3d frontCam = new Transform3d(
     new Translation3d(Units.inchesToMeters(13.5), Units.inchesToMeters(0.0), Units.inchesToMeters(6.5)), 
@@ -403,6 +404,10 @@ public class Drivetrain extends SubsystemBase {
     return targetHeadingToReef;
   }
 
+  public double getTargetHeadingToStation() {
+    return targetHeadingToStation;
+  }
+
   public boolean isTargetPresent() {
     Optional<EstimatedRobotPose> result = photonCam.getGlobalPose();
     return result.isPresent();
@@ -479,6 +484,7 @@ public class Drivetrain extends SubsystemBase {
     // setTrajectorySmartdash(PathUtils.TrajectoryFromPath(pathToAmp), "pathToAmp");
 
     targetHeadingToReef = ReefscapeUtils.getTargetHeadingToReef(getPose());
+    targetHeadingToStation = ReefscapeUtils.getTargetHeadingToStation(getPose());
 
     pathToZone = PathUtils.getPathToPose(() -> ReefscapeUtils.getpreferredZone(), () -> 0.0);
 

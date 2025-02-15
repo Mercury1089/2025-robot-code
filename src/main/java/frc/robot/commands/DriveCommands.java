@@ -90,6 +90,22 @@ public class DriveCommands {
         ) ;
     }
     /**
+    * @param : Supplier (xSpeed, ySpeed), 
+    * @return : Returns a RunCommand telling the drivetrain to drive and calculates heading degrees required to target reef
+    */
+    public static Command targetDriveToStation(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
+        Supplier<Double> heading = () -> drivetrain.getTargetHeadingToStation();
+        return new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getPose().getRotation().getDegrees())).andThen(
+            new RunCommand(
+                () -> drivetrain.drive(
+                  -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+                  -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+                  drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), heading.get()),
+                  true)
+              , drivetrain) 
+        ) ;
+    }
+    /**
     * @param : Drivetrain, Pose2d Supplier 
     * @return : Outputs a Run Command 
     */

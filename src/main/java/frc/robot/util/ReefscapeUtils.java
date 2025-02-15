@@ -321,6 +321,17 @@ public class ReefscapeUtils {
         return finalHeading;
     }
     /**
+    * @param : robotPose
+    * @return : finalHeading
+    */
+    public static double getTargetHeadingToStation(Pose2d robotPose) {
+        if (preferredCoralStation == CoralStation.INSIDELEFT || preferredCoralStation == CoralStation.OUTSIDELEFT) {
+            return KnownLocations.leftCoralStationOutside.getRotation().rotateBy(Rotation2d.fromDegrees(90)).getDegrees();
+        } else {
+            return KnownLocations.rightCoralStationOutside.getRotation().rotateBy(Rotation2d.fromDegrees(90)).getDegrees();
+        }
+    }
+    /**
     * @param : current robot zone
     * @return : left branch
     */

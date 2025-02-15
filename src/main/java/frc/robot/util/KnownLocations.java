@@ -4,6 +4,8 @@
 
 package frc.robot.util;
 
+import java.io.IOError;
+import java.io.IOException;
 import java.io.UncheckedIOException;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -93,9 +95,9 @@ public class KnownLocations {
      */
     synchronized public static AprilTagFieldLayout getFieldLayout() {
         if (fieldLayout == null) {
-            try {
-                fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
-            } catch (UncheckedIOException e) {
+            try {//C:/Users/Mercury1089/git/
+                fieldLayout = AprilTagFieldLayout.loadFromResource("2025-robot-code/src/main/java/frc/robot/util/combined_calibration.json");
+            } catch (IOException e) {
                 DriverStation.reportWarning("Failed to load AprilTagFieldLayout: " + e.getMessage(), true);
                 fieldLayout = null;
             }
