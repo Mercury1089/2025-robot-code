@@ -1,7 +1,9 @@
 package frc.robot.util;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -336,11 +338,12 @@ public class ReefscapeUtils {
     */
     public static double getTargetHeadingToStation(Pose2d robotPose) {
         KnownLocations locs = KnownLocations.getKnownLocations();
-        if (preferredCoralStation == CoralStation.INSIDELEFT || preferredCoralStation == CoralStation.OUTSIDELEFT) {
-            return locs.leftCoralStationOutside.getRotation().rotateBy(Rotation2d.fromDegrees(90)).getDegrees();
-        } else {
-            return locs.rightCoralStationOutside.getRotation().rotateBy(Rotation2d.fromDegrees(90)).getDegrees();
-        }
+        List<Pose2d> stations = new ArrayList<>();
+        stations.add(locs.leftCoralStationOutside);
+        stations.add(locs.rightCoralStationOutside);
+        stations.add(locs.leftCoralStationInside);
+        stations.add(locs.leftCoralStationInside);
+        return robotPose.nearest(stations).getRotation().rotateBy(new Rotation2d(180.0)).getDegrees();
     }
     /**
     * @param : current robot zone
