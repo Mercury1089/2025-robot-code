@@ -90,6 +90,9 @@ public class KnownLocations {
     public static final double ALGAE_SAFE_DISTANCE = 34.5;
     public static final double ALGAE_SCORE_DISTANCE = 16.5;
 
+    public static final double CORAL_STATION_DISTANCE_X = 16;
+    public static final double CORAL_STATION_DISTANCE_Y = 13;
+
     public final double X_OFFSET = 16;
     public final double Y_OFFSET = 8;
 
@@ -141,10 +144,14 @@ public class KnownLocations {
         Transform2d posXposYOffsets = new Transform2d(Units.inchesToMeters(X_OFFSET), Units.inchesToMeters(Y_OFFSET), Rotation2d.fromDegrees(0.0));
         Transform2d posXnegYOffsets = new Transform2d(Units.inchesToMeters(X_OFFSET), Units.inchesToMeters(-Y_OFFSET), Rotation2d.fromDegrees(0.0));
         Rotation2d rotate180 = Rotation2d.fromDegrees(180);
+        Rotation2d rotate0 = Rotation2d.fromDegrees(0);
 
         Transform2d algaeSafe = new Transform2d(Units.inchesToMeters(ALGAE_SAFE_DISTANCE), Units.inchesToMeters(0), Rotation2d.fromDegrees(0.0));
         Transform2d algaeScore = new Transform2d(Units.inchesToMeters(ALGAE_SCORE_DISTANCE), Units.inchesToMeters(0), Rotation2d.fromDegrees(0.0));
 
+        Transform2d coralStationPosY = new Transform2d(Units.inchesToMeters(CORAL_STATION_DISTANCE_X), Units.inchesToMeters(CORAL_STATION_DISTANCE_Y), Rotation2d.fromDegrees(0.0));
+        Transform2d coralStationNegY = new Transform2d(Units.inchesToMeters(CORAL_STATION_DISTANCE_X), Units.inchesToMeters(-CORAL_STATION_DISTANCE_Y), Rotation2d.fromDegrees(0.0));
+        
         //TODO: check headings
         if (alliance == Alliance.Blue) {
             // closeRightSideRightBranch = PathPointInch(159.522, 112.559, 60.0);
@@ -179,11 +186,13 @@ public class KnownLocations {
             leftBargeSide = PathPointInch(206.767, 209.402, -120);
             rightBargeSide = PathPointInch(206.767, 112.848, 120);
 
-            rightCoralStationInside = PathPointInch(30.783, 54.988, -126 + 180);
-            rightCoralStationOutside = PathPointInch(62.743, 32.206, -126  + 180);
+            Pose2d rightCoralStationTag = getFieldLayout().getTagPose(12).get().toPose2d();
+            rightCoralStationOutside = new Pose2d(rightCoralStationTag.transformBy(coralStationNegY).getTranslation(), rightCoralStationTag.getRotation().rotateBy(rotate0));
+            rightCoralStationInside = new Pose2d(rightCoralStationTag.transformBy(coralStationPosY).getTranslation(), rightCoralStationTag.getRotation().rotateBy(rotate0));
 
-            leftCoralStationInside = PathPointInch(30.783, 267.262, 126 - 180);
-            leftCoralStationOutside = PathPointInch(62.743, 290.044, 126 - 180);
+            Pose2d leftCoralStationTag = getFieldLayout().getTagPose(13).get().toPose2d();
+            leftCoralStationOutside = new Pose2d(leftCoralStationTag.transformBy(coralStationNegY).getTranslation(), leftCoralStationTag.getRotation().rotateBy(rotate0));
+            leftCoralStationInside = new Pose2d(leftCoralStationTag.transformBy(coralStationPosY).getTranslation(), leftCoralStationTag.getRotation().rotateBy(rotate0));
 
             rightCloseSideAlgaeSafePoint = new Pose2d(closeRightTag.transformBy(algaeSafe).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
             rightCloseSideAlgaeScorePoint = new Pose2d(closeRightTag.transformBy(algaeScore).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
@@ -242,11 +251,19 @@ public class KnownLocations {
             rightBargeSide = PathPointInch(544.152, 112.848, 120);
 
             
-            rightCoralStationInside = PathPointInch(664.391, 267.262, 54 - 180);
-            rightCoralStationOutside = PathPointInch(632.431, 290.044, 54 - 180);
+            //rightCoralStationInside = PathPointInch(664.391, 267.262, 54 - 180);
+            //rightCoralStationOutside = PathPointInch(632.431, 290.044, 54 - 180);
 
-            leftCoralStationInside = PathPointInch(664.391, 54.988, -54 + 180);
-            leftCoralStationOutside = PathPointInch(632.431, 32.206, -54 + 180);
+            //leftCoralStationInside = PathPointInch(664.391, 54.988, -54 + 180);
+            //leftCoralStationOutside = PathPointInch(632.431, 32.206, -54 + 180);
+
+            Pose2d rightCoralStationTag = getFieldLayout().getTagPose(2).get().toPose2d();
+            rightCoralStationOutside = new Pose2d(rightCoralStationTag.transformBy(coralStationNegY).getTranslation(), rightCoralStationTag.getRotation().rotateBy(rotate0));
+            rightCoralStationInside = new Pose2d(rightCoralStationTag.transformBy(coralStationPosY).getTranslation(), rightCoralStationTag.getRotation().rotateBy(rotate0));
+
+            Pose2d leftCoralStationTag = getFieldLayout().getTagPose(1).get().toPose2d();
+            leftCoralStationOutside = new Pose2d(leftCoralStationTag.transformBy(coralStationNegY).getTranslation(), leftCoralStationTag.getRotation().rotateBy(rotate0));
+            leftCoralStationInside = new Pose2d(leftCoralStationTag.transformBy(coralStationPosY).getTranslation(), leftCoralStationTag.getRotation().rotateBy(rotate0));
 
             rightCloseSideAlgaeSafePoint = new Pose2d(closeRightTag.transformBy(algaeSafe).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
             rightCloseSideAlgaeScorePoint = new Pose2d(closeRightTag.transformBy(algaeScore).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
