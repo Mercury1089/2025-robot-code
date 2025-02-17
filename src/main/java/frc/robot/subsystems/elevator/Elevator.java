@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CAN;
+import frc.robot.subsystems.elevator.AlgaeArticulator.ArticulatorPosition;
 
 public class Elevator extends SubsystemBase {
 
@@ -48,6 +49,8 @@ public class Elevator extends SubsystemBase {
   private SparkClosedLoopController elevatorClosedLoopController;
   private RelativeEncoder relativeEncoder;
   private double setPosition;
+
+  private AlgaeArticulator articulator;
 
   public Elevator() {
     leftMotor = new SparkFlex(CAN.ELEVATOR_LEFT, MotorType.kBrushless);
@@ -96,6 +99,10 @@ public class Elevator extends SubsystemBase {
     setPosition = getArmPosition();
 
   }
+
+  public void setArticulator(AlgaeArticulator artic) {
+    this.articulator = artic;
+  }
   
   public void resetEncoders() {
     elevatorClosedLoopController.setReference(0, SparkMax.ControlType.kPosition);
@@ -134,6 +141,10 @@ public class Elevator extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
+  public boolean isAboveSafePosition() {
+    return getArmPosition() > ElevatorPosition.SAFE_POS.degreePos;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -152,7 +163,8 @@ public class Elevator extends SubsystemBase {
     LEVEL2(50.0),
     LEVEL1(0.0),
     HOME(0.0),
-    CORAL_STATION(0.0);
+    CORAL_STATION(0.0),
+    SAFE_POS(50.0);
   
     //this.setDefaultCommand(new RunCommand(() -> elevator.setPosition(LEVEL1), elevator));
     

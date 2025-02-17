@@ -34,10 +34,14 @@ public class ReefscapeUtils {
     }
 
     public static Pose2d getCurrentZoneLeftBranch() {
+        preferredBranchSide = BranchSide.LEFT;
+        preferredZone = getCurrentRobotZone();
         return getLeftBranch(robotZone);
     }
 
     public static Pose2d getCurrentZoneRightBranch() {
+        preferredBranchSide = BranchSide.RIGHT;
+        preferredZone = getCurrentRobotZone();
         return getRightBranch(robotZone);
     }
 
@@ -294,28 +298,29 @@ public class ReefscapeUtils {
     public static double getTargetHeadingToReef(Pose2d robotPose) {
         double rawHeading = TargetUtils.getTargetHeadingToPoint(robotPose, KnownLocations.REEF.getTranslation()).rotateBy(Rotation2d.fromDegrees(180.0)).getDegrees();
         double finalHeading = 0.0;
+        boolean isBlue = KnownLocations.getKnownLocations().alliance == Alliance.Blue;
 
         if (rawHeading >= -30.0 && rawHeading <= 30.0) {
             finalHeading = 0.0;
-            robotZone = RobotZone.CLOSE;
+            robotZone = isBlue ? RobotZone.CLOSE : RobotZone.BARGE;
         } else if (rawHeading > 30.0 && rawHeading <= 90.0) {
             finalHeading = 60.0;
-            robotZone = RobotZone.CLOSE_RIGHT;
+            robotZone = isBlue ? RobotZone.CLOSE_RIGHT : RobotZone.BARGE_LEFT;
         } else if (rawHeading > 90.0 && rawHeading <= 150.0) {
             finalHeading = 120.0;
-            robotZone = RobotZone.BARGE_RIGHT;
+            robotZone = isBlue ? RobotZone.BARGE_RIGHT : RobotZone.CLOSE_LEFT;
         } else if (rawHeading > 150.0 && rawHeading <= 180.0) {
             finalHeading = 180.0;
-            robotZone = RobotZone.BARGE;
+            robotZone = isBlue ? RobotZone.BARGE : RobotZone.CLOSE;
         } else if (rawHeading >= -180.0 && rawHeading < -150.0) {
             finalHeading = 180.0;
-            robotZone = RobotZone.BARGE;
+            robotZone = isBlue ? RobotZone.BARGE : RobotZone.CLOSE;
         } else if (rawHeading >= -150.0 && rawHeading < -90.0) {
             finalHeading = -120.0;
-            robotZone = RobotZone.BARGE_LEFT;
+            robotZone = isBlue ? RobotZone.BARGE_LEFT : RobotZone.CLOSE_RIGHT;
         } else if (rawHeading >= -90.0 && rawHeading < -30.0) {
             finalHeading = -60.0;
-            robotZone = RobotZone.CLOSE_LEFT;
+            robotZone = isBlue ? RobotZone.CLOSE_LEFT : RobotZone.BARGE_RIGHT;
         }        
 
         return finalHeading;

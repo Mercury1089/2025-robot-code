@@ -191,6 +191,17 @@ public class DriveCommands {
             new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
         );
     }
+
+    public static Command scoreAtCurrentZoneBranch(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) {
+        return new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                alignwithSensors(drivetrain),
+                new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
+            ).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel())),
+            new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
+        );
+    }
+
     /**
     * @param : Drivetrain, Elevator, Coral Intake
     * @return : Returns Sequential Command Group 
@@ -234,9 +245,11 @@ public class DriveCommands {
           , drivetrain).until(() -> !proximitySensor.get().isTooFarAwayFromReef());
     }
 
-    
-    
+    public static Command lockToProcessor(Drivetrain drivetrain) {
+        return new InstantCommand(() -> drivetrain.getXController().reset(drivetrain.getPose().getX())).andThen(
 
+        );
+    }
     /**
      * Construct a command that will follow a path provided when the command initializes.
      * @param pathSupplier Supplier that provides the path to follow.

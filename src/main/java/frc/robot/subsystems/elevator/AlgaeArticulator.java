@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CAN;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 
 public class AlgaeArticulator extends SubsystemBase {
 
@@ -45,11 +46,12 @@ public class AlgaeArticulator extends SubsystemBase {
 
   
   private SparkFlex articulator;
-  private SparkClosedLoopController elevatorClosedLoopController;
+  private SparkClosedLoopController articulatorClosedLoopController;
   private AbsoluteEncoder absoluteEncoder;
   private double setPosition;
+  private Elevator elevator;
 
-  public AlgaeArticulator() {
+  public AlgaeArticulator(Elevator elev) {
     articulator = new SparkFlex(CAN.ALGAE_ARTICULATOR, MotorType.kBrushless);
 
     SparkFlexConfig articulatorConfig = new SparkFlexConfig();
@@ -68,15 +70,17 @@ public class AlgaeArticulator extends SubsystemBase {
         PersistMode.kPersistParameters);
 
 
-    elevatorClosedLoopController = articulator.getClosedLoopController();
+    articulatorClosedLoopController = articulator.getClosedLoopController();
 
     absoluteEncoder = articulator.getAbsoluteEncoder();
     setPosition = getPosition();
 
+    this.elevator = elev;
+
   }
   
   public void resetEncoders() {
-    elevatorClosedLoopController.setReference(0, SparkMax.ControlType.kPosition);
+    articulatorClosedLoopController.setReference(0, SparkMax.ControlType.kPosition);
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
@@ -89,7 +93,11 @@ public class AlgaeArticulator extends SubsystemBase {
 
   public void setPosition(double pos) {
     setPosition = pos;
-    elevatorClosedLoopController.setReference(pos, SparkMax.ControlType.kPosition);
+    articulatorClosedLoopController.setReference(pos, SparkMax.ControlType.kPosition);
+  }
+
+  public void setPosition(ArticulatorPosition pos) {
+    setPosition(pos.degreePos);
   }
 
   public boolean isAtPosition(double pos) {
@@ -98,6 +106,10 @@ public class AlgaeArticulator extends SubsystemBase {
 
   public double getPosition() {
     return absoluteEncoder.getPosition();
+  }
+
+  public boolean isInPosition() {
+    return isAtPosition(setPosition);
   }
 
   public enum IntakeSpeed {
@@ -118,7 +130,16 @@ public class AlgaeArticulator extends SubsystemBase {
 
   }
   
-
+  public enum ArticulatorPosition {
+    IN(0.0),
+    OUT(90.0),
+    OUT_THRESHOLD(30.0);
+    
+    public final double degreePos;
+      ArticulatorPosition(double degreePos) {
+        this.degreePos = degreePos;
+      }
+  }
   
 
 }

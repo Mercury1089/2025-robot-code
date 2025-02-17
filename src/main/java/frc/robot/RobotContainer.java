@@ -11,6 +11,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.RobotModeLEDs;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.elevator.AlgaeArticulator;
 import frc.robot.subsystems.elevator.AlgaeIntake;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
@@ -68,6 +69,7 @@ public class RobotContainer {
   private CoralIntake coralIntake;
   private AlgaeIntake algaeIntake;
   private RobotModeLEDs leds;
+  private AlgaeArticulator articulator;
 
   private double manualThreshold = 0.2;
 
@@ -116,65 +118,51 @@ public class RobotContainer {
       new InstantCommand(() -> coralIntake.setEjecting(false))
     ));
 
-
     algaeIntake = new AlgaeIntake();
     algaeIntake.setDefaultCommand(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP), algaeIntake));
-    
     // gamepadB.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
     // gamepadA.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(1.0));
 
-    // coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
-    // Trigger coralCommandTrigger = new Trigger(() -> !coralIntake.hasCoral() && coralIntake.hasCoralEntered());
-    // coralCommandTrigger.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW), coralIntake)).onFalse(
-    //   new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
-    // );
-
-    // coralIntake.setDefaultCommand(new RunCommand(() -> new ConditionalCommand(
-    //   new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW), coralIntake),
-    //   new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake),
-    //   () -> true), coralIntake));
+    articulator = new AlgaeArticulator(elevator);
+    elevator.setArticulator(articulator);
     
     leds = new RobotModeLEDs();
 
     auton = new Autons(drivetrain);
 
-    Map<String, Command> commands = new HashMap<String, Command>();
-
-
-    NamedCommands.registerCommands(commands); 
+    left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     
     Trigger takeControl = new Trigger(() -> (Math.abs(leftJoystickY.get()) > manualThreshold || Math.abs(leftJoystickX.get()) > manualThreshold || Math.abs(rightJoystickX.get()) > manualThreshold));
     Trigger fidoOn = new Trigger(() -> leds.isFIDOEnabled());
     Trigger fidoOff = new Trigger(() -> !leds.isFIDOEnabled());
 
-    takeControl.onTrue(drivetrain.getDefaultCommand());
-    //left3.onTrue(new InstantCommand(() -> leds.enableFIDO()));
-    // left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain));
+    takeControl.and(fidoOn).onTrue(new InstantCommand(() -> leds.disableFIDO()).andThen(drivetrain.getDefaultCommand()));
     
-    left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
+    right1.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain)); //TODO: Change logic to lock to nearest station
+    right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
 
-    // right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
-    right3.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain));
+    right4.onTrue(
+      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()).andThen(
+      /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
+      DriveCommands.alignwithSensors(drivetrain)));
+    right5.onTrue(
+      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()).andThen(
+      /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
+      DriveCommands.alignwithSensors(drivetrain)));
 
-    // ight4.onTrue(
-    //   new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.LEFT)).andThen(
-    //   DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()).andThen(
-    //   DriveCommands.alignwithSensors(drivetrain))
-    // ));
-    // right5.onTrue(
-    //   new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.RIGHT)).andThen(
-    //   DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()).andThen(
-    //   DriveCommands.alignwithSensors(drivetrain))
-    // ));r
+    left1.whileTrue(DriveCommands.lockToProcessor(drivetrain)); //TODO: actually write this command
+    left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain));
+    left6.onTrue(new InstantCommand(() -> leds.enableFIDO()));
+    left7.onTrue(new InstantCommand(() -> leds.disableFIDO()));
 
-    // gamepadLB.onTrue(DriveCommands.goToPreferredBranch(drivetrain));
-    // gamepadLB.onTrue(DriveCommands.alignwithSensors(drivetrain));
-    // gamepadRB.onTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
+    gamepadLB.and(fidoOn).onTrue(DriveCommands.goToPreferredBranch(drivetrain));
+    // gamepadLB.and(fidoOn).onTrue(DriveCommands.alignwithSensors(drivetrain));
+    gamepadRB.and(fidoOn).onTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
 
-    // gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE)));
-    // gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE_RIGHT)));
-    // gamepadY.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE_RIGHT)));
-    // gamepadX.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE)));
+    gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE)));
+    gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE_RIGHT)));
+    gamepadY.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE_RIGHT)));
+    gamepadX.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE)));
 
     gamepadPOVRight.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.OUTSIDERIGHT)));
     gamepadPOVLeft.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.INSIDERIGHT)));

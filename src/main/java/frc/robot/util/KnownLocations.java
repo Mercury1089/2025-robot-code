@@ -201,18 +201,18 @@ public class KnownLocations {
             bottomMostStart = PathPointInch(290.0,76.5,180.0);
 
         } else {
-            closeRightSideRightBranch = PathPointInch(483.907, 120.0650, 60.0);
-            closeRightSideLeftBranch = PathPointInch(496.907,112.559,60.0);
-            rightBargeSideRightBranch = PathPointInch(548.652, 120.065, 120);
-            rightBargeSideLeftBranch = PathPointInch(535.652,112.559,120.0);
-            closeSideRightBranch = PathPointInch(464.534,167.625,0.0);
-            closeSideLeftBranch = PathPointInch(464.534,154.625,0.0);
-            bargeSideRightBranch = PathPointInch(568.025,167.625,180.0);
-            bargeSideLeftBranch = PathPointInch(568.025,154.625,180.0);
-            leftCloseSideLeftBranch = PathPointInch(483.907,202.185,-60.0);
-            leftCloseSideRightBranch = PathPointInch(496.907,209.691,-60);
-            leftBargeSideLeftBranch = PathPointInch(548.652,202.185,-120.0);
-            leftBargeSideRightBranch = PathPointInch(535.652, 209.691, -120.0);
+            leftBargeSideRightBranch = PathPointInch(483.907, 120.0650, 60.0);
+            leftBargeSideLeftBranch = PathPointInch(496.907,112.559,60.0);
+            leftCloseSideRightBranch = PathPointInch(548.652, 120.065, 120);
+            leftCloseSideLeftBranch = PathPointInch(535.652,112.559,120.0);
+            bargeSideRightBranch = PathPointInch(464.534,167.625,0.0);
+            bargeSideLeftBranch = PathPointInch(464.534,154.625,0.0);
+            closeSideRightBranch = PathPointInch(568.025,167.625,180.0);
+            closeSideLeftBranch = PathPointInch(568.025,154.625,180.0);
+            rightBargeSideLeftBranch = PathPointInch(483.907,202.185,-60.0);
+            rightBargeSideRightBranch = PathPointInch(496.907,209.691,-60);
+            closeRightSideLeftBranch = PathPointInch(548.652,202.185,-120.0);
+            closeRightSideRightBranch = PathPointInch(535.652, 209.691, -120.0);
 
             closeSide = PathPointInch(460.534, 161.125, 0);
             bargeSide = PathPointInch(572.025, 161.125, 180);
@@ -226,7 +226,7 @@ public class KnownLocations {
             rightCoralStationOutside = PathPointInch(632.431, 290.044, 54 - 180);
 
             leftCoralStationInside = PathPointInch(664.391, 54.988, -54 + 180);
-            leftCoralStationOutside = PathPointInch(632.431, 54.988, -54 + 180);
+            leftCoralStationOutside = PathPointInch(632.431, 32.206, -54 + 180);
 
             Rotation2d bottomLeftRotation = getFieldLayout().getTagPose(11).get().getRotation().toRotation2d();
             rightCloseSideAlgaeSafePoint = PathPointInch(497.77 + ALGAE_SAFE_DISTANCE*bottomLeftRotation.getCos(),
