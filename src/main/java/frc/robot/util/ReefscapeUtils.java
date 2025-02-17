@@ -342,7 +342,7 @@ public class ReefscapeUtils {
         stations.add(locs.leftCoralStationOutside);
         stations.add(locs.rightCoralStationOutside);
         stations.add(locs.leftCoralStationInside);
-        stations.add(locs.leftCoralStationInside);
+        stations.add(locs.rightCoralStationInside);
         return robotPose.nearest(stations).getRotation().rotateBy(new Rotation2d(180.0)).getDegrees();
     }
     /**

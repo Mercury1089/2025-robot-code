@@ -506,5 +506,6 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putBoolean("Drivetrain/isAtScoreCoralPoint",isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()));
     SmartDashboard.putNumber("Drivetrain/rightInner", rightSensors.getSensorDistance(rightSensors.getInnerSensor()));
     SmartDashboard.putNumber("Drivetrain/rightOuter", rightSensors.getSensorDistance(rightSensors.getOuterSensor()));
+    SmartDashboard.putNumber("Drivetrain/rotationToStation", ReefscapeUtils.getTargetHeadingToStation(getPose()));
   }
 }

@@ -252,7 +252,8 @@ public class DriveCommands {
                 new RunCommand(() -> drivetrain.drive(
                 drivetrain.getXController().calculate(drivetrain.getPose().getX(), locs.processor.getX()),
                 -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-                drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(),locs.processor.getRotation().getDegrees())
+                drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(),locs.processor.getRotation().getDegrees()),
+                true
             ), drivetrain)
             )
         );
