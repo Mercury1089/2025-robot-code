@@ -150,7 +150,7 @@ public class RobotContainer {
       /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
       DriveCommands.alignwithSensors(drivetrain)));
 
-    left1.whileTrue(DriveCommands.lockToProcessor(drivetrain)); //TODO: actually write this command
+    left1.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX));
     left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain));
     left6.onTrue(new InstantCommand(() -> leds.enableFIDO()));
     left7.onTrue(new InstantCommand(() -> leds.disableFIDO()));

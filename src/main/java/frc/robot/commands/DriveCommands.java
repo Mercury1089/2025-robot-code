@@ -245,9 +245,16 @@ public class DriveCommands {
           , drivetrain).until(() -> !proximitySensor.get().isTooFarAwayFromReef());
     }
 
-    public static Command lockToProcessor(Drivetrain drivetrain) {
+    public static Command lockToProcessor(Drivetrain drivetrain, Supplier<Double> ySpeedSupplier) {
+        KnownLocations locs = KnownLocations.getKnownLocations();
         return new InstantCommand(() -> drivetrain.getXController().reset(drivetrain.getPose().getX())).andThen(
-
+            new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getRotation().getDegrees())).andThen(
+                new RunCommand(() -> drivetrain.drive(
+                drivetrain.getXController().calculate(drivetrain.getPose().getX(), locs.processor.getX()),
+                -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+                drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(),locs.processor.getRotation().getDegrees())
+            ), drivetrain)
+            )
         );
     }
     /**

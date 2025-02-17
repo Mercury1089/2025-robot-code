@@ -87,6 +87,9 @@ public class KnownLocations {
         leftCloseSideAlgaeScorePoint,
         leftBargeSideAlgaeScorePoint;
 
+    public final Pose2d
+        processor;
+
     public static final double ALGAE_SAFE_DISTANCE = 34.5;
     public static final double ALGAE_SCORE_DISTANCE = 16.5;
 
@@ -209,6 +212,8 @@ public class KnownLocations {
             middleStart = PathPointInch(290.0,158.5,180.0);
             bottomMostStart = PathPointInch(290.0,76.5,180.0);
 
+            processor = getFieldLayout().getTagPose(16).get().toPose2d().rotateBy(new Rotation2d(180.0));
+
         } else {
             Pose2d closeRightTag = getFieldLayout().getTagPose(8).get().toPose2d();
             closeRightSideRightBranch = new Pose2d(closeRightTag.transformBy(posXposYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
@@ -271,6 +276,8 @@ public class KnownLocations {
             topMostStart = PathPointInch(403,246,0);
             middleStart = PathPointInch(403,158.5,0);
             bottomMostStart = PathPointInch(403,76.5,0);
+
+            processor = getFieldLayout().getTagPose(3).get().toPose2d().rotateBy(new Rotation2d(180.0));
         }
 
     }
