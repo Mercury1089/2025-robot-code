@@ -134,10 +134,10 @@ public class Drivetrain extends SubsystemBase {
     rotationPIDController.setTolerance(1.0);
 
     xPIDController = new ProfiledPIDController(DIRECTION_P, I, D, new TrapezoidProfile.Constraints(SWERVE.MAX_DIRECTION_SPEED,SWERVE.MAX_ACCELERATION));
-    xPIDController.setTolerance(0.05);
+    xPIDController.setTolerance(0.0254);
     
     yPIDController = new ProfiledPIDController(DIRECTION_P, I, D, new TrapezoidProfile.Constraints(SWERVE.MAX_DIRECTION_SPEED,SWERVE.MAX_ACCELERATION));
-    yPIDController.setTolerance(0.05);
+    yPIDController.setTolerance(0.0254);
 
     // photonvision wrapper
     photonCam = new AprilTagCamera("AprilTagCamera" , frontCam);

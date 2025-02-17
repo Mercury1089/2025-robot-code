@@ -58,20 +58,21 @@ public class ReefscapeUtils {
     }
 
     public static Pose2d getPreferredCoralStation() {
+        KnownLocations locs = KnownLocations.getKnownLocations();
         Pose2d stationPose2d = new Pose2d();
 
         switch (preferredCoralStation) {
             case INSIDELEFT:
-                stationPose2d = KnownLocations.leftCoralStationInside;
+                stationPose2d = locs.leftCoralStationInside;
                 break;
             case OUTSIDELEFT:
-                stationPose2d = KnownLocations.leftCoralStationOutside;
+                stationPose2d = locs.leftCoralStationOutside;
                 break;
             case INSIDERIGHT:
-                stationPose2d = KnownLocations.rightCoralStationInside;
+                stationPose2d = locs.rightCoralStationInside;
                 break;
             case OUTSIDERIGHT:
-                stationPose2d = KnownLocations.rightCoralStationOutside;
+                stationPose2d = locs.rightCoralStationOutside;
                 break;
         }
 
@@ -79,26 +80,27 @@ public class ReefscapeUtils {
     }
 
     public static Pose2d getpreferredZone() {
+        KnownLocations locs = KnownLocations.getKnownLocations();
         Pose2d zone = new Pose2d();
 
         switch (preferredZone) {
             case BARGE:
-                zone = KnownLocations.bargeSide;
+                zone = locs.bargeSide;
                 break;
             case BARGE_RIGHT:
-                zone = KnownLocations.rightBargeSide;
+                zone = locs.rightBargeSide;
                 break;
             case CLOSE_RIGHT:
-                zone = KnownLocations.rightCloseSide;
+                zone = locs.rightCloseSide;
                 break;
             case CLOSE:
-                zone = KnownLocations.closeSide;
+                zone = locs.closeSide;
                 break;
             case CLOSE_LEFT:
-                zone = KnownLocations.leftCloseSide;
+                zone = locs.leftCloseSide;
                 break;
             case BARGE_LEFT:
-                zone = KnownLocations.leftBargeSide;
+                zone = locs.leftBargeSide;
                 break;    
         }
 
@@ -106,25 +108,26 @@ public class ReefscapeUtils {
     }
 
     public static Pose2d getCurrentZoneSafeAlgaePoint() {
+        KnownLocations locs = KnownLocations.getKnownLocations();
         Pose2d result;
         switch (robotZone) {
             case CLOSE:
-                result = KnownLocations.closeSideAlgaeSafePoint;
+                result = locs.closeSideAlgaeSafePoint;
                 break;
             case CLOSE_RIGHT:
-                result = KnownLocations.rightCloseSideAlgaeSafePoint;
+                result = locs.rightCloseSideAlgaeSafePoint;
                 break;
             case BARGE_RIGHT:
-                result = KnownLocations.rightBargeSideAlgaeSafePoint;
+                result = locs.rightBargeSideAlgaeSafePoint;
                 break;
             case BARGE:
-                result = KnownLocations.bargeSideAlgaeSafePoint;
+                result = locs.bargeSideAlgaeSafePoint;
                 break;
             case BARGE_LEFT:
-                result = KnownLocations.leftBargeSideAlgaeSafePoint;
+                result = locs.leftBargeSideAlgaeSafePoint;
                 break;
             case CLOSE_LEFT:
-                result = KnownLocations.leftCloseSideAlgaeSafePoint;
+                result = locs.leftCloseSideAlgaeSafePoint;
                 break;
             default:
                 result = new Pose2d();
@@ -134,25 +137,26 @@ public class ReefscapeUtils {
     }
 
     public static Pose2d getCurrentZoneScoreAlgaePoint() {
+        KnownLocations locs = KnownLocations.getKnownLocations();
         Pose2d result;
         switch (robotZone) {
             case CLOSE:
-                result = KnownLocations.closeSideAlgaeScorePoint;
+                result = locs.closeSideAlgaeScorePoint;
                 break;
             case CLOSE_RIGHT:
-                result = KnownLocations.rightCloseSideAlgaeScorePoint;
+                result = locs.rightCloseSideAlgaeScorePoint;
                 break;
             case BARGE_RIGHT:
-                result = KnownLocations.rightBargeSideALgaeScorePoint;
+                result = locs.rightBargeSideALgaeScorePoint;
                 break;
             case BARGE:
-                result = KnownLocations.bargeSideAlgaeScorePoint;
+                result = locs.bargeSideAlgaeScorePoint;
                 break;
             case BARGE_LEFT:
-                result = KnownLocations.leftBargeSideAlgaeScorePoint;
+                result = locs.leftBargeSideAlgaeScorePoint;
                 break;
             case CLOSE_LEFT:
-                result = KnownLocations.leftCloseSideAlgaeScorePoint;
+                result = locs.leftCloseSideAlgaeScorePoint;
                 break;
             default:
                 result = new Pose2d();
@@ -260,16 +264,17 @@ public class ReefscapeUtils {
     }
 
     public static Command getPathToPreferredCoralStation() {
+        KnownLocations locs = KnownLocations.getKnownLocations();
         Supplier<Double> goalEndSupplier = () -> 0.5;
         return new ConditionalCommand(
-            PathUtils.getPathToPose(() -> KnownLocations.leftCoralStationInside, goalEndSupplier), 
+            PathUtils.getPathToPose(() -> locs.leftCoralStationInside, goalEndSupplier), 
             new ConditionalCommand(
-                PathUtils.getPathToPose(() -> KnownLocations.leftCoralStationOutside, goalEndSupplier), 
+                PathUtils.getPathToPose(() -> locs.leftCoralStationOutside, goalEndSupplier), 
                 new ConditionalCommand(
-                    PathUtils.getPathToPose(() -> KnownLocations.rightCoralStationInside, goalEndSupplier), 
+                    PathUtils.getPathToPose(() -> locs.rightCoralStationInside, goalEndSupplier), 
                     new ConditionalCommand(
-                        PathUtils.getPathToPose(() -> KnownLocations.rightCoralStationOutside, goalEndSupplier), 
-                            PathUtils.getPathToPose(() -> KnownLocations.rightCoralStationInside, goalEndSupplier), 
+                        PathUtils.getPathToPose(() -> locs.rightCoralStationOutside, goalEndSupplier), 
+                            PathUtils.getPathToPose(() -> locs.rightCoralStationInside, goalEndSupplier), 
                         () -> preferredCoralStation == CoralStation.OUTSIDERIGHT),
                     () -> preferredCoralStation == CoralStation.INSIDERIGHT),
                 () -> preferredCoralStation == CoralStation.OUTSIDELEFT), 
@@ -296,7 +301,7 @@ public class ReefscapeUtils {
     * @return : finalHeading
     */
     public static double getTargetHeadingToReef(Pose2d robotPose) {
-        double rawHeading = TargetUtils.getTargetHeadingToPoint(robotPose, KnownLocations.REEF.getTranslation()).rotateBy(Rotation2d.fromDegrees(180.0)).getDegrees();
+        double rawHeading = TargetUtils.getTargetHeadingToPoint(robotPose, KnownLocations.getKnownLocations().REEF.getTranslation()).rotateBy(Rotation2d.fromDegrees(180.0)).getDegrees();
         double finalHeading = 0.0;
         boolean isBlue = KnownLocations.getKnownLocations().alliance == Alliance.Blue;
 
@@ -330,10 +335,11 @@ public class ReefscapeUtils {
     * @return : finalHeading
     */
     public static double getTargetHeadingToStation(Pose2d robotPose) {
+        KnownLocations locs = KnownLocations.getKnownLocations();
         if (preferredCoralStation == CoralStation.INSIDELEFT || preferredCoralStation == CoralStation.OUTSIDELEFT) {
-            return KnownLocations.leftCoralStationOutside.getRotation().rotateBy(Rotation2d.fromDegrees(90)).getDegrees();
+            return locs.leftCoralStationOutside.getRotation().rotateBy(Rotation2d.fromDegrees(90)).getDegrees();
         } else {
-            return KnownLocations.rightCoralStationOutside.getRotation().rotateBy(Rotation2d.fromDegrees(90)).getDegrees();
+            return locs.rightCoralStationOutside.getRotation().rotateBy(Rotation2d.fromDegrees(90)).getDegrees();
         }
     }
     /**
@@ -341,50 +347,52 @@ public class ReefscapeUtils {
     * @return : left branch
     */
     public static Pose2d getLeftBranch(RobotZone zone) {
+        KnownLocations locs = KnownLocations.getKnownLocations();
         Pose2d leftBranch = new Pose2d();
         switch (zone) {
             case BARGE:
-                leftBranch = KnownLocations.bargeSideLeftBranch;
+                leftBranch = locs.bargeSideLeftBranch;
                 break;
             case BARGE_RIGHT:
-                leftBranch = KnownLocations.rightBargeSideLeftBranch;
+                leftBranch = locs.rightBargeSideLeftBranch;
                 break;
             case CLOSE_RIGHT:
-                leftBranch = KnownLocations.closeRightSideLeftBranch;
+                leftBranch = locs.closeRightSideLeftBranch;
                 break;
             case CLOSE:
-                leftBranch = KnownLocations.closeSideLeftBranch;
+                leftBranch = locs.closeSideLeftBranch;
                 break;
             case CLOSE_LEFT:
-                leftBranch = KnownLocations.leftCloseSideLeftBranch;
+                leftBranch = locs.leftCloseSideLeftBranch;
                 break;
             case BARGE_LEFT:
-                leftBranch = KnownLocations.leftBargeSideLeftBranch;
+                leftBranch = locs.leftBargeSideLeftBranch;
                 break;    
         }
         return leftBranch; //should get here (:
     }
 
     public static Pose2d getRightBranch(RobotZone zone)  {
+        KnownLocations locs = KnownLocations.getKnownLocations();
         Pose2d rightBranch = new Pose2d();
         switch (zone) {
             case BARGE:
-                rightBranch = KnownLocations.bargeSideRightBranch;
+                rightBranch = locs.bargeSideRightBranch;
                 break;
             case BARGE_RIGHT:
-                rightBranch = KnownLocations.rightBargeSideRightBranch;
+                rightBranch = locs.rightBargeSideRightBranch;
                 break;
             case CLOSE_RIGHT:
-                rightBranch = KnownLocations.closeRightSideRightBranch;
+                rightBranch = locs.closeRightSideRightBranch;
                 break;
             case CLOSE:
-                rightBranch = KnownLocations.closeSideRightBranch;
+                rightBranch = locs.closeSideRightBranch;
                 break;
             case CLOSE_LEFT:
-                rightBranch = KnownLocations.leftCloseSideRightBranch;
+                rightBranch = locs.leftCloseSideRightBranch;
                 break;
             case BARGE_LEFT:
-                rightBranch = KnownLocations.leftBargeSideRightBranch;  
+                rightBranch = locs.leftBargeSideRightBranch;  
                 break;
                      
         }

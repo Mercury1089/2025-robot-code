@@ -136,7 +136,7 @@ public class RobotContainer {
     Trigger fidoOn = new Trigger(() -> leds.isFIDOEnabled());
     Trigger fidoOff = new Trigger(() -> !leds.isFIDOEnabled());
 
-    takeControl.and(fidoOn).onTrue(new InstantCommand(() -> leds.disableFIDO()).andThen(drivetrain.getDefaultCommand()));
+    takeControl.and(fidoOn).onTrue(drivetrain.getDefaultCommand());
     
     right1.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain)); //TODO: Change logic to lock to nearest station
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));

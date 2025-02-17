@@ -245,27 +245,40 @@ public class Autons {
     public void setChoosers(KnownLocations knownLocations) {
         // select the MANUAL STARTING POSITION of the robot
         this.startingPoseChooser = new SendableChooser<Pose2d>();
-        startingPoseChooser.setDefaultOption("Bottom", KnownLocations.bottomMostStart);
-        startingPoseChooser.addOption("Middle", KnownLocations.middleStart);
-        startingPoseChooser.addOption("Top", KnownLocations.topMostStart);
+        startingPoseChooser.setDefaultOption("Bottom", knownLocations.bottomMostStart);
+        startingPoseChooser.addOption("Middle", knownLocations.middleStart);
+        startingPoseChooser.addOption("Top", knownLocations.topMostStart);
 
-        startingPoseChooser.addOption("BRSAFE", KnownLocations.rightBargeSideAlgaeSafePoint);
-        startingPoseChooser.addOption("BRSCORE", KnownLocations.rightBargeSideALgaeScorePoint);
+        startingPoseChooser.addOption("closeRightRight", knownLocations.closeRightSideRightBranch);
+        startingPoseChooser.addOption("closeRightLeft", knownLocations.closeRightSideLeftBranch);
+        startingPoseChooser.addOption("bargeLeftRight", knownLocations.leftBargeSideRightBranch);
+        startingPoseChooser.addOption("bargeLeftLeft", knownLocations.leftBargeSideLeftBranch);
+        startingPoseChooser.addOption("bargeRightLeft", knownLocations.rightBargeSideLeftBranch);
+        startingPoseChooser.addOption("bargeRightRight", knownLocations.rightBargeSideRightBranch);
+        startingPoseChooser.addOption("closeLeftLeft", knownLocations.leftCloseSideLeftBranch);
+        startingPoseChooser.addOption("closeLeftRight", knownLocations.leftCloseSideRightBranch);
+        startingPoseChooser.addOption("closeLeft", knownLocations.closeSideLeftBranch);
+        startingPoseChooser.addOption("closeRight", knownLocations.closeSideRightBranch);
+        startingPoseChooser.addOption("bargeLeft", knownLocations.bargeSideLeftBranch);
+        startingPoseChooser.addOption("bargeRight", knownLocations.bargeSideRightBranch);
+
+        // startingPoseChooser.addOption("BRSAFE", KnownLocations.rightBargeSideAlgaeSafePoint);
+        // startingPoseChooser.addOption("BRSCORE", KnownLocations.rightBargeSideALgaeScorePoint);
         
-        startingPoseChooser.addOption("BLSAFE", KnownLocations.rightCloseSideAlgaeSafePoint);
-        startingPoseChooser.addOption("BLSCORE", KnownLocations.rightCloseSideAlgaeScorePoint);
+        // startingPoseChooser.addOption("BLSAFE", KnownLocations.rightCloseSideAlgaeSafePoint);
+        // startingPoseChooser.addOption("BLSCORE", KnownLocations.rightCloseSideAlgaeScorePoint);
         
-        startingPoseChooser.addOption("RSAFE", KnownLocations.bargeSideAlgaeSafePoint);
-        startingPoseChooser.addOption("RSCORE", KnownLocations.bargeSideAlgaeScorePoint);
+        // startingPoseChooser.addOption("RSAFE", KnownLocations.bargeSideAlgaeSafePoint);
+        // startingPoseChooser.addOption("RSCORE", KnownLocations.bargeSideAlgaeScorePoint);
         
-        startingPoseChooser.addOption("TRSAFE", KnownLocations.leftBargeSideAlgaeSafePoint);
-        startingPoseChooser.addOption("TRSCORE", KnownLocations.leftBargeSideAlgaeScorePoint);
+        // startingPoseChooser.addOption("TRSAFE", KnownLocations.leftBargeSideAlgaeSafePoint);
+        // startingPoseChooser.addOption("TRSCORE", KnownLocations.leftBargeSideAlgaeScorePoint);
         
-        startingPoseChooser.addOption("TLSAFE", KnownLocations.leftCloseSideAlgaeSafePoint);
-        startingPoseChooser.addOption("TLSCORE", KnownLocations.leftCloseSideAlgaeScorePoint);
+        // startingPoseChooser.addOption("TLSAFE", KnownLocations.leftCloseSideAlgaeSafePoint);
+        // startingPoseChooser.addOption("TLSCORE", KnownLocations.leftCloseSideAlgaeScorePoint);
         
-        startingPoseChooser.addOption("LSAFE", KnownLocations.closeSideAlgaeSafePoint);
-        startingPoseChooser.addOption("LSCORE", KnownLocations.closeSideAlgaeScorePoint);
+        // startingPoseChooser.addOption("LSAFE", KnownLocations.closeSideAlgaeSafePoint);
+        // startingPoseChooser.addOption("LSCORE", KnownLocations.closeSideAlgaeScorePoint);
         
 
         firstBranchChooser = getBranchChooser();
