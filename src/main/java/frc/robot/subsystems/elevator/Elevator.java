@@ -71,7 +71,7 @@ public class Elevator extends SubsystemBase {
     //   .reverseSoftLimitEnabled(true)
     //   .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
     leftConfig.closedLoop
-      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)//should be external
+      .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
     //  .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
       .pid(0.0225,0,0)
       .positionWrappingEnabled(false)
@@ -148,8 +148,8 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Arm/Position", getArmPosition());
-
+    SmartDashboard.putNumber("Elevator/Position", getArmPosition());
+    SmartDashboard.putBoolean("Elevator/isInPosition", isInPosition());
   }
   
 
@@ -163,6 +163,8 @@ public class Elevator extends SubsystemBase {
     LEVEL2(50.0),
     LEVEL1(0.0),
     HOME(0.0),
+    L2_ALGAE(0.0),
+    L3_ALGAE(0.0),
     CORAL_STATION(0.0),
     SAFE_POS(50.0);
   

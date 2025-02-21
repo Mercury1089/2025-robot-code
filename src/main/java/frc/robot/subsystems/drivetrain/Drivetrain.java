@@ -64,7 +64,7 @@ public class Drivetrain extends SubsystemBase {
   private AprilTagCamera photonCam, photonCam2;
   private Field2d smartdashField;
   private ProfiledPIDController rotationPIDController, xPIDController, yPIDController;
-  private PathPlannerPath pathToNote, pathToAmp;
+  private Pose2d startingPosition;
 
   private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.125, I = 0.0, D = 0.0;
   private final double THRESHOLD_DEGREES = 3.0;
@@ -92,10 +92,6 @@ public class Drivetrain extends SubsystemBase {
   private final double WHEEL_LENGTH = 23.5; // distance between left/right wheels (in inches)
 
   private Rotation2d gyroOffset = Rotation2d.fromDegrees(0); // Offset to apply to gyro for field oriented
-
-  private Command pathToZone = new Command() {
-    
-  };
 
   // Slew rate filter variables for controlling lateral acceleration
   private double currentAngularSpeed = 0.0;
@@ -138,6 +134,8 @@ public class Drivetrain extends SubsystemBase {
     
     yPIDController = new ProfiledPIDController(DIRECTION_P, I, D, new TrapezoidProfile.Constraints(SWERVE.MAX_DIRECTION_SPEED,SWERVE.MAX_ACCELERATION));
     yPIDController.setTolerance(0.0254);
+
+    startingPosition = new Pose2d();
 
     // photonvision wrapper
     photonCam = new AprilTagCamera("AprilTagCamera" , frontCam);
@@ -195,6 +193,10 @@ public class Drivetrain extends SubsystemBase {
 
   public DistanceSensors getRightSensors() {
     return rightSensors;
+  }
+
+  public void setStartingPosition(Pose2d startPos) {
+    this.startingPosition = startPos;
   }
 
   /**
@@ -416,15 +418,20 @@ public class Drivetrain extends SubsystemBase {
   public boolean isNotMoving() {
     return Math.abs(getXSpeeds()) < THRESHOLD_SPEED && Math.abs(getYSpeeds()) < THRESHOLD_SPEED;
   }
-  
-  public Command getPathToPreferredZone() {
-    return pathToZone;
-  }
 
   public boolean isAtPose(Pose2d target) {
-    return Math.abs(target.getX() - getPose().getX()) < getXController().getPositionTolerance()
-        && Math.abs(target.getY() - getPose().getY()) < getYController().getPositionTolerance();
-  } 
+    return isAtPose(target, getXController().getPositionTolerance(), getYController().getPositionTolerance());
+  }
+  
+  public boolean isAtPose(Pose2d target, double xTolerance, double yTolerance) {
+    return Math.abs(target.getX() - getPose().getX()) < xTolerance
+        && Math.abs(target.getY() - getPose().getY()) < yTolerance;
+  }
+
+  public boolean isAtPose(Pose2d target, double tolerance) {
+    return isAtPose(target, tolerance, tolerance);
+  }
+
 
   public boolean isAtPreferredCoralStation() {
     return isAtPose(ReefscapeUtils.getPreferredCoralStation());
@@ -486,8 +493,6 @@ public class Drivetrain extends SubsystemBase {
     targetHeadingToReef = ReefscapeUtils.getTargetHeadingToReef(getPose());
     targetHeadingToStation = ReefscapeUtils.getTargetHeadingToStation(getPose());
 
-    pathToZone = PathUtils.getPathToPose(() -> ReefscapeUtils.getpreferredZone(), () -> 0.0);
-
     SmartDashboard.putNumber("Drivetrain/CurrentPose X", getPose().getX());
     SmartDashboard.putNumber("Drivetrain/CurrentPose Y", getPose().getY());
     SmartDashboard.putNumber("Drivetrain/getRotation", getRotation().getDegrees());
@@ -507,5 +512,6 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drivetrain/rightInner", rightSensors.getSensorDistance(rightSensors.getInnerSensor()));
     SmartDashboard.putNumber("Drivetrain/rightOuter", rightSensors.getSensorDistance(rightSensors.getOuterSensor()));
     SmartDashboard.putNumber("Drivetrain/rotationToStation", ReefscapeUtils.getTargetHeadingToStation(getPose()));
+    SmartDashboard.putBoolean("Drivetrain/isAtStartingPosition", isAtPose(startingPosition, Units.inchesToMeters(2.0), Units.inchesToMeters(2.0)));
   }
 }

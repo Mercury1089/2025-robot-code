@@ -104,6 +104,10 @@ public class AlgaeArticulator extends SubsystemBase {
     return Math.abs(getPosition() - pos) < THRESHOLD_DEGREES;
   }
 
+  public boolean isAtPosition(ArticulatorPosition pos) {
+    return Math.abs(getPosition() - pos.degreePos) < THRESHOLD_DEGREES;
+  }
+
   public double getPosition() {
     return absoluteEncoder.getPosition();
   }
@@ -126,7 +130,8 @@ public class AlgaeArticulator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Arm/Position", getPosition());
+    SmartDashboard.putNumber("Articulator/Position", getPosition());
+    SmartDashboard.putBoolean("Articulator/isInPosition", isInPosition());
 
   }
   

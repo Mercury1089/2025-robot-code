@@ -53,14 +53,6 @@ public class KnownLocations {
         leftBargeSideRightBranch;
 
     public final Pose2d
-        bargeSide,
-        rightBargeSide,
-        rightCloseSide,
-        closeSide,
-        leftCloseSide,
-        leftBargeSide;
-
-    public final Pose2d
         leftCoralStationInside,
         leftCoralStationOutside,
         rightCoralStationInside,
@@ -182,13 +174,6 @@ public class KnownLocations {
             leftBargeSideLeftBranch = new Pose2d(leftBargeTag.transformBy(posXposYOffsets).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
             leftBargeSideRightBranch = new Pose2d(leftBargeTag.transformBy(posXnegYOffsets).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
 
-            closeSide = PathPointInch(123.149,161.125,0);
-            bargeSide = PathPointInch(234.640, 161.125, 180);
-            leftCloseSide = PathPointInch(151.022, 209.402, -60);
-            rightCloseSide = PathPointInch(151.022, 112.848, 60);
-            leftBargeSide = PathPointInch(206.767, 209.402, -120);
-            rightBargeSide = PathPointInch(206.767, 112.848, 120);
-
             Pose2d rightCoralStationTag = getFieldLayout().getTagPose(12).get().toPose2d();
             rightCoralStationOutside = new Pose2d(rightCoralStationTag.transformBy(coralStationNegY).getTranslation(), rightCoralStationTag.getRotation().rotateBy(rotate0));
             rightCoralStationInside = new Pose2d(rightCoralStationTag.transformBy(coralStationPosY).getTranslation(), rightCoralStationTag.getRotation().rotateBy(rotate0));
@@ -215,13 +200,23 @@ public class KnownLocations {
             closeSideAlgaeSafePoint = new Pose2d(closeTag.transformBy(algaeSafe).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
             closeSideAlgaeScorePoint = new Pose2d(closeTag.transformBy(algaeScore).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
                 
-            REEF = PathPointInch(176.75, 158.5, 0);
+            double reefX = (bargeTag.getX() + closeTag.getX()) / 2.0;
+            double reefY = (bargeTag.getY() + closeTag.getY()) / 2.0;
+            REEF = new Pose2d(reefX, reefY, Rotation2d.fromDegrees(0.0));
 
-            topMostStart = PathPointInch(290.0,246.0,180.0);
-            middleStart = PathPointInch(290.0,158.5,180.0);
-            bottomMostStart = PathPointInch(290.0,76.5,180.0);
+            Pose2d topTagPose = getFieldLayout().getTagPose(14).get().toPose2d();
+            Pose2d bottomTagPose = getFieldLayout().getTagPose(15).get().toPose2d();
+            double averageX = (topTagPose.getX() + bottomTagPose.getX()) / 2.0;
+            double averageY = (topTagPose.getY() + bottomTagPose.getY()) / 2.0;
+            Pose2d middleFictionalTagPose = new Pose2d(averageX, averageY, Rotation2d.fromDegrees(180.0));
+            
+            topMostStart = new Pose2d(topTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
+            middleStart = new Pose2d(middleFictionalTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
+            bottomMostStart = new Pose2d(bottomTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
 
-            processor = getFieldLayout().getTagPose(16).get().toPose2d().rotateBy(new Rotation2d(180.0));
+            Pose2d processorTagPose = getFieldLayout().getTagPose(16).get().toPose2d();
+            processor = new Pose2d(processorTagPose.getTranslation(), processorTagPose.getRotation().rotateBy(Rotation2d.fromDegrees(180.0)));
+
 
         } else {
             Pose2d closeRightTag = getFieldLayout().getTagPose(8).get().toPose2d();
@@ -247,20 +242,7 @@ public class KnownLocations {
             Pose2d leftBargeTag = getFieldLayout().getTagPose(11).get().toPose2d();
             leftBargeSideLeftBranch = new Pose2d(leftBargeTag.transformBy(posXposYOffsets).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
             leftBargeSideRightBranch = new Pose2d(leftBargeTag.transformBy(posXnegYOffsets).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
-
-            closeSide = PathPointInch(460.534, 161.125, 0);
-            bargeSide = PathPointInch(572.025, 161.125, 180);
-            leftCloseSide = PathPointInch(488.407, 209.402, -60);
-            rightCloseSide = PathPointInch(488.407, 112.848, 60);
-            leftBargeSide = PathPointInch(544.152, 209.402, -120);
-            rightBargeSide = PathPointInch(544.152, 112.848, 120);
-
             
-            //rightCoralStationInside = PathPointInch(664.391, 267.262, 54 - 180);
-            //rightCoralStationOutside = PathPointInch(632.431, 290.044, 54 - 180);
-
-            //leftCoralStationInside = PathPointInch(664.391, 54.988, -54 + 180);
-            //leftCoralStationOutside = PathPointInch(632.431, 32.206, -54 + 180);
 
             Pose2d rightCoralStationTag = getFieldLayout().getTagPose(2).get().toPose2d();
             rightCoralStationOutside = new Pose2d(rightCoralStationTag.transformBy(coralStationNegY).getTranslation(), rightCoralStationTag.getRotation().rotateBy(rotate0));
@@ -288,13 +270,22 @@ public class KnownLocations {
             closeSideAlgaeSafePoint = new Pose2d(closeTag.transformBy(algaeSafe).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
             closeSideAlgaeScorePoint = new Pose2d(closeTag.transformBy(algaeScore).getTranslation(), closeTag.getRotation().rotateBy(rotate180)); 
             
-            REEF = PathPointInch(514.14, 158.5, 0);
-            
-            topMostStart = PathPointInch(403,246,0);
-            middleStart = PathPointInch(403,158.5,0);
-            bottomMostStart = PathPointInch(403,76.5,0);
+            double reefX = (bargeTag.getX() + closeTag.getX()) / 2.0;
+            double reefY = (bargeTag.getY() + closeTag.getY()) / 2.0;
+            REEF = new Pose2d(reefX, reefY, Rotation2d.fromDegrees(0.0));
 
-            processor = getFieldLayout().getTagPose(3).get().toPose2d().rotateBy(new Rotation2d(180.0));
+            Pose2d topTagPose = getFieldLayout().getTagPose(4).get().toPose2d();
+            Pose2d bottomTagPose = getFieldLayout().getTagPose(5).get().toPose2d();
+            double averageX = (topTagPose.getX() + bottomTagPose.getX()) / 2.0;
+            double averageY = (topTagPose.getY() + bottomTagPose.getY()) / 2.0;
+            Pose2d middleFictionalTagPose = new Pose2d(averageX, averageY, Rotation2d.fromDegrees(0.0));
+            
+            topMostStart = new Pose2d(topTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
+            middleStart = new Pose2d(middleFictionalTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
+            bottomMostStart = new Pose2d(bottomTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
+
+            Pose2d processorTagPose = getFieldLayout().getTagPose(3).get().toPose2d();
+            processor = new Pose2d(processorTagPose.getTranslation(), processorTagPose.getRotation().rotateBy(Rotation2d.fromDegrees(180.0)));
         }
 
     }

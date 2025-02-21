@@ -126,6 +126,7 @@ public class Autons {
     public Command buildAutonCommand(KnownLocations knownLocations) {
         // SET OUR INITIAL POSE
         drivetrain.resetPose(startingPose);
+        drivetrain.setStartingPosition(startingPose);
 
         SequentialCommandGroup autonCommandGroup = new SequentialCommandGroup();
 
@@ -190,11 +191,11 @@ public class Autons {
         AutonLocations firstBranch = firstBranchChooser.getSelected();
         AutonLocations secondBranch = secondBranchChooser.getSelected();
         AutonLocations thirdBranch = thirdBranchChooser.getSelected();
-        AutonLocations fourthBranch = fourthBranchChooser.getSelected();
+        // AutonLocations fourthBranch = fourthBranchChooser.getSelected();
 
         CoralStation firstStation = firstStationChooser.getSelected();
         CoralStation secondStation = secondStationChooser.getSelected();
-        CoralStation thirdStation = thirdStationChooser.getSelected();
+        // CoralStation thirdStation = thirdStationChooser.getSelected();
 
         if (startingPose != this.startingPose) {
             this.startingPose = startingPose;
@@ -216,10 +217,10 @@ public class Autons {
             rebuildAutonCommand = true;
         }
         
-        if (fourthBranch != this.fourthBranch) {
-            this.fourthBranch = fourthBranch;
-            rebuildAutonCommand = true;
-        }
+        // if (fourthBranch != this.fourthBranch) {
+        //     this.fourthBranch = fourthBranch;
+        //     rebuildAutonCommand = true;
+        // }
 
         if (firstStation != this.firstStation) {
             this.firstStation = firstStation;
@@ -231,10 +232,10 @@ public class Autons {
             rebuildAutonCommand = true;
         }
 
-        if (thirdStation != this.thirdStation) {
-            this.thirdStation = thirdStation;
-            rebuildAutonCommand = true;
-        }
+        // if (thirdStation != this.thirdStation) {
+        //     this.thirdStation = thirdStation;
+        //     rebuildAutonCommand = true;
+        // }
         
 
         if (rebuildAutonCommand) {
@@ -249,18 +250,19 @@ public class Autons {
         startingPoseChooser.addOption("Middle", knownLocations.middleStart);
         startingPoseChooser.addOption("Top", knownLocations.topMostStart);
 
-        startingPoseChooser.addOption("closeRightRight", knownLocations.closeRightSideRightBranch);
-        startingPoseChooser.addOption("closeRightLeft", knownLocations.closeRightSideLeftBranch);
-        startingPoseChooser.addOption("bargeLeftRight", knownLocations.leftBargeSideRightBranch);
-        startingPoseChooser.addOption("bargeLeftLeft", knownLocations.leftBargeSideLeftBranch);
-        startingPoseChooser.addOption("bargeRightLeft", knownLocations.rightBargeSideLeftBranch);
-        startingPoseChooser.addOption("bargeRightRight", knownLocations.rightBargeSideRightBranch);
-        startingPoseChooser.addOption("closeLeftLeft", knownLocations.leftCloseSideLeftBranch);
-        startingPoseChooser.addOption("closeLeftRight", knownLocations.leftCloseSideRightBranch);
-        startingPoseChooser.addOption("closeLeft", knownLocations.closeSideLeftBranch);
-        startingPoseChooser.addOption("closeRight", knownLocations.closeSideRightBranch);
-        startingPoseChooser.addOption("bargeLeft", knownLocations.bargeSideLeftBranch);
-        startingPoseChooser.addOption("bargeRight", knownLocations.bargeSideRightBranch);
+        // startingPoseChooser.addOption("closeRightRight", knownLocations.closeRightSideRightBranch);
+        // startingPoseChooser.addOption("closeRightLeft", knownLocations.closeRightSideLeftBranch);
+        // startingPoseChooser.addOption("bargeLeftRight", knownLocations.leftBargeSideRightBranch);
+        // startingPoseChooser.addOption("bargeLeftLeft", knownLocations.leftBargeSideLeftBranch);
+        // startingPoseChooser.addOption("bargeRightLeft", knownLocations.rightBargeSideLeftBranch);
+        // startingPoseChooser.addOption("bargeRightRight", knownLocations.rightBargeSideRightBranch);
+        // startingPoseChooser.addOption("closeLeftLeft", knownLocations.leftCloseSideLeftBranch);
+        // startingPoseChooser.addOption("closeLeftRight", knownLocations.leftCloseSideRightBranch);
+        // startingPoseChooser.addOption("closeLeft", knownLocations.closeSideLeftBranch);
+        // startingPoseChooser.addOption("closeRight", knownLocations.closeSideRightBranch);
+        // startingPoseChooser.addOption("bargeLeft", knownLocations.bargeSideLeftBranch);
+        // startingPoseChooser.addOption("bargeRight", knownLocations.bargeSideRightBranch);
+        // startingPoseChooser.addOption("reef", knownLocations.REEF);
 
         // startingPoseChooser.addOption("BRSAFE", KnownLocations.rightBargeSideAlgaeSafePoint);
         // startingPoseChooser.addOption("BRSCORE", KnownLocations.rightBargeSideALgaeScorePoint);
@@ -284,19 +286,19 @@ public class Autons {
         firstBranchChooser = getBranchChooser();
         secondBranchChooser = getBranchChooser();
         thirdBranchChooser = getBranchChooser();
-        fourthBranchChooser = getBranchChooser();
+        // fourthBranchChooser = getBranchChooser();
         firstStationChooser = getCoralStationChooser();
         secondStationChooser = getCoralStationChooser();
-        thirdStationChooser = getCoralStationChooser();
+        // thirdStationChooser = getCoralStationChooser();
 
         SmartDashboard.putData("Starting Pose", startingPoseChooser);
         SmartDashboard.putData("First Branch", firstBranchChooser);
         SmartDashboard.putData("Second Branch", secondBranchChooser);
         SmartDashboard.putData("Third Branch", thirdBranchChooser);
-        SmartDashboard.putData("Fourth Branch", fourthBranchChooser);
+        // SmartDashboard.putData("Fourth Branch", fourthBranchChooser);
         SmartDashboard.putData("First Coral Station", firstStationChooser);
         SmartDashboard.putData("Second Coral Station", secondStationChooser);
-        SmartDashboard.putData("Third Coral Station", thirdStationChooser);
+        // SmartDashboard.putData("Third Coral Station", thirdStationChooser);
     }
 
     private SendableChooser<AutonLocations> getBranchChooser() {

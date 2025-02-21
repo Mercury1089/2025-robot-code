@@ -81,34 +81,6 @@ public class ReefscapeUtils {
         return stationPose2d;
     }
 
-    public static Pose2d getpreferredZone() {
-        KnownLocations locs = KnownLocations.getKnownLocations();
-        Pose2d zone = new Pose2d();
-
-        switch (preferredZone) {
-            case BARGE:
-                zone = locs.bargeSide;
-                break;
-            case BARGE_RIGHT:
-                zone = locs.rightBargeSide;
-                break;
-            case CLOSE_RIGHT:
-                zone = locs.rightCloseSide;
-                break;
-            case CLOSE:
-                zone = locs.closeSide;
-                break;
-            case CLOSE_LEFT:
-                zone = locs.leftCloseSide;
-                break;
-            case BARGE_LEFT:
-                zone = locs.leftBargeSide;
-                break;    
-        }
-
-        return zone;
-    }
-
     public static Pose2d getCurrentZoneSafeAlgaePoint() {
         KnownLocations locs = KnownLocations.getKnownLocations();
         Pose2d result;
@@ -343,7 +315,7 @@ public class ReefscapeUtils {
         stations.add(locs.rightCoralStationOutside);
         stations.add(locs.leftCoralStationInside);
         stations.add(locs.rightCoralStationInside);
-        return robotPose.nearest(stations).getRotation().rotateBy(new Rotation2d(180.0)).getDegrees();
+        return robotPose.nearest(stations).getRotation().rotateBy(Rotation2d.fromDegrees(180.0)).getDegrees();
     }
     /**
     * @param : current robot zone
