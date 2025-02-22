@@ -114,6 +114,7 @@ public class DriveCommands {
             new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getRotation().getDegrees())),
             new InstantCommand(() -> drivetrain.getXController().reset(drivetrain.getPose().getX())),
             new InstantCommand(() -> drivetrain.getYController().reset(drivetrain.getPose().getY()))
+            // new InstantCommand(() -> drivetrain.setIgnoreBackCam(true))
         ).andThen(
             new RunCommand(
             () -> drivetrain.drive(
@@ -122,6 +123,7 @@ public class DriveCommands {
               drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), desiredPose.get().getRotation().getDegrees()),
               true)
           , drivetrain).until(() -> drivetrain.isAtPose(desiredPose.get()))
+        //   new InstantCommand(() -> drivetrain.setIgnoreBackCam(false))
         );
     }
     /**
@@ -132,9 +134,11 @@ public class DriveCommands {
     */
     public static Command goToPreferredBranch(Drivetrain drivetrain) {
         return new SequentialCommandGroup(
+            new InstantCommand(() -> drivetrain.setIgnoreBackCam(true)),
             ReefscapeUtils.getPathToPreferredBranch(),
             goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()),
-            alignwithSensors(drivetrain)
+            alignwithSensors(drivetrain),
+            new InstantCommand(() -> drivetrain.setIgnoreBackCam(false))
         );
     }
     /**
@@ -180,7 +184,7 @@ public class DriveCommands {
     * SELECT BRANCH AND ZONE BEFORE USING
     * @return : Returns Sequential Command Group 
     */
-    public static Command scoreAtPreferredBranch(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) {
+    public static Command scoreAtPreferredBranch(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) { // combine with a conditional command
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredBranch(),
             goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()),
@@ -246,13 +250,13 @@ public class DriveCommands {
     }
 
     public static Command lockToProcessor(Drivetrain drivetrain, Supplier<Double> ySpeedSupplier) {
-        KnownLocations locs = KnownLocations.getKnownLocations();
+        Supplier<KnownLocations> locs = () -> KnownLocations.getKnownLocations();
         return new InstantCommand(() -> drivetrain.getXController().reset(drivetrain.getPose().getX())).andThen(
             new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getRotation().getDegrees())).andThen(
                 new RunCommand(() -> drivetrain.drive(
-                drivetrain.getXController().calculate(drivetrain.getPose().getX(), locs.processor.getX()),
+                drivetrain.getXController().calculate(drivetrain.getPose().getX(), locs.get().processor.getX()),
                 -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-                drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(),locs.processor.getRotation().getDegrees()),
+                drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(),locs.get().processor.getRotation().getDegrees()),
                 true
             ), drivetrain)
             )

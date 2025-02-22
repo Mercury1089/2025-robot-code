@@ -18,6 +18,8 @@ public final class Constants {
 
   public static class DS_USB {
     public static final int LEFT_STICK = 0, RIGHT_STICK = 1, GAMEPAD = 2;
+    public static final int REEF_BOARD = 3;
+    public static final int SECOND_ENCODER_BOARD = 4;
 
     private DS_USB() {
     }

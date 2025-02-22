@@ -131,25 +131,25 @@ public class Autons {
         SequentialCommandGroup autonCommandGroup = new SequentialCommandGroup();
 
         autonCommandGroup.addCommands(
-            new InstantCommand(() -> changePreferredScoringLocation(firstBranch)),
+            new InstantCommand(() -> changePreferredScoringLocation(firstBranch)),  
             DriveCommands.goToPreferredBranch(drivetrain),
             new WaitCommand(1.0),
 
-            new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(firstStation)),
+            new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
             DriveCommands.goToPreferredCoralStation(drivetrain),
             new WaitCommand(1.0),
             new InstantCommand(() -> changePreferredScoringLocation(secondBranch)),
             DriveCommands.goToPreferredBranch(drivetrain),
             new WaitCommand(1.0),
 
-            new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(secondStation)),
+            new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(secondStation)),
             DriveCommands.goToPreferredCoralStation(drivetrain),
             new WaitCommand(1.0),
             new InstantCommand(() -> changePreferredScoringLocation(thirdBranch)),
             DriveCommands.goToPreferredBranch(drivetrain),
             new WaitCommand(1.0),
 
-            new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(thirdStation)),
+            new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(thirdStation)),
             DriveCommands.goToPreferredCoralStation(drivetrain),
             new WaitCommand(1.0),
             new InstantCommand(() -> changePreferredScoringLocation(fourthBranch)),
@@ -161,8 +161,8 @@ public class Autons {
     }
 
     public void changePreferredScoringLocation(AutonLocations loc) {
-        ReefscapeUtils.changepreferredZone(loc.getZone());
-        ReefscapeUtils.changepreferredBranch(loc.getSide());
+        ReefscapeUtils.changePreferredZone(loc.getZone());
+        ReefscapeUtils.changePreferredBranch(loc.getSide());
     }
 
 

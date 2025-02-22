@@ -255,19 +255,19 @@ public class ReefscapeUtils {
             () -> preferredCoralStation == CoralStation.INSIDELEFT);
     }
 
-    public static void changepreferredBranch(BranchSide side) {
+    public static void changePreferredBranch(BranchSide side) {
         preferredBranchSide = side;
     }
 
-    public static void changepreferredLevel(ElevatorPosition level) {
+    public static void changePreferredLevel(ElevatorPosition level) {
         preferredLevel = level;
     }
 
-    public static void changepreferredCoralStation(CoralStation station) {
+    public static void changePreferredCoralStation(CoralStation station) {
         preferredCoralStation = station;
     }
 
-    public static void changepreferredZone(RobotZone zone) {
+    public static void changePreferredZone(RobotZone zone) {
         preferredZone = zone;
     }
     /**
@@ -315,7 +315,7 @@ public class ReefscapeUtils {
         stations.add(locs.rightCoralStationOutside);
         stations.add(locs.leftCoralStationInside);
         stations.add(locs.rightCoralStationInside);
-        return robotPose.nearest(stations).getRotation().rotateBy(Rotation2d.fromDegrees(180.0)).getDegrees();
+        return robotPose.nearest(stations).getRotation().getDegrees();
     }
     /**
     * @param : current robot zone

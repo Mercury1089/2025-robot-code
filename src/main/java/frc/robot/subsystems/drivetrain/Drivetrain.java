@@ -104,6 +104,7 @@ public class Drivetrain extends SubsystemBase {
 
   private double laserCanMeasurement = 0.0;
   private double laserCanMeasurement2 = 0.0;
+  private boolean ignoreBackCamera = false;
   private DistanceSensors leftSensors, rightSensors;
 
   /** Creates a new Drivetrain. */
@@ -451,6 +452,10 @@ public class Drivetrain extends SubsystemBase {
     return min;
   }
 
+  public void setIgnoreBackCam(boolean ignore){
+    ignoreBackCamera = ignore;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -464,7 +469,7 @@ public class Drivetrain extends SubsystemBase {
     });
     
     Optional<EstimatedRobotPose> result = photonCam.getGlobalPose();
-    if (result.isPresent() && /* getMinimumAbiguity(result.get().targetsUsed) < 0.20 && photonCam.getDistanceToClosestTag(result.get()) < 4.0 */  !photonCam.rejectUpdate(result.get())) {
+    if (result.isPresent() && !photonCam.rejectUpdate(result.get())) {
       // Uncomment the following to check camera position on robot
       // Pose3d estimatedPose = result.get().estimatedPose;
       // SmartDashboard.putNumber("Cam/Yaw", estimatedPose.getRotation().getZ());
@@ -474,7 +479,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     Optional<EstimatedRobotPose> backResult = photonCam2.getGlobalPose();
-    if (backResult.isPresent() && /*getMinimumAbiguity(backResult.get().targetsUsed) < 0.20 && photonCam2.getDistanceToClosestTag(backResult.get()) < 4.0)/* */  !photonCam2.rejectUpdate(backResult.get())){
+    if (backResult.isPresent() && !ignoreBackCamera && !photonCam2.rejectUpdate(backResult.get())){
       // Uncomment the following to check camera position on robot
       // Pose3d estimatedPose = result.get().estimatedPose;
       // SmartDashboard.putNumber("Cam/Yaw", estimatedPose.getRotation().getZ());
@@ -505,6 +510,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Drivetrain/coralStation", ReefscapeUtils.preferredCoralStation().coralStation);
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredStation", isAtPreferredCoralStation());
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredBranch", isAtPreferredBranch());
+    SmartDashboard.putString("Drivetrain/preferredLevel", ReefscapeUtils.getPreferredLevel().lev);
     SmartDashboard.putNumber("Drivetrain/leftInner", leftSensors.getSensorDistance(leftSensors.getInnerSensor()));
     SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getSensorDistance(leftSensors.getOuterSensor()));
     SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsLEFT", leftSensors.isAtReefSide());

@@ -17,6 +17,7 @@ import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.AlgaeIntake.AlgaeSpeed;
 import frc.robot.subsystems.elevator.CoralIntake.IntakeSpeed;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.TargetUtils;
@@ -37,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController; 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -52,16 +54,37 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
   private CommandJoystick rightJoystick, leftJoystick;
-  private CommandXboxController gamepad;
+  // private CommandXboxController gamepad;
+  private CommandGenericHID reefBoard;
+  private CommandGenericHID secondEncoderBoard;
 
   private Trigger left1, left2, left3, left4, left5, left6, left7, left8, left9, left10, left11;
   private Trigger right1, right2, right3, right4, right5, right6, right7, right8, right9, right10, right11;
-  private Trigger gamepadA, gamepadB, gamepadX, gamepadY, gamepadRB, gamepadLB, gamepadL3, gamepadBack, 
-  gamepadStart, gamepadLeftStickButton, gamepadRightStickButton, gamepadLT, gamepadRT, gamepadPOVDown, gamepadPOVUpLeft, 
-  gamepadPOVUp, gamepadPOVUpRight, gamepadPOVLeft, gamepadPOVRight, gamepadPOVDownRight, gamepadPOVDownLeft;
+  // private Trigger gamepadA, gamepadB, gamepadX, gamepadY, gamepadRB, gamepadLB, gamepadL3, gamepadBack, 
+  // gamepadStart, gamepadLeftStickButton, gamepadRightStickButton, gamepadLT, gamepadRT, gamepadPOVDown, gamepadPOVUpLeft, 
+  // gamepadPOVUp, gamepadPOVUpRight, gamepadPOVLeft, gamepadPOVRight, gamepadPOVDownRight, gamepadPOVDownLeft;
+  private Trigger bargeSideLeftBranchBTN,
+                  bargeSideRightBranchBTN,
+                  rightBargeSideLeftBranchBTN,
+                  rightBargeSideRightBranchBTN,
+                  closeRightSideRightBranchBTN,
+                  closeRightSideLeftBranchBTN,
+                  closeSideRightBranchBTN,
+                  closeSideLeftBranchBTN,
+                  leftCloseSideRightBranchBTN,
+                  leftCloseSideLeftBranchBTN,
+                  leftBargeSideLeftBranchBTN,
+                  leftBargeSideRightBranchBTN;
+  private Trigger outerLeftStationBTN,
+                  innerLeftStationBTN,
+                  outerRightStationBTN,
+                  innerRightStationBTN;
+  private Trigger level1BTN, level2BTN, level3BTN, level4BTN;
+  private Trigger fidoBTN;
 
   private GenericHID gamepadHID;
-  private Supplier<Double> gamepadLeftX, gamepadLeftY, gamepadRightX, gamepadRightY, rightJoystickX, rightJoystickY, leftJoystickX, leftJoystickY;
+  private Supplier<Double> gamepadLeftX, gamepadLeftY, gamepadRightX, gamepadRightY;
+  private Supplier<Double> rightJoystickX, rightJoystickY, leftJoystickX, leftJoystickY;
 
   private Autons auton;
   private Drivetrain drivetrain;
@@ -80,7 +103,9 @@ public class RobotContainer {
     // buttons & bindings
     leftJoystick = new CommandJoystick(DS_USB.LEFT_STICK);
     rightJoystick = new CommandJoystick(DS_USB.RIGHT_STICK);
-    gamepad = new CommandXboxController(DS_USB.GAMEPAD);
+    // gamepad = new CommandXboxController(DS_USB.GAMEPAD);
+    reefBoard = new CommandGenericHID(DS_USB.REEF_BOARD);
+    secondEncoderBoard = new CommandGenericHID(DS_USB.SECOND_ENCODER_BOARD);
     gamepadHID = new GenericHID(DS_USB.GAMEPAD);
     configureBindings();
 
@@ -89,7 +114,7 @@ public class RobotContainer {
     drivetrain.resetGyro();
 
     elevator = new Elevator(); 
-    elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
+    // elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
     // gamepadA.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL1), elevator));
     // gamepadB.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL2), elevator));
     // gamepadY.onTrue(new RunCommand(() -> elevator.setPosition(Elevator.ElevatorPosition.LEVEL3), elevator));
@@ -114,9 +139,9 @@ public class RobotContainer {
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
     );
 
-    gamepadA.and(hasCoral.and(hasCoralEntered)).onTrue(new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent()).andThen(
-      new InstantCommand(() -> coralIntake.setEjecting(false))
-    ));
+    // gamepadA.and(hasCoral.and(hasCoralEntered)).onTrue(new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent()).andThen(
+    //   new InstantCommand(() -> coralIntake.setEjecting(false))
+    // ));
 
     algaeIntake = new AlgaeIntake();
     algaeIntake.setDefaultCommand(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP), algaeIntake));
@@ -132,11 +157,13 @@ public class RobotContainer {
 
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     
-    Trigger takeControl = new Trigger(() -> (Math.abs(leftJoystickY.get()) > manualThreshold || Math.abs(leftJoystickX.get()) > manualThreshold || Math.abs(rightJoystickX.get()) > manualThreshold));
+    // Trigger takeControl = new Trigger(() -> (Math.abs(leftJoystickY.get()) > manualThreshold || Math.abs(leftJoystickX.get()) > manualThreshold || Math.abs(rightJoystickX.get()) > manualThreshold));
     Trigger fidoOn = new Trigger(() -> leds.isFIDOEnabled());
     Trigger fidoOff = new Trigger(() -> !leds.isFIDOEnabled());
 
-    takeControl.and(fidoOn).onTrue(drivetrain.getDefaultCommand());
+    left2.onTrue(drivetrain.getDefaultCommand());
+    left2.onTrue(new InstantCommand(() -> drivetrain.setIgnoreBackCam(false)));
+    
     
     right1.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain)); //TODO: Change logic to lock to nearest station
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
@@ -155,20 +182,34 @@ public class RobotContainer {
     left6.onTrue(new InstantCommand(() -> leds.enableFIDO()));
     left7.onTrue(new InstantCommand(() -> leds.disableFIDO()));
 
-    gamepadLB.and(fidoOn).onTrue(DriveCommands.goToPreferredBranch(drivetrain));
-    // gamepadLB.and(fidoOn).onTrue(DriveCommands.alignwithSensors(drivetrain));
-    gamepadRB.and(fidoOn).onTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
+    right6.and(fidoOn).whileTrue(DriveCommands.goToPreferredBranch(drivetrain));
+    // // gamepadLB.and(fidoOn).onTrue(DriveCommands.alignwithSensors(drivetrain));
+    right7.and(fidoOn).whileTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
 
-    gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE)));
-    gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.CLOSE_RIGHT)));
-    gamepadY.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE_RIGHT)));
-    gamepadX.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredZone(RobotZone.BARGE)));
+    closeSideLeftBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.LEFT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.CLOSE))));
+    closeSideRightBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.RIGHT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.CLOSE))));
+    closeRightSideLeftBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.LEFT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.CLOSE_RIGHT))));
+    closeRightSideRightBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.RIGHT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.CLOSE_RIGHT))));
+    rightBargeSideRightBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.RIGHT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.BARGE_RIGHT))));
+    rightBargeSideLeftBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.LEFT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.BARGE_RIGHT))));
+    bargeSideRightBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.RIGHT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.BARGE))));
+    bargeSideLeftBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.LEFT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.BARGE))));
+    leftBargeSideRightBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.RIGHT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.BARGE_LEFT))));
+    leftBargeSideLeftBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.LEFT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.BARGE_LEFT))));
+    leftCloseSideLeftBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.LEFT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.CLOSE_LEFT))));
+    leftCloseSideRightBranchBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredBranch(BranchSide.RIGHT)).alongWith(new InstantCommand(() -> ReefscapeUtils.changePreferredZone(RobotZone.CLOSE_LEFT))));
 
-    gamepadPOVRight.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.OUTSIDERIGHT)));
-    gamepadPOVLeft.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredCoralStation(CoralStation.INSIDERIGHT)));
+    level1BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL1)));
+    level2BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)));
+    level3BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL3)));
+    level4BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)));
 
-    left6.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.LEFT)));
-    left7.onTrue(new InstantCommand(() -> ReefscapeUtils.changepreferredBranch(BranchSide.RIGHT)));
+    innerRightStationBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.INSIDERIGHT)));
+    outerRightStationBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDERIGHT)));
+    innerLeftStationBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.INSIDELEFT)));
+    outerLeftStationBTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDELEFT)));
+
+    fidoBTN.onTrue(new InstantCommand(() -> leds.toggleFIDO()));
   }
 
   /**
@@ -207,32 +248,56 @@ public class RobotContainer {
         right10 = rightJoystick.button(JOYSTICK_BUTTONS.BTN10);
         right11 = rightJoystick.button(JOYSTICK_BUTTONS.BTN11);
 
-        gamepadA = gamepad.a();
-        gamepadB = gamepad.b();
-        gamepadX = gamepad.x();
-        gamepadY = gamepad.y();
-        gamepadRB = gamepad.rightBumper();
-        gamepadLB = gamepad.leftBumper();
-        gamepadBack = gamepad.back();
-        gamepadStart = gamepad.start();
-        gamepadLeftStickButton = gamepad.leftStick();
-        gamepadRightStickButton = gamepad.rightStick();
-        gamepadLT = gamepad.leftTrigger();
-        gamepadRT = gamepad.rightTrigger();
-        
-        gamepadPOVDown = gamepad.povDown();
-        gamepadPOVUpLeft = gamepad.povUpLeft();
-        gamepadPOVUp = gamepad.povUp();
-        gamepadPOVUpRight = gamepad.povUpRight();
-        gamepadPOVLeft = gamepad.povLeft();
-        gamepadPOVRight = gamepad.povRight();
-        gamepadPOVDownRight = gamepad.povDownRight();
-        gamepadPOVDownLeft = gamepad.povDownLeft();
+        closeSideLeftBranchBTN = reefBoard.button(1);
+        closeSideRightBranchBTN = reefBoard.button(2);
+        closeRightSideLeftBranchBTN = reefBoard.button(3);
+        closeRightSideRightBranchBTN = reefBoard.button(4);
+        rightBargeSideRightBranchBTN = reefBoard.button(5);
+        rightBargeSideLeftBranchBTN = reefBoard.button(6);
+        bargeSideRightBranchBTN = reefBoard.button(7);
+        bargeSideLeftBranchBTN = reefBoard.button(8);
+        leftBargeSideRightBranchBTN = reefBoard.button(9);
+        leftBargeSideLeftBranchBTN = reefBoard.button(10);
+        leftCloseSideLeftBranchBTN = reefBoard.button(11);
+        leftCloseSideRightBranchBTN = reefBoard.button(12);
 
-        gamepadLeftX = () -> gamepad.getLeftX();
-        gamepadRightX = () -> gamepad.getRightX();
-        gamepadLeftY = () -> -gamepad.getLeftY();
-        gamepadRightY = () -> -gamepad.getRightY();
+        fidoBTN = secondEncoderBoard.button(1);
+        level1BTN = secondEncoderBoard.button(2);
+        level2BTN = secondEncoderBoard.button(3);
+        level3BTN = secondEncoderBoard.button(4);
+        level4BTN = secondEncoderBoard.button(5);
+        innerRightStationBTN = secondEncoderBoard.button(6);
+        outerRightStationBTN = secondEncoderBoard.button(7);
+        innerLeftStationBTN = secondEncoderBoard.button(8);
+        outerLeftStationBTN = secondEncoderBoard.button(9);
+
+
+        // gamepadA = gamepad.a();
+        // gamepadB = gamepad.b();
+        // gamepadX = gamepad.x();
+        // gamepadY = gamepad.y();
+        // gamepadRB = gamepad.rightBumper();
+        // gamepadLB = gamepad.leftBumper();
+        // gamepadBack = gamepad.back();
+        // gamepadStart = gamepad.start();
+        // gamepadLeftStickButton = gamepad.leftStick();
+        // gamepadRightStickButton = gamepad.rightStick();
+        // gamepadLT = gamepad.leftTrigger();
+        // gamepadRT = gamepad.rightTrigger();
+        
+        // gamepadPOVDown = gamepad.povDown();
+        // gamepadPOVUpLeft = gamepad.povUpLeft();
+        // gamepadPOVUp = gamepad.povUp();
+        // gamepadPOVUpRight = gamepad.povUpRight();
+        // gamepadPOVLeft = gamepad.povLeft();
+        // gamepadPOVRight = gamepad.povRight();
+        // gamepadPOVDownRight = gamepad.povDownRight();
+        // gamepadPOVDownLeft = gamepad.povDownLeft();
+
+        // gamepadLeftX = () -> gamepad.getLeftX();
+        // gamepadRightX = () -> gamepad.getRightX();
+        // gamepadLeftY = () -> -gamepad.getLeftY();
+        // gamepadRightY = () -> -gamepad.getRightY();
 
         leftJoystickX = () -> leftJoystick.getX();
         leftJoystickY = () -> leftJoystick.getY();

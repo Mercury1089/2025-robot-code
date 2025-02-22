@@ -85,7 +85,7 @@ public class Elevator extends SubsystemBase {
     //   .allowedClosedLoopError(0.2);
     rightConfig
       .idleMode(IdleMode.kBrake)
-      .follow(Constants.CAN.ELEVATOR_LEFT,false);
+      .follow(Constants.CAN.ELEVATOR_LEFT,true);
 
     leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
@@ -158,21 +158,23 @@ public class Elevator extends SubsystemBase {
     // HOME(ARM_SOFT_LIMIT_BKW),
     // SHUTTLE(78.0),
     // PICKUP_FLOOR(ARM_SOFT_LIMIT_BKW);
-    LEVEL4(150.0),
-    LEVEL3(100.0),
-    LEVEL2(50.0),
-    LEVEL1(0.0),
-    HOME(0.0),
-    L2_ALGAE(0.0),
-    L3_ALGAE(0.0),
-    CORAL_STATION(0.0),
-    SAFE_POS(50.0);
+    LEVEL4(150.0,"level4"),
+    LEVEL3(100.0, "level3"),
+    LEVEL2(50.0, "level2"),
+    LEVEL1(0.0, "level1"),
+    HOME(0.0, "home"),
+    L2_ALGAE(0.0, "level2Algae"),
+    L3_ALGAE(0.0, "level3Algae"),
+    CORAL_STATION(0.0, "coralStation"),
+    SAFE_POS(50.0, "safePos");
   
     //this.setDefaultCommand(new RunCommand(() -> elevator.setPosition(LEVEL1), elevator));
     
     public final double degreePos;
-      ElevatorPosition(double degreePos) {
+    public final String lev;
+      ElevatorPosition(double degreePos, String lev) {
         this.degreePos = degreePos;
+        this.lev = lev;
       }
   }
 
