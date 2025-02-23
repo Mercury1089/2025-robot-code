@@ -131,30 +131,30 @@ public class Autons {
         SequentialCommandGroup autonCommandGroup = new SequentialCommandGroup();
 
         autonCommandGroup.addCommands(
-            new InstantCommand(() -> changePreferredScoringLocation(firstBranch)),  
-            DriveCommands.goToPreferredBranch(drivetrain),
-            new WaitCommand(1.0),
+            // new InstantCommand(() -> changePreferredScoringLocation(firstBranch)),  
+            // // DriveCommands.goToPreferredBranch(drivetrain),
+            // new WaitCommand(1.0),
 
-            new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
-            DriveCommands.goToPreferredCoralStation(drivetrain),
-            new WaitCommand(1.0),
-            new InstantCommand(() -> changePreferredScoringLocation(secondBranch)),
-            DriveCommands.goToPreferredBranch(drivetrain),
-            new WaitCommand(1.0),
+            // new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
+            // DriveCommands.goToPreferredCoralStation(drivetrain),
+            // new WaitCommand(1.0),
+            // new InstantCommand(() -> changePreferredScoringLocation(secondBranch)),
+            // // DriveCommands.goToPreferredBranch(drivetrain),
+            // new WaitCommand(1.0),
 
-            new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(secondStation)),
-            DriveCommands.goToPreferredCoralStation(drivetrain),
-            new WaitCommand(1.0),
-            new InstantCommand(() -> changePreferredScoringLocation(thirdBranch)),
-            DriveCommands.goToPreferredBranch(drivetrain),
-            new WaitCommand(1.0),
+            // new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(secondStation)),
+            // DriveCommands.goToPreferredCoralStation(drivetrain),
+            // new WaitCommand(1.0),
+            // new InstantCommand(() -> changePreferredScoringLocation(thirdBranch)),
+            // // DriveCommands.goToPreferredBranch(drivetrain),
+            // new WaitCommand(1.0),
 
-            new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(thirdStation)),
-            DriveCommands.goToPreferredCoralStation(drivetrain),
-            new WaitCommand(1.0),
-            new InstantCommand(() -> changePreferredScoringLocation(fourthBranch)),
-            DriveCommands.goToPreferredBranch(drivetrain),
-            new WaitCommand(1.0)
+            // new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(thirdStation)),
+            // DriveCommands.goToPreferredCoralStation(drivetrain),
+            // new WaitCommand(1.0),
+            // new InstantCommand(() -> changePreferredScoringLocation(fourthBranch)),
+            // // DriveCommands.goToPreferredBranch(drivetrain),
+            // new WaitCommand(1.0)
         );
 
         return autonCommandGroup;

@@ -71,7 +71,7 @@ public class Elevator extends SubsystemBase {
     //   .reverseSoftLimitEnabled(true)
     //   .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
     leftConfig.closedLoop
-      .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
     //  .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
       .pid(0.0225,0,0)
       .positionWrappingEnabled(false)
@@ -105,7 +105,8 @@ public class Elevator extends SubsystemBase {
   }
   
   public void resetEncoders() {
-    elevatorClosedLoopController.setReference(0, SparkMax.ControlType.kPosition);
+    // elevatorClosedLoopController.setReference(0, SparkMax.ControlType.kPosition); this DRIVES to zero
+    relativeEncoder.setPosition(0.0);
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
@@ -147,9 +148,14 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    if (leftMotor.getReverseLimitSwitch().isPressed()) {
+      resetEncoders();
+    }
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Elevator/Position", getArmPosition());
     SmartDashboard.putBoolean("Elevator/isInPosition", isInPosition());
+    SmartDashboard.putBoolean("Elevator/limitSwitchEngaged", leftMotor.getReverseLimitSwitch().isPressed());
   }
   
 

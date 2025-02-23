@@ -105,7 +105,7 @@ public class Drivetrain extends SubsystemBase {
   private double laserCanMeasurement = 0.0;
   private double laserCanMeasurement2 = 0.0;
   private boolean ignoreBackCamera = false;
-  private DistanceSensors leftSensors, rightSensors;
+  private DistanceSensors leftSensors, rightSensors, backSensor;
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -120,6 +120,7 @@ public class Drivetrain extends SubsystemBase {
 
     leftSensors = new DistanceSensors(CAN.LEFT_INNER_LASER_CAN, CAN.LEFT_OUTER_LASER_CAN);
     rightSensors = new DistanceSensors(CAN.RIGHT_INNER_LASER_CAN, CAN.RIGHT_OUTER_LASER_CAN);
+    backSensor = new DistanceSensors(CAN.BACK_LASER_CAN, 135); // check this error
 
     //configure gyro
     pigeon = new Pigeon2(CAN.PIGEON_DRIVETRAIN);
@@ -194,6 +195,10 @@ public class Drivetrain extends SubsystemBase {
 
   public DistanceSensors getRightSensors() {
     return rightSensors;
+  }
+
+  public DistanceSensors getBackSensor() {
+    return backSensor;
   }
 
   public void setStartingPosition(Pose2d startPos) {

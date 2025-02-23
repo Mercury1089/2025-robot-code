@@ -38,8 +38,8 @@ public class PathUtils {
         SWERVE.MAX_ANGULAR_SPEED
     );
 
-    public static Command getPathToPose(Supplier<Pose2d> desiredPose, Supplier<Double> goalEndVel) {
-        return AutoBuilder.pathfindToPose(desiredPose.get(), fastPathConstraints, goalEndVel.get());
+    public static Command getPathToPose(Pose2d desiredPose, Supplier<Double> goalEndVel) {
+        return AutoBuilder.pathfindToPose(desiredPose, fastPathConstraints, goalEndVel.get());
     }
 
     /**

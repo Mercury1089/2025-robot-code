@@ -88,7 +88,7 @@ public class KnownLocations {
     public static final double CORAL_STATION_DISTANCE_X = 16;
     public static final double CORAL_STATION_DISTANCE_Y = 13;
 
-    public final double X_OFFSET = 18;
+    public final double X_OFFSET = 16;
     public final double Y_OFFSET = 8;
 
     /**
@@ -182,23 +182,23 @@ public class KnownLocations {
             leftCoralStationOutside = new Pose2d(leftCoralStationTag.transformBy(coralStationNegY).getTranslation(), leftCoralStationTag.getRotation().rotateBy(rotate0));
             leftCoralStationInside = new Pose2d(leftCoralStationTag.transformBy(coralStationPosY).getTranslation(), leftCoralStationTag.getRotation().rotateBy(rotate0));
 
-            rightCloseSideAlgaeSafePoint = new Pose2d(closeRightTag.transformBy(algaeSafe).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
-            rightCloseSideAlgaeScorePoint = new Pose2d(closeRightTag.transformBy(algaeScore).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
+            rightCloseSideAlgaeSafePoint = new Pose2d(closeRightTag.transformBy(algaeSafe).getTranslation(), closeRightTag.getRotation().rotateBy(rotate0));
+            rightCloseSideAlgaeScorePoint = new Pose2d(closeRightTag.transformBy(algaeScore).getTranslation(), closeRightTag.getRotation().rotateBy(rotate0));
 
-            rightBargeSideAlgaeSafePoint = new Pose2d(bargeRightTag.transformBy(algaeSafe).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
-            rightBargeSideALgaeScorePoint = new Pose2d(bargeRightTag.transformBy(algaeScore).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
+            rightBargeSideAlgaeSafePoint = new Pose2d(bargeRightTag.transformBy(algaeSafe).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate0));
+            rightBargeSideALgaeScorePoint = new Pose2d(bargeRightTag.transformBy(algaeScore).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate0));
     
-            leftCloseSideAlgaeSafePoint = new Pose2d(closeLeftTag.transformBy(algaeSafe).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
-            leftCloseSideAlgaeScorePoint = new Pose2d(closeLeftTag.transformBy(algaeScore).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
+            leftCloseSideAlgaeSafePoint = new Pose2d(closeLeftTag.transformBy(algaeSafe).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate0));
+            leftCloseSideAlgaeScorePoint = new Pose2d(closeLeftTag.transformBy(algaeScore).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate0));
 
-            leftBargeSideAlgaeSafePoint = new Pose2d(leftBargeTag.transformBy(algaeSafe).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
-            leftBargeSideAlgaeScorePoint = new Pose2d(leftBargeTag.transformBy(algaeScore).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
+            leftBargeSideAlgaeSafePoint = new Pose2d(leftBargeTag.transformBy(algaeSafe).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate0));
+            leftBargeSideAlgaeScorePoint = new Pose2d(leftBargeTag.transformBy(algaeScore).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate0));
 
-            bargeSideAlgaeSafePoint = new Pose2d(bargeTag.transformBy(algaeSafe).getTranslation(), bargeTag.getRotation().rotateBy(rotate180));
-            bargeSideAlgaeScorePoint = new Pose2d(bargeTag.transformBy(algaeScore).getTranslation(), bargeTag.getRotation().rotateBy(rotate180));
+            bargeSideAlgaeSafePoint = new Pose2d(bargeTag.transformBy(algaeSafe).getTranslation(), bargeTag.getRotation().rotateBy(rotate0));
+            bargeSideAlgaeScorePoint = new Pose2d(bargeTag.transformBy(algaeScore).getTranslation(), bargeTag.getRotation().rotateBy(rotate0));
             
-            closeSideAlgaeSafePoint = new Pose2d(closeTag.transformBy(algaeSafe).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
-            closeSideAlgaeScorePoint = new Pose2d(closeTag.transformBy(algaeScore).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
+            closeSideAlgaeSafePoint = new Pose2d(closeTag.transformBy(algaeSafe).getTranslation(), closeTag.getRotation().rotateBy(rotate0));
+            closeSideAlgaeScorePoint = new Pose2d(closeTag.transformBy(algaeScore).getTranslation(), closeTag.getRotation().rotateBy(rotate0));
                 
             double reefX = (bargeTag.getX() + closeTag.getX()) / 2.0;
             double reefY = (bargeTag.getY() + closeTag.getY()) / 2.0;
@@ -252,23 +252,23 @@ public class KnownLocations {
             leftCoralStationOutside = new Pose2d(leftCoralStationTag.transformBy(coralStationNegY).getTranslation(), leftCoralStationTag.getRotation().rotateBy(rotate0));
             leftCoralStationInside = new Pose2d(leftCoralStationTag.transformBy(coralStationPosY).getTranslation(), leftCoralStationTag.getRotation().rotateBy(rotate0));
 
-            rightCloseSideAlgaeSafePoint = new Pose2d(closeRightTag.transformBy(algaeSafe).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
-            rightCloseSideAlgaeScorePoint = new Pose2d(closeRightTag.transformBy(algaeScore).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
+            rightCloseSideAlgaeSafePoint = new Pose2d(closeRightTag.transformBy(algaeSafe).getTranslation(), closeRightTag.getRotation().rotateBy(rotate0));
+            rightCloseSideAlgaeScorePoint = new Pose2d(closeRightTag.transformBy(algaeScore).getTranslation(), closeRightTag.getRotation().rotateBy(rotate0));
 
-            rightBargeSideAlgaeSafePoint = new Pose2d(bargeRightTag.transformBy(algaeSafe).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
-            rightBargeSideALgaeScorePoint = new Pose2d(bargeRightTag.transformBy(algaeScore).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
+            rightBargeSideAlgaeSafePoint = new Pose2d(bargeRightTag.transformBy(algaeSafe).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate0));
+            rightBargeSideALgaeScorePoint = new Pose2d(bargeRightTag.transformBy(algaeScore).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate0));
     
-            leftCloseSideAlgaeSafePoint = new Pose2d(closeLeftTag.transformBy(algaeSafe).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
-            leftCloseSideAlgaeScorePoint = new Pose2d(closeLeftTag.transformBy(algaeScore).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
+            leftCloseSideAlgaeSafePoint = new Pose2d(closeLeftTag.transformBy(algaeSafe).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate0));
+            leftCloseSideAlgaeScorePoint = new Pose2d(closeLeftTag.transformBy(algaeScore).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate0));
 
-            leftBargeSideAlgaeSafePoint = new Pose2d(leftBargeTag.transformBy(algaeSafe).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
-            leftBargeSideAlgaeScorePoint = new Pose2d(leftBargeTag.transformBy(algaeScore).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
+            leftBargeSideAlgaeSafePoint = new Pose2d(leftBargeTag.transformBy(algaeSafe).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate0));
+            leftBargeSideAlgaeScorePoint = new Pose2d(leftBargeTag.transformBy(algaeScore).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate0));
 
-            bargeSideAlgaeSafePoint = new Pose2d(bargeTag.transformBy(algaeSafe).getTranslation(), bargeTag.getRotation().rotateBy(rotate180));
-            bargeSideAlgaeScorePoint = new Pose2d(bargeTag.transformBy(algaeScore).getTranslation(), bargeTag.getRotation().rotateBy(rotate180));
+            bargeSideAlgaeSafePoint = new Pose2d(bargeTag.transformBy(algaeSafe).getTranslation(), bargeTag.getRotation().rotateBy(rotate0));
+            bargeSideAlgaeScorePoint = new Pose2d(bargeTag.transformBy(algaeScore).getTranslation(), bargeTag.getRotation().rotateBy(rotate0));
             
-            closeSideAlgaeSafePoint = new Pose2d(closeTag.transformBy(algaeSafe).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
-            closeSideAlgaeScorePoint = new Pose2d(closeTag.transformBy(algaeScore).getTranslation(), closeTag.getRotation().rotateBy(rotate180)); 
+            closeSideAlgaeSafePoint = new Pose2d(closeTag.transformBy(algaeSafe).getTranslation(), closeTag.getRotation().rotateBy(rotate0));
+            closeSideAlgaeScorePoint = new Pose2d(closeTag.transformBy(algaeScore).getTranslation(), closeTag.getRotation().rotateBy(rotate0)); 
             
             double reefX = (bargeTag.getX() + closeTag.getX()) / 2.0;
             double reefY = (bargeTag.getY() + closeTag.getY()) / 2.0;

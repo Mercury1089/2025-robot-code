@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.elevator.AlgaeArticulator;
+import frc.robot.subsystems.elevator.AlgaeIntake;
 import frc.robot.subsystems.elevator.AlgaeArticulator.ArticulatorPosition;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
@@ -31,6 +32,13 @@ public class ElevatorCommands {
                 new RunCommand(() -> elevator.setPosition(ElevatorPosition.L3_ALGAE), elevator), 
                 () -> zone == RobotZone.BARGE || zone == RobotZone.CLOSE_LEFT || zone == RobotZone.CLOSE_RIGHT).until(() -> elevator.isInPosition()),
             new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator)
+        );
+    }
+
+    public static Command pickUpAlgaeCommand(Elevator elevator, AlgaeArticulator articulator, RobotZone zone, AlgaeIntake intake) {
+        return new ParallelCommandGroup(
+            getArticulatorOutCommand(elevator, articulator, zone),
+            new RunCommand(() -> intake.intakeAlgae(), intake)
         );
     }
     

@@ -109,7 +109,7 @@ public class DriveCommands {
     * @param : Drivetrain, Pose2d Supplier 
     * @return : Outputs a Run Command 
     */
-    public static Command goToPose(Drivetrain drivetrain, Supplier<Pose2d> desiredPose) {
+    public static Command goToPose(Drivetrain drivetrain, Pose2d desiredPose) {
         return new ParallelCommandGroup(
             new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getRotation().getDegrees())),
             new InstantCommand(() -> drivetrain.getXController().reset(drivetrain.getPose().getX())),
@@ -118,11 +118,11 @@ public class DriveCommands {
         ).andThen(
             new RunCommand(
             () -> drivetrain.drive(
-              drivetrain.getXController().calculate(drivetrain.getPose().getX(), desiredPose.get().getX()),
-              drivetrain.getYController().calculate(drivetrain.getPose().getY(), desiredPose.get().getY()),
-              drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), desiredPose.get().getRotation().getDegrees()),
+              drivetrain.getXController().calculate(drivetrain.getPose().getX(), desiredPose.getX()),
+              drivetrain.getYController().calculate(drivetrain.getPose().getY(), desiredPose.getY()),
+              drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), desiredPose.getRotation().getDegrees()),
               true)
-          , drivetrain).until(() -> drivetrain.isAtPose(desiredPose.get()))
+          , drivetrain).until(() -> drivetrain.isAtPose(desiredPose))
         //   new InstantCommand(() -> drivetrain.setIgnoreBackCam(false))
         );
     }
@@ -132,12 +132,12 @@ public class DriveCommands {
     * SELECT BRANCH AND ZONE BEFORE USING
     * @return : Runs a sequential command which makes it go through all the pose options, using the sensor to guide its path
     */
-    public static Command goToPreferredBranch(Drivetrain drivetrain) {
+    public static Command goToPreferredBranch(Drivetrain drivetrain, RobotZone zone, Pose2d branch) {
         return new SequentialCommandGroup(
             new InstantCommand(() -> drivetrain.setIgnoreBackCam(true)),
-            ReefscapeUtils.getPathToPreferredBranch(),
-            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()),
-            alignwithSensors(drivetrain),
+            PathUtils.getPathToPose(branch, () -> 0.5),
+            goToPose(drivetrain, branch),
+            alignwithSensors(drivetrain, zone),
             new InstantCommand(() -> drivetrain.setIgnoreBackCam(false))
         );
     }
@@ -147,35 +147,33 @@ public class DriveCommands {
     * @return : Outputs a Run Command and calculates if the robot is too far left or right it will adjust itself
     * SELECT BRANCH AND ZONE BEFORE USING
     */
-    public static Command alignwithSensors(Drivetrain drivetrain) {
+    public static Command alignwithSensors(Drivetrain drivetrain, RobotZone zone) {
 
-        Supplier<DistanceSensors> proximitySensor;
+        Supplier<DistanceSensors> proximitySensor;;
 
-        Supplier<RobotZone> currentPref = () -> ReefscapeUtils.preferredZone();
-
-        proximitySensor = () -> currentPref.get() == RobotZone.BARGE || currentPref.get() == RobotZone.BARGE_LEFT || currentPref.get() == RobotZone.BARGE_RIGHT ?
+        proximitySensor = () -> zone == RobotZone.BARGE || zone == RobotZone.BARGE_LEFT || zone == RobotZone.BARGE_RIGHT ?
                                 ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
                                 ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
 
         Supplier<Double> invert = () -> !proximitySensor.get().isTooFarLeft() ? 1.0 : -1.0;
 
-        return new RunCommand(
+        return goCloserToReef(drivetrain, zone).andThen(new RunCommand(
             () -> drivetrain.drive(
               0.0, 
               invert.get() * 0.1,
               0.0,
               false)
-        ).until(() -> proximitySensor.get().isAtReefSide());
+        ).until(() -> proximitySensor.get().isAtReefSide()));
     }
     /**
     * @param : Drivetrain 
     * @return : Returns a Sequential Command Group, and starts goToPose command to go to the prefered Station
     * SELECT SIDE AND CORAL STATION BEFOR USING
     */
-    public static Command goToPreferredCoralStation(Drivetrain drivetrain) {
+    public static Command goToPreferredCoralStation(Drivetrain drivetrain, Pose2d station) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredCoralStation(),
-            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredCoralStation()).until(() -> drivetrain.isAtPreferredCoralStation())
+            goToPose(drivetrain, station)).until(() -> drivetrain.isAtPreferredCoralStation()
         );
     }
     /**
@@ -184,36 +182,36 @@ public class DriveCommands {
     * SELECT BRANCH AND ZONE BEFORE USING
     * @return : Returns Sequential Command Group 
     */
-    public static Command scoreAtPreferredBranch(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) { // combine with a conditional command
-        return new SequentialCommandGroup(
-            ReefscapeUtils.getPathToPreferredBranch(),
-            goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()),
-            new ParallelCommandGroup(
-                alignwithSensors(drivetrain),
-                new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
-            ).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel())),
-            new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
-        );
-    }
+    // public static Command scoreAtPreferredBranch(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) { // combine with a conditional command
+    //     return new SequentialCommandGroup(
+    //         ReefscapeUtils.getPathToPreferredBranch(),
+    //         goToPose(drivetrain, () -> ReefscapeUtils.getPreferredBranch()),
+    //         new ParallelCommandGroup(
+    //             alignwithSensors(drivetrain),
+    //             new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
+    //         ).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel())),
+    //         new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
+    //     );
+    // }
 
-    public static Command scoreAtCurrentZoneBranch(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) {
-        return new SequentialCommandGroup(
-            new ParallelCommandGroup(
-                alignwithSensors(drivetrain),
-                new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
-            ).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel())),
-            new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
-        );
-    }
+    // public static Command scoreAtCurrentZoneBranch(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) {
+    //     return new SequentialCommandGroup(
+    //         new ParallelCommandGroup(
+    //             alignwithSensors(drivetrain),
+    //             new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
+    //         ).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel())),
+    //         new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
+    //     );
+    // }
 
     /**
     * @param : Drivetrain, Elevator, Coral Intake
     * @return : Returns Sequential Command Group 
     * Input : Elevator Set Position, Coral Intake, Coral Intake Detection
     */
-    public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake) {
+    public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake, Pose2d station) {
         return new SequentialCommandGroup(
-            goToPreferredCoralStation(drivetrain),
+            goToPreferredCoralStation(drivetrain, station),
             new RunCommand(() -> elevator.setPosition(ElevatorPosition.CORAL_STATION), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.CORAL_STATION)),
             new RunCommand(() -> coralIntake.intakeCoral(), coralIntake).until(() -> coralIntake.hasCoralEntered())
         );
@@ -227,9 +225,9 @@ public class DriveCommands {
     public static Command pickUpAlgaeInCurrentZone(Drivetrain drivetrain) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
         return new SequentialCommandGroup(
-          goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneSafeAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneSafeAlgaePoint())),
-          goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint())),
-          goCloserToReefForAlgae(drivetrain)
+          goToPose(drivetrain, ReefscapeUtils.getCurrentZoneSafeAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneSafeAlgaePoint())),
+          goToPose(drivetrain, ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()))
+        //   goCloserToReef(drivetrain)
         );
     }
     /**
@@ -237,16 +235,22 @@ public class DriveCommands {
     * @return : Run Command 
     * SELECT BRANCH AND ZONE BEFORE USING
     */
-    public static Command goCloserToReefForAlgae(Drivetrain drivetrain) {
-        Supplier<DistanceSensors> proximitySensor = () -> drivetrain.getLeftSensors();
-        Supplier<Double> invert = () -> proximitySensor.get().isTooFarAwayFromReef() ? 1.0 : -1.0;
+    public static Command goCloserToReef(Drivetrain drivetrain, RobotZone zone) {
+        Supplier<DistanceSensors> proximitySensor;
+
+        proximitySensor = () -> zone == RobotZone.BARGE || zone == RobotZone.BARGE_LEFT || zone == RobotZone.BARGE_RIGHT ?
+                                ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors() :
+                                ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors();
+
+        Supplier<Double> invert = () -> proximitySensor.get().isTooFarAway() ? 1.0 : -1.0;
+
         return new RunCommand(
             () -> drivetrain.drive(
               invert.get() * 0.1, // away from reef num
               0.0,
               0.0,
               false)
-          , drivetrain).until(() -> !proximitySensor.get().isTooFarAwayFromReef());
+          , drivetrain).until(() -> !proximitySensor.get().isTooFarAway());
     }
 
     public static Command lockToProcessor(Drivetrain drivetrain, Supplier<Double> ySpeedSupplier) {
@@ -261,6 +265,20 @@ public class DriveCommands {
             ), drivetrain)
             )
         );
+    }
+
+    public static Command goCloserWithBackLaserCan(Drivetrain drivetrain) {
+        DistanceSensors proximitySensor = drivetrain.getBackSensor();
+
+        Supplier<Double> invert = () -> proximitySensor.isTooFarAway() ? 1.0 : -1.0;
+
+        return new RunCommand(
+            () -> drivetrain.drive(
+              invert.get() * 0.1, // away from reef num
+              0.0,
+              0.0,
+              false)
+          , drivetrain).until(() -> !proximitySensor.isTooFarAway());
     }
     /**
      * Construct a command that will follow a path provided when the command initializes.

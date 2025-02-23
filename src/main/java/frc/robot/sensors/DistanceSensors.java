@@ -16,11 +16,13 @@ public class DistanceSensors {
 
     private LaserCan innerSensor;
     private LaserCan outerSensor;
+    private LaserCan backSensor;
 
     private double outerTrigger = 380;
     private double innerTrigger = 340;
+    private double backTrigger = 0;
 
-    private double awayFromReefError = 135;
+    private double awayFromReefError = 160;
 
     // private double awayFromReefError = innerTrigger;
     
@@ -43,12 +45,28 @@ public class DistanceSensors {
           } //i copied this whole thing
     }
 
+    public DistanceSensors(int backCANID, double error) {
+        outerSensor = new LaserCan(backCANID);
+        awayFromReefError = error;
+        try {
+            outerSensor.setRangingMode(LaserCan.RangingMode.SHORT);
+            outerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+            outerSensor.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+          } catch (ConfigurationFailedException e) {
+            System.out.println("Configuration failed! " + e);
+          } //i copied this whole thing
+    }
+
     public LaserCan getInnerSensor() {
         return innerSensor;
     }
 
     public LaserCan getOuterSensor() {
         return outerSensor;
+    }
+
+    public LaserCan getBackSensor() {
+        return backSensor;
     }
 
     // returns in millimters
@@ -91,6 +109,10 @@ public class DistanceSensors {
         return getSensorDistance(innerSensor) < innerTrigger;
     }
 
+    public boolean isBackSensorTriggered() {
+        return getSensorDistance(backSensor) < backTrigger;
+    }
+
     public boolean isAtReefSide() {
         return isInnerSensorTriggered() && isOuterSensorTriggered();
     }
@@ -123,7 +145,11 @@ public class DistanceSensors {
         return tooLeft;
     }
 
-    public boolean isTooFarAwayFromReef() {
+    public boolean isTooFarAway() {
         return getSensorDistance(innerSensor) > awayFromReefError;
     }  
+
+    public boolean isTooFarAwayFromReefBack() {
+        return isBackSensorTriggered();
+    }
 }

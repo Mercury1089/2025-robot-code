@@ -45,16 +45,16 @@ public class AlgaeArticulator extends SubsystemBase {
   public final double THRESHOLD_DEGREES = 0.5;
 
   
-  private SparkFlex articulator;
+  private SparkMax articulator;
   private SparkClosedLoopController articulatorClosedLoopController;
   private AbsoluteEncoder absoluteEncoder;
   private double setPosition;
   private Elevator elevator;
 
   public AlgaeArticulator(Elevator elev) {
-    articulator = new SparkFlex(CAN.ALGAE_ARTICULATOR, MotorType.kBrushless);
+    articulator = new SparkMax(CAN.ALGAE_ARTICULATOR, MotorType.kBrushless);
 
-    SparkFlexConfig articulatorConfig = new SparkFlexConfig();
+    SparkMaxConfig articulatorConfig = new SparkMaxConfig();
 
     articulatorConfig
       .idleMode(IdleMode.kBrake)
@@ -88,7 +88,7 @@ public class AlgaeArticulator extends SubsystemBase {
   }
 
   public void changePos() {
-    setPosition(SmartDashboard.getNumber("Arm/Position", 110.0));
+    setPosition(SmartDashboard.getNumber("Articulator/Position", 110.0));
   }
 
   public void setPosition(double pos) {
