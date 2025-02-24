@@ -160,47 +160,29 @@ public class RobotContainer {
     auton = new Autons(drivetrain);
 
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
-    
-    // Trigger takeControl = new Trigger(() -> (Math.abs(leftJoystickY.get()) > manualThreshold || Math.abs(leftJoystickX.get()) > manualThreshold || Math.abs(rightJoystickX.get()) > manualThreshold));
-    Trigger fidoOn = new Trigger(() -> leds.isFIDOEnabled());
-    Trigger fidoOff = new Trigger(() -> !leds.isFIDOEnabled());
-
     left2.onTrue(drivetrain.getDefaultCommand());
-    // left2.onTrue(new InstantCommand(() -> drivetrain.setIgnoreBackCam(false)));
+    left2.onTrue(new InstantCommand(() -> leds.disableFIDO()));
     
-    
-    right1.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain)); //TODO: Change logic to lock to nearest station
+    right1.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain));
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
 
-    // right4.onTrue( TODO
-    //   DriveCommands.goToPose(drivetrain, ReefscapeUtils.getCurrentZoneLeftBranch()).andThen(
-    //   /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
-    //   DriveCommands.alignwithSensors(drivetrain)));
-    // right5.onTrue(
-    //   DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()).andThen(
-    //   /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
-    //   DriveCommands.alignwithSensors(drivetrain)));
+    right4.onTrue(
+      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()).andThen(
+      /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
+      DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
+    right5.onTrue(
+      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()).andThen(
+      /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
+      DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
 
     left1.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX));
     left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain));
-    left6.onTrue(new InstantCommand(() -> leds.enableFIDO()));
-    left7.onTrue(new InstantCommand(() -> leds.disableFIDO()));
 
-    // right6.and(fidoOn).whileTrue(DriveCommands.goToPreferredBranch(drivetrain));
-    // // // gamepadLB.and(fidoOn).onTrue(DriveCommands.alignwithSensors(drivetrain));
-    // right7.and(fidoOn).whileTrue(DriveCommands.goToPreferredCoralStation(drivetrain));
-
-    level1BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL1)));
-    level2BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)));
-    level3BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL3)));
-    level4BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)));
-
-    fidoBTN.onTrue(new InstantCommand(() -> leds.toggleFIDO()));
+    initializeTriggers();
   }
 
   public void initializeTriggers() {
     Trigger fidoOn = new Trigger(() -> leds.isFIDOEnabled());
-    Trigger hasCoral = new Trigger(() -> coralIntake.hasCoral());
     Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered()); 
 
     closeSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
@@ -252,6 +234,13 @@ public class RobotContainer {
     innerRightStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
       DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationInside)
     );
+
+    level1BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL1)));
+    level2BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)));
+    level3BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL3)));
+    level4BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)));
+
+    fidoBTN.onTrue(new InstantCommand(() -> leds.toggleFIDO()));
   }
 
   /**

@@ -8,9 +8,11 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import com.reduxrobotics.canand.CanandEventLoop;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.KnownLocations;
 import au.grapplerobotics.CanBridge;
 
 /**
@@ -22,6 +24,7 @@ import au.grapplerobotics.CanBridge;
 public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
+  private Alliance m_alliance;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -34,6 +37,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     // CanandEventLoop.getInstance();
     m_robotContainer = new RobotContainer();
+    m_alliance = KnownLocations.getKnownLocations().alliance;
 
     PathfindingCommand.warmupCommand().schedule();
   }
@@ -61,6 +65,10 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
     m_robotContainer.getAutonomous().updateDash();
+
+    if (m_alliance != KnownLocations.getKnownLocations().alliance) {
+      m_robotContainer.initializeTriggers();
+    }
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
