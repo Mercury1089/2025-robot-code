@@ -71,7 +71,7 @@ public class Elevator extends SubsystemBase {
     //   .reverseSoftLimitEnabled(true)
     //   .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
     leftConfig.closedLoop
-      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
     //  .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
       .pid(0.0225,0,0)
       .positionWrappingEnabled(false)
