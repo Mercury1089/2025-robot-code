@@ -88,8 +88,9 @@ public class KnownLocations {
     public static final double CORAL_STATION_DISTANCE_X = 16;
     public static final double CORAL_STATION_DISTANCE_Y = 13;
 
-    public final double X_OFFSET = 16;
+    public final double X_OFFSET = 19;
     public final double Y_OFFSET = 8;
+    public final double BIGGER_Y_OFFSET = 10; // calc this with acc robot
 
     /**
      * Load the field layout for the current year (currently CHARGED UP).
@@ -103,9 +104,9 @@ public class KnownLocations {
     synchronized public static AprilTagFieldLayout getFieldLayout() {
         if (fieldLayout == null) {
             try {//C:/Users/Mercury1089/git/
-                fieldLayout = new AprilTagFieldLayout(Filesystem.getDeployDirectory() + "/combined_calibration.json");
-                // fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
-            } catch (IOException e) {
+                // fieldLayout = new AprilTagFieldLayout(Filesystem.getDeployDirectory() + "/combined_calibration.json");
+                fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+            } catch (Exception e) {
                 DriverStation.reportWarning("Failed to load AprilTagFieldLayout: " + e.getMessage(), true);
                 fieldLayout = null;
             }
@@ -138,6 +139,10 @@ public class KnownLocations {
 
         Transform2d posXposYOffsets = new Transform2d(Units.inchesToMeters(X_OFFSET), Units.inchesToMeters(Y_OFFSET), Rotation2d.fromDegrees(0.0));
         Transform2d posXnegYOffsets = new Transform2d(Units.inchesToMeters(X_OFFSET), Units.inchesToMeters(-Y_OFFSET), Rotation2d.fromDegrees(0.0));
+
+        Transform2d posXposBiggerYOffsets = new Transform2d(Units.inchesToMeters(X_OFFSET), Units.inchesToMeters(BIGGER_Y_OFFSET), Rotation2d.fromDegrees(0.0));
+        Transform2d posXnegYBiggerOffsets = new Transform2d(Units.inchesToMeters(X_OFFSET), Units.inchesToMeters(-BIGGER_Y_OFFSET), Rotation2d.fromDegrees(0.0));
+
         Rotation2d rotate180 = Rotation2d.fromDegrees(180);
         Rotation2d rotate0 = Rotation2d.fromDegrees(0);
 

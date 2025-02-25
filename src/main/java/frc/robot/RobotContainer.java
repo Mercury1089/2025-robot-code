@@ -167,13 +167,15 @@ public class RobotContainer {
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
 
     right4.onTrue(
-      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()).andThen(
-      /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
-      DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
+      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
+      // .andThen(
+      // /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
+      // DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
     right5.onTrue(
-      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()).andThen(
-      /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
-      DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
+      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
+      // .andThen(
+      // /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
+      // DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
 
     left1.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX));
     left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain));
@@ -183,7 +185,8 @@ public class RobotContainer {
 
   public void initializeTriggers() {
     Trigger fidoOn = new Trigger(() -> leds.isFIDOEnabled());
-    Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered()); 
+    // Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered()); 
+    Trigger hasCoralEntered = new Trigger(() -> true); 
 
     closeSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.CLOSE, KnownLocations.getKnownLocations().closeSideLeftBranch)
@@ -206,7 +209,7 @@ public class RobotContainer {
     bargeSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.BARGE, KnownLocations.getKnownLocations().bargeSideLeftBranch)
     );
-    bargeSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
+    bargeSideRightBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.BARGE, KnownLocations.getKnownLocations().bargeSideRightBranch)
     );
     leftBargeSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
@@ -222,16 +225,16 @@ public class RobotContainer {
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.BARGE_RIGHT, KnownLocations.getKnownLocations().rightBargeSideRightBranch)
     );
 
-    outerLeftStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
+    outerLeftStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationOutside)
     );
-    outerRightStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
-      DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationOutside)
+    outerRightStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
+      DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationOutside)  //TODO: NEGATE THIS TRIGGER
     );
-    innerLeftStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
+    innerLeftStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationInside)
     );
-    innerRightStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
+    innerRightStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationInside)
     );
 
