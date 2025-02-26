@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -25,17 +27,17 @@ public class ElevatorCommands {
         );
     }
 
-    public static Command getArticulatorOutCommand(Elevator elevator, AlgaeArticulator articulator, /* make this a supplier? */RobotZone zone) {
+    public static Command getArticulatorOutCommand(Elevator elevator, AlgaeArticulator articulator, Supplier<RobotZone> zone) {
         return new SequentialCommandGroup(
             new ConditionalCommand(
                 new RunCommand(() -> elevator.setPosition(ElevatorPosition.L2_ALGAE), elevator), 
                 new RunCommand(() -> elevator.setPosition(ElevatorPosition.L3_ALGAE), elevator), 
-                () -> zone == RobotZone.BARGE || zone == RobotZone.CLOSE_LEFT || zone == RobotZone.CLOSE_RIGHT).until(() -> elevator.isInPosition()),
+                () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.CLOSE_LEFT || zone.get() == RobotZone.CLOSE_RIGHT).until(() -> elevator.isInPosition()),
             new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator)
         );
     }
 
-    public static Command getAlgaeElevatorCommand(Elevator elevator, AlgaeArticulator articulator, RobotZone zone, AlgaeIntake intake) {
+    public static Command getAlgaeElevatorCommand(Elevator elevator, AlgaeArticulator articulator, Supplier<RobotZone> zone, AlgaeIntake intake) {
         return new ParallelCommandGroup(
             getArticulatorOutCommand(elevator, articulator, zone),
             new RunCommand(() -> intake.intakeAlgae(), intake)

@@ -146,17 +146,17 @@ public class DriveCommands {
     * @return : Outputs a Run Command and calculates if the robot is too far left or right it will adjust itself
     * SELECT BRANCH AND ZONE BEFORE USING
     */
-    public static Command alignwithSensors(Drivetrain drivetrain, Supplier<RobotZone> zone) {
+    public static Command alignwithSensors(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side) {
 
-        Supplier<DistanceSensors> proximitySensor;;
+        Supplier<DistanceSensors> proximitySensor;
 
         proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
-                                ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
-                                ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
+                                side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
+                                side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
 
         Supplier<Double> invert = () -> !proximitySensor.get().isTooFarLeft() ? 1.0 : -1.0;
 
-        return goCloserToReef(drivetrain, zone).andThen(new RunCommand(
+        return goCloserToReef(drivetrain, zone, side).andThen(new RunCommand(
             () -> drivetrain.drive(
               0.0, 
               invert.get() * 0.1,
@@ -172,8 +172,8 @@ public class DriveCommands {
     public static Command goToPreferredCoralStation(Drivetrain drivetrain, Pose2d station) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredCoralStation(),
-            goToPose(drivetrain, () -> station)).until(() -> drivetrain.isAtPreferredCoralStation()
-        );
+            goToPose(drivetrain, () -> station).until(() -> drivetrain.isAtPreferredCoralStation()),
+            goCloserWithBackLaserCan(drivetrain));
     }
     /**
     * @param : Drivetrain, Elevator, and Coral Intake
@@ -181,21 +181,22 @@ public class DriveCommands {
     * SELECT BRANCH AND ZONE BEFORE USING
     * @return : Returns Sequential Command Group 
     */
-    public static Command scoreAtPreferredBranch(Drivetrain drivetrain, RobotZone zone, Pose2d branch, Elevator elevator, CoralIntake coralIntake) { // combine with a conditional command
+    public static Command scoreAtPreferredBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Pose2d branch, Elevator elevator, CoralIntake coralIntake) { // combine with a conditional command
         return new SequentialCommandGroup(
-            goToPreferredBranch(drivetrain, zone, branch),
+            new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME)),
+            goToPreferredBranch(drivetrain, zone.get(), branch),
             new ParallelCommandGroup( // before use, make sure align with sensors has ended
-                alignwithSensors(drivetrain, () -> zone),
+                alignwithSensors(drivetrain, zone, side),
                 new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
             ).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel())),
             new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
         );
     }
 
-    public static Command scoreAtCurrentZoneBranch(Drivetrain drivetrain, RobotZone zone, Pose2d branch, Elevator elevator, CoralIntake coralIntake) {
+    public static Command scoreAtCurrentZoneBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Pose2d branch, Elevator elevator, CoralIntake coralIntake) {
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
-                alignwithSensors(drivetrain, () -> zone),
+                alignwithSensors(drivetrain, zone, side),
                 new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
             ).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel())),
             new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
@@ -209,6 +210,7 @@ public class DriveCommands {
     */
     public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake, Pose2d station) {
         return new SequentialCommandGroup(
+            new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME)),
             goToPreferredCoralStation(drivetrain, station),
             new RunCommand(() -> elevator.setPosition(ElevatorPosition.CORAL_STATION), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.CORAL_STATION))
         );
@@ -231,12 +233,12 @@ public class DriveCommands {
     * @return : Run Command 
     * SELECT BRANCH AND ZONE BEFORE USING
     */
-    public static Command goCloserToReef(Drivetrain drivetrain, Supplier<RobotZone> zone) {
+    public static Command goCloserToReef(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side) {
         Supplier<DistanceSensors> proximitySensor;
 
         proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
-                                ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors() :
-                                ReefscapeUtils.branchSide() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors();
+                                side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors() :
+                                side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors();
 
         Supplier<Double> invert = () -> proximitySensor.get().isTooFarAway() ? 1.0 : -1.0;
 

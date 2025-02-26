@@ -63,8 +63,6 @@ public class Elevator extends SubsystemBase {
       .idleMode(IdleMode.kBrake)
       .inverted(false)
       .closedLoopRampRate(0.6);
-   // leftConfig.absoluteEncoder
-    //  .positionConversionFactor(360.0); // multiplied by native units
     // leftConfig.softLimit
     //   .forwardSoftLimitEnabled(true)
     //   .forwardSoftLimit(ARM_SOFT_LIMIT_FWD)
@@ -72,17 +70,10 @@ public class Elevator extends SubsystemBase {
     //   .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
     leftConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
-    //  .pid(ARM_NORMAL_P_VAL, ARM_NORMAL_I_VAL, ARM_NORMAL_D_VAL)
       .pid(0.0225,0,0)
       .positionWrappingEnabled(false)
       .outputRange(-1,1);
-    //leftConfig.closedLoop.maxMotion
-      //.maxVelocity(7.5)
-      //.maxAcceleration(15);
-    // leftConfig.closedLoop.maxMotion
-    //   .maxVelocity(4200)
-    //   .maxAcceleration(12000)
-    //   .allowedClosedLoopError(0.2);
+
     rightConfig
       .idleMode(IdleMode.kBrake)
       .follow(Constants.CAN.ELEVATOR_LEFT,true);
@@ -118,7 +109,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void changePos() {
-    setPosition(SmartDashboard.getNumber("Arm/Position", 110.0));
+    setPosition(SmartDashboard.getNumber("Elevator/Position", 110.0));
   }
 
   public void setPosition(double pos) {
