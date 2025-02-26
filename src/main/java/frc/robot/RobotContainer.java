@@ -8,6 +8,7 @@ import frc.robot.Constants.DS_USB;
 import frc.robot.Constants.JOYSTICK_BUTTONS;
 import frc.robot.commands.Autons;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ElevatorCommands;
 import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.RobotModeLEDs;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -145,8 +146,7 @@ public class RobotContainer {
     algaeIntake.setDefaultCommand(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP), algaeIntake));
     // right2.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake).until(() -> algaeIntake.hasAlgae()));
 
-    articulator = new AlgaeArticulator(elevator);
-    elevator.setArticulator(articulator);
+    articulator = new AlgaeArticulator();
     
     leds = new RobotModeLEDs();
 
@@ -179,56 +179,72 @@ public class RobotContainer {
   public void initializeTriggers() {
     Trigger fidoOn = new Trigger(() -> leds.isFIDOEnabled());
     // Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered()); 
-    Trigger hasCoralEntered = new Trigger(() -> true); 
+    Trigger hasCoralEntered = new Trigger(() -> true); //TODO: change this to real value (currently true as placeholder for testing)
 
     closeSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.CLOSE, KnownLocations.getKnownLocations().closeSideLeftBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.CLOSE, () -> BranchSide.LEFT, KnownLocations.getKnownLocations().closeSideLeftBranch, elevator, coralIntake)
     );
     closeSideRightBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.CLOSE, KnownLocations.getKnownLocations().closeSideRightBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.CLOSE, () -> BranchSide.RIGHT, KnownLocations.getKnownLocations().closeSideRightBranch, elevator, coralIntake)
     );
     leftCloseSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.CLOSE_LEFT, KnownLocations.getKnownLocations().leftCloseSideLeftBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.CLOSE_LEFT, () -> BranchSide.LEFT, KnownLocations.getKnownLocations().leftCloseSideLeftBranch, elevator, coralIntake)
     );
     leftCloseSideRightBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.CLOSE_LEFT, KnownLocations.getKnownLocations().leftCloseSideLeftBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.CLOSE_LEFT, () -> BranchSide.RIGHT, KnownLocations.getKnownLocations().leftCloseSideRightBranch, elevator, coralIntake)
     );
     closeRightSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.CLOSE_RIGHT, KnownLocations.getKnownLocations().closeRightSideLeftBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.CLOSE_RIGHT, () -> BranchSide.LEFT, KnownLocations.getKnownLocations().closeRightSideLeftBranch, elevator, coralIntake)
     );
     closeRightSideRightBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.CLOSE_RIGHT, KnownLocations.getKnownLocations().closeRightSideRightBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.CLOSE_RIGHT, () -> BranchSide.RIGHT, KnownLocations.getKnownLocations().closeRightSideRightBranch, elevator, coralIntake)
     );
     bargeSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.BARGE, KnownLocations.getKnownLocations().bargeSideLeftBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.BARGE, () -> BranchSide.LEFT, KnownLocations.getKnownLocations().bargeSideLeftBranch, elevator, coralIntake)
     );
     bargeSideRightBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.BARGE, KnownLocations.getKnownLocations().bargeSideRightBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.BARGE, () -> BranchSide.RIGHT, KnownLocations.getKnownLocations().bargeSideRightBranch, elevator, coralIntake)
     );
     leftBargeSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.BARGE_LEFT, KnownLocations.getKnownLocations().leftBargeSideLeftBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.BARGE_LEFT, () -> BranchSide.LEFT, KnownLocations.getKnownLocations().leftBargeSideLeftBranch, elevator, coralIntake)
     );
     leftBargeSideRightBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.BARGE_LEFT, KnownLocations.getKnownLocations().leftBargeSideRightBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.BARGE_LEFT, () -> BranchSide.RIGHT, KnownLocations.getKnownLocations().leftBargeSideRightBranch, elevator, coralIntake)
     );
     rightBargeSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.BARGE_RIGHT, KnownLocations.getKnownLocations().rightBargeSideLeftBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.BARGE_RIGHT, () -> BranchSide.LEFT, KnownLocations.getKnownLocations().rightBargeSideLeftBranch, elevator, coralIntake)
     );
     rightBargeSideRightBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.BARGE_RIGHT, KnownLocations.getKnownLocations().rightBargeSideRightBranch)
+      // DriveCommands.scoreAtPreferredBranch(drivetrain, () -> RobotZone.BARGE_RIGHT, () -> BranchSide.RIGHT, KnownLocations.getKnownLocations().rightBargeSideRightBranch, elevator, coralIntake)
     );
 
     outerLeftStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationOutside)
+      // DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().leftCoralStationOutside)
     );
     outerRightStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationOutside)  //TODO: NEGATE THIS TRIGGER
+      // DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().rightCoralStationOutside)
     );
     innerLeftStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationInside)
+      // DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().leftCoralStationInside)
     );
     innerRightStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationInside)
+      // DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().rightCoralStationInside)
     );
 
     level1BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL1)));

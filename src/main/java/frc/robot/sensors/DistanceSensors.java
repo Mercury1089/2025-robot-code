@@ -20,7 +20,7 @@ public class DistanceSensors {
 
     private double outerTrigger = 380;
     private double innerTrigger = 340;
-    private double backTrigger = 0;
+    private double backTrigger = 0; //TODO: test for this value
 
     private double awayFromReefError = 160;
 

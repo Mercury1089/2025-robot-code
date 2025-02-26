@@ -14,10 +14,6 @@ public class ProximitySensor extends Canandcolor {
     }
 
     public boolean isTriggered() { // if the reported value is less than your trigger value, it returns true
-        if (isConnected()) {
-            return getProximity() < triggerValue;
-        }
-
-        return false;
+        return isConnected() && getProximity() < triggerValue; // works because of shortcircuit eval
     }
 }

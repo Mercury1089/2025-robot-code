@@ -50,8 +50,6 @@ public class Elevator extends SubsystemBase {
   private RelativeEncoder relativeEncoder;
   private double setPosition;
 
-  private AlgaeArticulator articulator;
-
   public Elevator() {
     leftMotor = new SparkFlex(CAN.ELEVATOR_LEFT, MotorType.kBrushless);
     rightMotor = new SparkFlex(CAN.ELEVATOR_RIGHT, MotorType.kBrushless);
@@ -89,10 +87,6 @@ public class Elevator extends SubsystemBase {
     relativeEncoder = leftMotor.getEncoder();
     setPosition = getArmPosition();
 
-  }
-
-  public void setArticulator(AlgaeArticulator artic) {
-    this.articulator = artic;
   }
   
   public void resetEncoders() {
