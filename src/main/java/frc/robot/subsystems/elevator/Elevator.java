@@ -63,14 +63,14 @@ public class Elevator extends SubsystemBase {
       .idleMode(IdleMode.kBrake)
       .inverted(false)
       .closedLoopRampRate(0.6);
-    // leftConfig.softLimit
-    //   .forwardSoftLimitEnabled(true)
-    //   .forwardSoftLimit(ARM_SOFT_LIMIT_FWD)
+    leftConfig.softLimit
+      .forwardSoftLimitEnabled(true)
+      .forwardSoftLimit(21.0);
     //   .reverseSoftLimitEnabled(true)
     //   .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
     leftConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
-      .pid(0.0225,0,0)
+      .pid(0.225,0,0)
       .positionWrappingEnabled(false)
       .outputRange(-1,1);
 
@@ -86,7 +86,7 @@ public class Elevator extends SubsystemBase {
 
     elevatorClosedLoopController = leftMotor.getClosedLoopController();
 
-    relativeEncoder = leftMotor.getEncoder();
+    relativeEncoder = leftMotor.getExternalEncoder();
     setPosition = getArmPosition();
 
   }
@@ -101,7 +101,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
-    leftMotor.set((speedSupplier.get() * 0.5));
+    leftMotor.set((speedSupplier.get()));
   }
 
   public void setPosition(ElevatorPosition pos) {
@@ -151,10 +151,6 @@ public class Elevator extends SubsystemBase {
   
 
   public enum ElevatorPosition {
-    // AMP(150.0),
-    // HOME(ARM_SOFT_LIMIT_BKW),
-    // SHUTTLE(78.0),
-    // PICKUP_FLOOR(ARM_SOFT_LIMIT_BKW);
     LEVEL4(150.0,"level4"),
     LEVEL3(100.0, "level3"),
     LEVEL2(50.0, "level2"),
@@ -164,8 +160,6 @@ public class Elevator extends SubsystemBase {
     L3_ALGAE(0.0, "level3Algae"),
     CORAL_STATION(0.0, "coralStation"),
     SAFE_POS(50.0, "safePos");
-  
-    //this.setDefaultCommand(new RunCommand(() -> elevator.setPosition(LEVEL1), elevator));
     
     public final double degreePos;
     public final String lev;
