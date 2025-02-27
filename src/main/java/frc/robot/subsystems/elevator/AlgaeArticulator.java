@@ -49,9 +49,8 @@ public class AlgaeArticulator extends SubsystemBase {
   private SparkClosedLoopController articulatorClosedLoopController;
   private AbsoluteEncoder absoluteEncoder;
   private double setPosition;
-  private Elevator elevator;
 
-  public AlgaeArticulator(Elevator elev) {
+  public AlgaeArticulator() {
     articulator = new SparkMax(CAN.ALGAE_ARTICULATOR, MotorType.kBrushless);
 
     SparkMaxConfig articulatorConfig = new SparkMaxConfig();
@@ -74,8 +73,6 @@ public class AlgaeArticulator extends SubsystemBase {
 
     absoluteEncoder = articulator.getAbsoluteEncoder();
     setPosition = getPosition();
-
-    this.elevator = elev;
 
   }
   

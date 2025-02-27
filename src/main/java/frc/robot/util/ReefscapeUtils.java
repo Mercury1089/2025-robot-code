@@ -121,7 +121,7 @@ public class ReefscapeUtils {
                 result = locs.rightCloseSideAlgaeScorePoint;
                 break;
             case BARGE_RIGHT:
-                result = locs.rightBargeSideALgaeScorePoint;
+                result = locs.rightBargeSideAlgaeScorePoint;
                 break;
             case BARGE:
                 result = locs.bargeSideAlgaeScorePoint;
