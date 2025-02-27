@@ -63,6 +63,11 @@ public class AlgaeArticulator extends SubsystemBase {
       .pid(0.085,0,0)
       .positionWrappingEnabled(false)
       .outputRange(-1,1);
+    // articulatorConfig.softLimit
+    //   .forwardSoftLimitEnabled(true)
+    //   .forwardSoftLimit(90.0)
+    //   .reverseSoftLimitEnabled(true)
+    //   .reverseSoftLimit(0.0);
     
 
       articulator.configure(articulatorConfig, ResetMode.kResetSafeParameters,

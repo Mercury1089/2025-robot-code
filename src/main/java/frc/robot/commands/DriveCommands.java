@@ -169,7 +169,7 @@ public class DriveCommands {
     * @param : Drivetrain 
     * @return : Returns a Sequential Command Group, and starts goToPose command to go to the prefered Station
     */
-    public static Command goToPreferredCoralStation(Drivetrain drivetrain, Pose2d station) {
+    public static Command goToCoralStation(Drivetrain drivetrain, Pose2d station) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredCoralStation(),
             goToPose(drivetrain, () -> station).until(() -> drivetrain.isAtPreferredCoralStation()),
@@ -181,24 +181,20 @@ public class DriveCommands {
     * @param : Drivetrain, Elevator, and Coral Intake
     * @return : Returns Sequential Command Group 
     */
-    public static Command scoreAtPreferredBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Pose2d branch, Elevator elevator, CoralIntake coralIntake) {
+    public static Command driveAndScoreAtBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Pose2d branch, Elevator elevator, CoralIntake coralIntake) {
         return new SequentialCommandGroup(
             new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME)),
             goToPreferredBranch(drivetrain, zone.get(), branch),
-            new ParallelCommandGroup(//parallel finishes when both are finished
-                alignwithSensors(drivetrain, zone, side),
-                new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel()))
-            ),
-            new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
+            scoreAtBranch(drivetrain, zone, side, branch, elevator, coralIntake)
         );
     }
 
-    public static Command scoreAtCurrentZoneBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Pose2d branch, Elevator elevator, CoralIntake coralIntake) {
+    public static Command scoreAtBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Pose2d branch, Elevator elevator, CoralIntake coralIntake) {
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
                 alignwithSensors(drivetrain, zone, side),
-                new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
-            ).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel())),
+                new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel()))
+            ),
             new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
         );
     }
@@ -211,10 +207,11 @@ public class DriveCommands {
     public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake, Pose2d station) {
         return new SequentialCommandGroup(
             new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME)),
-            goToPreferredCoralStation(drivetrain, station),
-            new RunCommand(() -> elevator.setPosition(ElevatorPosition.CORAL_STATION), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.CORAL_STATION))
+            goToCoralStation(drivetrain, station),
+            new RunCommand(() -> elevator.setPosition(ElevatorPosition.CORAL_STATION), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.CORAL_STATION)),
+            new RunCommand(() -> coralIntake.intakeCoral(), coralIntake).until(() -> coralIntake.hasCoral())
         );
-    }
+    }//untested
     /**
     * Input : Pose, Rotation, Degrees, Heading. 
     * SELECT BRANCH AND ZONE BEFORE USING

@@ -34,6 +34,7 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.TriggerEvent;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -122,19 +123,20 @@ public class RobotContainer {
     coralIntake = new CoralIntake();
     coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
 
-    Trigger hasCoral = new Trigger(() -> coralIntake.hasCoral());
-    Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered());
-    Trigger ejecting = new Trigger(() -> coralIntake.getEjecting());
+    Trigger hasCoral = new Trigger(() -> coralIntake.hasCoral() && DriverStation.isTeleop());
+    Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered() && DriverStation.isTeleop());
+    Trigger ejecting = new Trigger(() -> coralIntake.getEjecting() && DriverStation.isTeleop());
+    Trigger isTeleopTrigger = new Trigger(() -> DriverStation.isTeleop());
 
-    (hasCoral.negate().and(hasCoralEntered)).and(ejecting.negate()).onTrue(
+    (hasCoral.negate().and(hasCoralEntered)).and(ejecting.negate().and(isTeleopTrigger)).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake)
     );
 
-    (hasCoral.and(hasCoralEntered.negate())).and(ejecting.negate()).onTrue(
+    (hasCoral.and(hasCoralEntered.negate())).and(ejecting.negate().and(isTeleopTrigger)).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.BRING_BACK), coralIntake)
     );
     
-    (hasCoral.and(hasCoralEntered)).or(hasCoral.negate().and(hasCoralEntered.negate())).and(ejecting.negate()).onTrue(
+    (hasCoral.and(hasCoralEntered)).or(hasCoral.negate().and(hasCoralEntered.negate())).and(ejecting.negate().and(isTeleopTrigger)).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
     );
 
@@ -150,7 +152,7 @@ public class RobotContainer {
     
     leds = new RobotModeLEDs();
 
-    auton = new Autons(drivetrain);
+    auton = new Autons(drivetrain, coralIntake, elevator);
 
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     left2.onTrue(drivetrain.getDefaultCommand());
@@ -231,19 +233,19 @@ public class RobotContainer {
     );
 
     outerLeftStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
-      DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationOutside)
+      DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationOutside)
       // DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().leftCoralStationOutside)
     );
     outerRightStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
-      DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationOutside)  //TODO: NEGATE THIS TRIGGER
+      DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationOutside)  //TODO: NEGATE THIS TRIGGER
       // DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().rightCoralStationOutside)
     );
     innerLeftStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
-      DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationInside)
+      DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationInside)
       // DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().leftCoralStationInside)
     );
     innerRightStationBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
-      DriveCommands.goToPreferredCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationInside)
+      DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationInside)
       // DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().rightCoralStationInside)
     );
 
@@ -304,13 +306,13 @@ public class RobotContainer {
         leftCloseSideLeftBranchBTN = reefBoard.button(11);
         leftCloseSideRightBranchBTN = reefBoard.button(12);
 
-        fidoBTN = secondEncoderBoard.button(1);
+        fidoBTN = secondEncoderBoard.button(10);
         level1BTN = secondEncoderBoard.button(2);
         level2BTN = secondEncoderBoard.button(3);
         level3BTN = secondEncoderBoard.button(4);
         level4BTN = secondEncoderBoard.button(5);
-        innerRightStationBTN = secondEncoderBoard.button(6);
-        outerRightStationBTN = secondEncoderBoard.button(7);
+        outerRightStationBTN = secondEncoderBoard.button(6);
+        innerRightStationBTN = secondEncoderBoard.button(7);
         innerLeftStationBTN = secondEncoderBoard.button(8);
         outerLeftStationBTN = secondEncoderBoard.button(9);
 

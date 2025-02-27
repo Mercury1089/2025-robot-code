@@ -81,6 +81,10 @@ public class ReefscapeUtils {
         return stationPose2d;
     }
 
+    public static RobotZone getPreferredZone() {
+        return preferredZone;
+    }
+
     public static Pose2d getCurrentZoneSafeAlgaePoint() {
         KnownLocations locs = KnownLocations.getKnownLocations();
         Pose2d result;
@@ -255,8 +259,12 @@ public class ReefscapeUtils {
             () -> preferredCoralStation == CoralStation.INSIDELEFT);
     }
 
-    public static void changePreferredBranch(BranchSide side) {
+    public static void changePreferredBranchSide(BranchSide side) {
         preferredBranchSide = side;
+    }
+
+    public static BranchSide getPreferredBranchSide() {
+        return preferredBranchSide;
     }
 
     public static void changePreferredLevel(ElevatorPosition level) {

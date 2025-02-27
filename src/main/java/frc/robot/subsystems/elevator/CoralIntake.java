@@ -73,7 +73,7 @@ public class CoralIntake extends SubsystemBase {
     }
  
     public void intakeCoral() {
-        setSpeed(IntakeSpeed.INTAKE);
+        setSpeed(IntakeSpeed.SLOW_INTAKE);
     }
     
     public void stopIntake() {

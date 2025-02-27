@@ -33,6 +33,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.SWERVE;
 import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.elevator.CoralIntake;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
 import frc.robot.util.PathUtils;
@@ -70,13 +72,17 @@ public class Autons {
 
     private final Command DO_NOTHING = new PrintCommand("Do Nothing Auton");
     private Drivetrain drivetrain;
+    private CoralIntake coralIntake;
+    private Elevator elevator;
     private DistanceSensors proximitySensor;
     private RobotConfig config;
 
-    public Autons(Drivetrain drivetrain) {
+    public Autons(Drivetrain drivetrain, CoralIntake coralIntake, Elevator elevator) {
 
         this.drivetrain = drivetrain;
         this.proximitySensor = proximitySensor;
+        this.elevator = elevator;
+        this.coralIntake = coralIntake;
 
         KnownLocations knownLocations = KnownLocations.getKnownLocations();
         this.alliance = knownLocations.alliance;
@@ -131,30 +137,20 @@ public class Autons {
         SequentialCommandGroup autonCommandGroup = new SequentialCommandGroup();
 
         autonCommandGroup.addCommands(
-            // new InstantCommand(() -> changePreferredScoringLocation(firstBranch)),  
-            // // DriveCommands.goToPreferredBranch(drivetrain),
-            // new WaitCommand(1.0),
+            new InstantCommand(() -> changePreferredScoringLocation(firstBranch)),  
+            DriveCommands.driveAndScoreAtBranch(drivetrain, () -> ReefscapeUtils.getPreferredZone(), () -> ReefscapeUtils.getPreferredBranchSide(), ReefscapeUtils.getPreferredBranch(), elevator, coralIntake),
 
-            // new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
-            // DriveCommands.goToPreferredCoralStation(drivetrain),
-            // new WaitCommand(1.0),
-            // new InstantCommand(() -> changePreferredScoringLocation(secondBranch)),
-            // // DriveCommands.goToPreferredBranch(drivetrain),
-            // new WaitCommand(1.0),
+            new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
+            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, ReefscapeUtils.getPreferredCoralStation()),
 
-            // new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(secondStation)),
-            // DriveCommands.goToPreferredCoralStation(drivetrain),
-            // new WaitCommand(1.0),
-            // new InstantCommand(() -> changePreferredScoringLocation(thirdBranch)),
-            // // DriveCommands.goToPreferredBranch(drivetrain),
-            // new WaitCommand(1.0),
+            new InstantCommand(() -> changePreferredScoringLocation(secondBranch)),
+            DriveCommands.driveAndScoreAtBranch(drivetrain, () -> ReefscapeUtils.getPreferredZone(), () -> ReefscapeUtils.getPreferredBranchSide(), ReefscapeUtils.getPreferredBranch(), elevator, coralIntake),
 
-            // new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(thirdStation)),
-            // DriveCommands.goToPreferredCoralStation(drivetrain),
-            // new WaitCommand(1.0),
-            // new InstantCommand(() -> changePreferredScoringLocation(fourthBranch)),
-            // // DriveCommands.goToPreferredBranch(drivetrain),
-            // new WaitCommand(1.0)
+            new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(secondStation)),
+            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, ReefscapeUtils.getPreferredCoralStation()),
+
+            new InstantCommand(() -> changePreferredScoringLocation(thirdBranch)),
+            DriveCommands.driveAndScoreAtBranch(drivetrain, () -> ReefscapeUtils.getPreferredZone(), () -> ReefscapeUtils.getPreferredBranchSide(), ReefscapeUtils.getPreferredBranch(), elevator, coralIntake)
         );
 
         return autonCommandGroup;
@@ -162,7 +158,7 @@ public class Autons {
 
     public void changePreferredScoringLocation(AutonLocations loc) {
         ReefscapeUtils.changePreferredZone(loc.getZone());
-        ReefscapeUtils.changePreferredBranch(loc.getSide());
+        ReefscapeUtils.changePreferredBranchSide(loc.getSide());
     }
 
 
