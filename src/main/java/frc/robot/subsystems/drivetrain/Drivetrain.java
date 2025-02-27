@@ -120,7 +120,7 @@ public class Drivetrain extends SubsystemBase {
 
     leftSensors = new DistanceSensors(CAN.LEFT_INNER_LASER_CAN, CAN.LEFT_OUTER_LASER_CAN);
     rightSensors = new DistanceSensors(CAN.RIGHT_INNER_LASER_CAN, CAN.RIGHT_OUTER_LASER_CAN);
-    backSensor = new DistanceSensors(CAN.BACK_LASER_CAN, 135); // check this error
+    backSensor = new DistanceSensors(CAN.BACK_LASER_CAN, 135.0); // check this error
 
     //configure gyro
     pigeon = new Pigeon2(CAN.PIGEON_DRIVETRAIN);

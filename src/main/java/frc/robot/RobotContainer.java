@@ -126,17 +126,16 @@ public class RobotContainer {
     Trigger hasCoral = new Trigger(() -> coralIntake.hasCoral() && DriverStation.isTeleop());
     Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered() && DriverStation.isTeleop());
     Trigger ejecting = new Trigger(() -> coralIntake.getEjecting() && DriverStation.isTeleop());
-    Trigger isTeleopTrigger = new Trigger(() -> DriverStation.isTeleop());
 
-    (hasCoral.negate().and(hasCoralEntered)).and(ejecting.negate().and(isTeleopTrigger)).onTrue(
+    (hasCoral.negate().and(hasCoralEntered)).and(ejecting.negate()).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake)
     );
 
-    (hasCoral.and(hasCoralEntered.negate())).and(ejecting.negate().and(isTeleopTrigger)).onTrue(
+    (hasCoral.and(hasCoralEntered.negate())).and(ejecting.negate()).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.BRING_BACK), coralIntake)
     );
     
-    (hasCoral.and(hasCoralEntered)).or(hasCoral.negate().and(hasCoralEntered.negate())).and(ejecting.negate().and(isTeleopTrigger)).onTrue(
+    (hasCoral.and(hasCoralEntered)).or(hasCoral.negate().and(hasCoralEntered.negate())).and(ejecting.negate()).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
     );
 
@@ -172,16 +171,16 @@ public class RobotContainer {
       // /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
       // DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
 
-    left1.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX));
-    left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain));
+    left1.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
+    left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain, elevator, algaeIntake, articulator));
 
     initializeTriggers();
   }
 
   public void initializeTriggers() {
-    Trigger fidoOn = new Trigger(() -> leds.isFIDOEnabled());
+    Trigger fidoOn = new Trigger(() -> leds.isFIDOEnabled() && DriverStation.isTeleop());
     // Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered()); 
-    Trigger hasCoralEntered = new Trigger(() -> true); //TODO: change this to real value (currently true as placeholder for testing)
+    Trigger hasCoralEntered = new Trigger(() -> true && DriverStation.isTeleop()); //TODO: change this to real value (currently true as placeholder for testing)
 
     closeSideLeftBranchBTN.and(fidoOn).and(hasCoralEntered).whileTrue(
       DriveCommands.goToPreferredBranch(drivetrain, RobotZone.CLOSE, KnownLocations.getKnownLocations().closeSideLeftBranch)

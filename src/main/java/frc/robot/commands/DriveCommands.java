@@ -21,8 +21,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.SWERVE;
 import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.elevator.AlgaeArticulator;
+import frc.robot.subsystems.elevator.AlgaeIntake;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.AlgaeArticulator.ArticulatorPosition;
 import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
@@ -185,17 +188,21 @@ public class DriveCommands {
         return new SequentialCommandGroup(
             new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME)),
             goToPreferredBranch(drivetrain, zone.get(), branch),
-            scoreAtBranch(drivetrain, zone, side, branch, elevator, coralIntake)
+            scoreAtBranch(drivetrain, zone, side, elevator, coralIntake)
         );
     }
 
-    public static Command scoreAtBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Pose2d branch, Elevator elevator, CoralIntake coralIntake) {
+    public static Command scoreAtBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Elevator elevator, CoralIntake coralIntake) {
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
                 alignwithSensors(drivetrain, zone, side),
                 new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel()))
             ),
-            new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent())
+            new ParallelCommandGroup(
+                new RunCommand(() -> coralIntake.spitCoral(), coralIntake),
+                new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
+            ).until(() -> coralIntake.noCoralPresent()),
+            new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME))
         );
     }
 
@@ -206,10 +213,8 @@ public class DriveCommands {
     */
     public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake, Pose2d station) {
         return new SequentialCommandGroup(
-            new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME)),
-            goToCoralStation(drivetrain, station),
             new RunCommand(() -> elevator.setPosition(ElevatorPosition.CORAL_STATION), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.CORAL_STATION)),
-            new RunCommand(() -> coralIntake.intakeCoral(), coralIntake).until(() -> coralIntake.hasCoral())
+            goToCoralStation(drivetrain, station).until(() -> coralIntake.hasCoralEntered())
         );
     }//untested
     /**
@@ -218,11 +223,14 @@ public class DriveCommands {
     * @param : Drivetrain, Joystick Supplier 
     * @return : Calculates necessary X,Y, and Rotational degrees required to align for algae
     */
-    public static Command pickUpAlgaeInCurrentZone(Drivetrain drivetrain) {
-        return new SequentialCommandGroup(
-          goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneSafeAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneSafeAlgaePoint())),
-          goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint())),
-          goCloserWithBackLaserCan(drivetrain)
+    public static Command pickUpAlgaeInCurrentZone(Drivetrain drivetrain, Elevator elevator, AlgaeIntake intake, AlgaeArticulator articulator) {
+        return new ParallelCommandGroup(
+            new SequentialCommandGroup(
+                goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneSafeAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneSafeAlgaePoint())),
+                goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint())),
+                goCloserWithBackLaserCan(drivetrain)
+            )
+            // ElevatorCommands.getAlgaeElevatorCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone(), intake)
         );
     }
     /**
@@ -248,16 +256,22 @@ public class DriveCommands {
           , drivetrain).until(() -> !proximitySensor.get().isTooFarAway());
     }
 
-    public static Command lockToProcessor(Drivetrain drivetrain, Supplier<Double> ySpeedSupplier) {
+    public static Command lockToProcessor(Drivetrain drivetrain, Supplier<Double> ySpeedSupplier, Elevator elevator, AlgaeArticulator articulator) {
         Supplier<KnownLocations> locs = () -> KnownLocations.getKnownLocations();
         return new InstantCommand(() -> drivetrain.getXController().reset(drivetrain.getPose().getX())).andThen(
             new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getRotation().getDegrees())).andThen(
-                new RunCommand(() -> drivetrain.drive(
-                drivetrain.getXController().calculate(drivetrain.getPose().getX(), locs.get().processor.getX()),
-                -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-                drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(),locs.get().processor.getRotation().getDegrees()),
-                true
-            ), drivetrain)
+                new ParallelCommandGroup(
+                    new RunCommand(() -> drivetrain.drive(
+                        drivetrain.getXController().calculate(drivetrain.getPose().getX(), locs.get().processor.getX()),
+                        -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+                        drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(),locs.get().processor.getRotation().getDegrees()),
+                        true
+                    ), drivetrain)
+                    // new ParallelCommandGroup(
+                    //     new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator),
+                    //     new RunCommand(() -> elevator.setPosition(ElevatorPosition.PROCESSOR), elevator)
+                    // )
+                )
             )
         );
     }
@@ -265,7 +279,7 @@ public class DriveCommands {
     public static Command goCloserWithBackLaserCan(Drivetrain drivetrain) {
         DistanceSensors proximitySensor = drivetrain.getBackSensor();
 
-        Supplier<Double> invert = () -> proximitySensor.isTooFarAway() ? 1.0 : -1.0;
+        Supplier<Double> invert = () -> proximitySensor.isTooFarAway() ? -1.0 : 1.0;
 
         return new RunCommand(
             () -> drivetrain.drive(

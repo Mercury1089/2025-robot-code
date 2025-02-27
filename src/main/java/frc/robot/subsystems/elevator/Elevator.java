@@ -134,7 +134,7 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
 
-    if (leftMotor.getReverseLimitSwitch().isPressed()) {
+    if (leftMotor.getReverseLimitSwitch().isPressed() && getArmPosition() != 0.0) {
       resetEncoders();
     }
     // This method will be called once per scheduler run
@@ -153,7 +153,8 @@ public class Elevator extends SubsystemBase {
     L2_ALGAE(0.0, "level2Algae"),
     L3_ALGAE(0.0, "level3Algae"),
     CORAL_STATION(0.0, "coralStation"),
-    SAFE_POS(50.0, "safePos");
+    SAFE_POS(50.0, "safePos"),
+    PROCESSOR(0.0, "processor");
     
     public final double degreePos;
     public final String lev;
