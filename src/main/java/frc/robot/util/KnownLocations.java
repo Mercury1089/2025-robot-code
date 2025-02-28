@@ -83,14 +83,14 @@ public class KnownLocations {
         processor;
 
     public static final double ALGAE_SAFE_DISTANCE = 34.5;
-    public static final double ALGAE_SCORE_DISTANCE = 16.5;
+    public static final double ALGAE_SCORE_DISTANCE = 21.0;
 
-    public static final double CORAL_STATION_DISTANCE_X = 16; // measure
-    public static final double CORAL_STATION_DISTANCE_Y = 13; // measure
+    public static final double CORAL_STATION_DISTANCE_X = 18;
+    public static final double CORAL_STATION_DISTANCE_Y = 13;
 
-    public final double X_OFFSET = 19; // measure
-    public final double Y_OFFSET = 8; // check
-    public final double BIGGER_Y_OFFSET = 10; // calc this with acc robot
+    public final double X_OFFSET = 20;
+    public final double Y_OFFSET = 8;
+    public final double BIGGER_Y_OFFSET = 10;
 
     /**
      * Load the field layout for the current year (currently CHARGED UP).

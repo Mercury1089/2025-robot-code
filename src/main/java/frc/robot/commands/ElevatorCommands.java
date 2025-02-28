@@ -32,8 +32,7 @@ public class ElevatorCommands {
             new ConditionalCommand(
                 new RunCommand(() -> elevator.setPosition(ElevatorPosition.L2_ALGAE), elevator), 
                 new RunCommand(() -> elevator.setPosition(ElevatorPosition.L3_ALGAE), elevator), 
-                () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.CLOSE_LEFT || zone.get() == RobotZone.CLOSE_RIGHT).until(() -> elevator.isInPosition()),
-            new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator)
+                () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.CLOSE_LEFT || zone.get() == RobotZone.CLOSE_RIGHT)
         );
     }
 

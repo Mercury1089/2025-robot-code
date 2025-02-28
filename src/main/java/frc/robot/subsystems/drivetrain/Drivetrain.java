@@ -74,12 +74,12 @@ public class Drivetrain extends SubsystemBase {
   private double targetHeadingToStation = 0.0;
 
   private Transform3d frontCam = new Transform3d(
-    new Translation3d(Units.inchesToMeters(13.5), Units.inchesToMeters(0.0), Units.inchesToMeters(6.5)), 
+    new Translation3d(Units.inchesToMeters(1.0), Units.inchesToMeters(9.0), Units.inchesToMeters(5.75)), 
     new Rotation3d(0.0, Rotation2d.fromDegrees(20).getRadians(), Rotation2d.fromDegrees(0).getRadians())
   );
     
   private Transform3d backCam = new Transform3d(
-    new Translation3d(Units.inchesToMeters(9.5), Units.inchesToMeters(0.0), Units.inchesToMeters(18.25)), 
+    new Translation3d(Units.inchesToMeters(2.5), Units.inchesToMeters(-9.0), Units.inchesToMeters(38.0)), 
     new Rotation3d(0.0, Rotation2d.fromDegrees(20).getRadians(), Rotation2d.fromDegrees(180).getRadians())
   );
 
@@ -88,8 +88,8 @@ public class Drivetrain extends SubsystemBase {
   //private final double WHEEL_LENGTH = 28.5; // distance between left/right wheels (in inches)
 
   // // distance between wheels
-  private final double WHEEL_WIDTH = 23.5; // distance between front/back wheels (in inches)
-  private final double WHEEL_LENGTH = 23.5; // distance between left/right wheels (in inches)
+  private final double WHEEL_WIDTH = 25.68; // distance between front/back wheels (in inches)
+  private final double WHEEL_LENGTH = 25.68; // distance between left/right wheels (in inches)
 
   private Rotation2d gyroOffset = Rotation2d.fromDegrees(0); // Offset to apply to gyro for field oriented
 
@@ -118,8 +118,8 @@ public class Drivetrain extends SubsystemBase {
     backLeftModule = new MAXSwerveModule(CAN.DRIVING_BACK_LEFT, CAN.TURNING_BACK_LEFT, Math.PI);
     backRightModule = new MAXSwerveModule(CAN.DRIVING_BACK_RIGHT, CAN.TURNING_BACK_RIGHT, Math.PI / 2);
 
-    leftSensors = new DistanceSensors(CAN.LEFT_INNER_LASER_CAN, CAN.LEFT_OUTER_LASER_CAN, 340, 380, 160);
-    rightSensors = new DistanceSensors(CAN.RIGHT_INNER_LASER_CAN, CAN.RIGHT_OUTER_LASER_CAN, 340, 380, 160);
+    leftSensors = new DistanceSensors(CAN.LEFT_INNER_LASER_CAN, CAN.LEFT_OUTER_LASER_CAN, 415, 445, 425);
+    rightSensors = new DistanceSensors(CAN.RIGHT_INNER_LASER_CAN, CAN.RIGHT_OUTER_LASER_CAN, 300, 330, 310);
     backSensor = new DistanceSensors(CAN.BACK_LASER_CAN, 135.0); // check this error
 
     //configure gyro
@@ -519,6 +519,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drivetrain/leftInner", leftSensors.getSensorDistance(leftSensors.getInnerSensor()));
     SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getSensorDistance(leftSensors.getOuterSensor()));
     SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsLEFT", leftSensors.isAtReefSide());
+    SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsRIGHT", rightSensors.isAtReefSide());
+    SmartDashboard.putBoolean("Drivetrain/isFarFromReefLEFT", leftSensors.isTooFarAway());
+    SmartDashboard.putBoolean("Drivetrain/isFarFromReefRIGHT", rightSensors.isTooFarAway());
     SmartDashboard.putBoolean("Drivetrain/isAtScoreCoralPoint",isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()));
     SmartDashboard.putNumber("Drivetrain/rightInner", rightSensors.getSensorDistance(rightSensors.getInnerSensor()));
     SmartDashboard.putNumber("Drivetrain/rightOuter", rightSensors.getSensorDistance(rightSensors.getOuterSensor()));

@@ -69,7 +69,7 @@ public class AlgaeArticulator extends SubsystemBase {
       .forwardSoftLimitEnabled(true)
       .forwardSoftLimit(320.0)
       .reverseSoftLimitEnabled(true)
-      .reverseSoftLimit(189.0);
+      .reverseSoftLimit(191.0);
     
 
       articulator.configure(articulatorConfig, ResetMode.kResetSafeParameters,

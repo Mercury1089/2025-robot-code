@@ -227,10 +227,9 @@ public class DriveCommands {
         return new ParallelCommandGroup(
             new SequentialCommandGroup(
                 goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneSafeAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneSafeAlgaePoint())),
-                goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint())),
-                goCloserWithBackLaserCan(drivetrain)
-            )
-            // ElevatorCommands.getAlgaeElevatorCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone(), intake)
+                goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()))
+            ),
+            ElevatorCommands.getArticulatorOutCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone())
         );
     }
     /**
@@ -265,10 +264,10 @@ public class DriveCommands {
                         -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
                         drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(),locs.get().processor.getRotation().getDegrees()),
                         true
-                    ), drivetrain)
+                    ), drivetrain),
                     // new ParallelCommandGroup(
                     //     new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator),
-                    //     new RunCommand(() -> elevator.setPosition(ElevatorPosition.PROCESSOR), elevator)
+                        new RunCommand(() -> elevator.setPosition(ElevatorPosition.PROCESSOR), elevator)
                     // )
                 )
             )

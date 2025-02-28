@@ -16,6 +16,7 @@ import frc.robot.subsystems.elevator.AlgaeArticulator;
 import frc.robot.subsystems.elevator.AlgaeIntake;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.AlgaeArticulator.ArticulatorPosition;
 import frc.robot.subsystems.elevator.AlgaeIntake.AlgaeSpeed;
 import frc.robot.subsystems.elevator.CoralIntake.IntakeSpeed;
 import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
@@ -145,7 +146,6 @@ public class RobotContainer {
 
     algaeIntake = new AlgaeIntake();
     algaeIntake.setDefaultCommand(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP), algaeIntake));
-    gamepadX.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
 
     articulator = new AlgaeArticulator();
     articulator.setDefaultCommand(new RunCommand(() -> articulator.setSpeed(gamepadRightX), articulator));
@@ -156,8 +156,8 @@ public class RobotContainer {
     auton = new Autons(drivetrain, coralIntake, elevator);
 
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
-    left2.onTrue(drivetrain.getDefaultCommand());
-    left2.onTrue(new InstantCommand(() -> leds.disableFIDO()));
+    right2.onTrue(drivetrain.getDefaultCommand());
+    right2.onTrue(new InstantCommand(() -> leds.disableFIDO()));
     
     right1.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain));
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
@@ -175,6 +175,16 @@ public class RobotContainer {
 
     left1.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
     left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain, elevator, algaeIntake, articulator));
+
+    right8.onTrue(
+      new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator).alongWith(
+      new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake))
+    );
+    right9.and(() -> !algaeIntake.hasAlgae()).onTrue(
+      new RunCommand(() -> articulator.setPosition(ArticulatorPosition.IN), articulator).alongWith(
+      new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP)))
+    );
+    left2.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(2.0));
 
     initializeTriggers();
   }
