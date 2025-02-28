@@ -63,11 +63,13 @@ public class AlgaeArticulator extends SubsystemBase {
       .pid(0.085,0,0)
       .positionWrappingEnabled(false)
       .outputRange(-1,1);
-    // articulatorConfig.softLimit
-    //   .forwardSoftLimitEnabled(true)
-    //   .forwardSoftLimit(90.0)
-    //   .reverseSoftLimitEnabled(true)
-    //   .reverseSoftLimit(0.0);
+    articulatorConfig.absoluteEncoder
+      .positionConversionFactor(360.0);
+    articulatorConfig.softLimit
+      .forwardSoftLimitEnabled(true)
+      .forwardSoftLimit(320.0)
+      .reverseSoftLimitEnabled(true)
+      .reverseSoftLimit(189.0);
     
 
       articulator.configure(articulatorConfig, ResetMode.kResetSafeParameters,
@@ -138,8 +140,8 @@ public class AlgaeArticulator extends SubsystemBase {
   }
   
   public enum ArticulatorPosition {
-    IN(0.0),
-    OUT(90.0),
+    IN(185.0),
+    OUT(278.0),
     OUT_THRESHOLD(30.0);
     
     public final double degreePos;

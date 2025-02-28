@@ -184,10 +184,10 @@ public class DriveCommands {
     * @param : Drivetrain, Elevator, and Coral Intake
     * @return : Returns Sequential Command Group 
     */
-    public static Command driveAndScoreAtBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Pose2d branch, Elevator elevator, CoralIntake coralIntake) {
+    public static Command driveAndScoreAtBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Supplier<Pose2d> branch, Elevator elevator, CoralIntake coralIntake) {
         return new SequentialCommandGroup(
             new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME)),
-            goToPreferredBranch(drivetrain, zone.get(), branch),
+            goToPreferredBranch(drivetrain, zone.get(), branch.get()),
             scoreAtBranch(drivetrain, zone, side, elevator, coralIntake)
         );
     }
@@ -239,8 +239,7 @@ public class DriveCommands {
     * @return : Run Command 
     */
     public static Command goCloserToReef(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side) {
-        Supplier<DistanceSensors> proximitySensor;
-
+        Supplier<DistanceSensors> proximitySensor; // this is the other inner sensor
         proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
                                 side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors() :
                                 side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors();

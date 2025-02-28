@@ -18,16 +18,18 @@ public class DistanceSensors {
     private LaserCan outerSensor;
     private LaserCan backSensor;
 
-    private double outerTrigger = 380;
-    private double innerTrigger = 340;
-    private double backTrigger = 0; //TODO: test for this value
+    private double outerTrigger;
+    private double innerTrigger;
 
-    private double awayFromReefError = 160;
+    private double awayFromReefError;
 
     // private double awayFromReefError = innerTrigger;
     
-    public DistanceSensors(int innerCANID, int outerCANID) {
+    public DistanceSensors(int innerCANID, int outerCANID, int innerTrigger, int outerTrigger, int awayFromReefError) {
         outerSensor = new LaserCan(outerCANID);
+        this.innerTrigger = innerTrigger;
+        this.outerTrigger = outerTrigger;
+        this.awayFromReefError = awayFromReefError;
         try {
             outerSensor.setRangingMode(LaserCan.RangingMode.SHORT);
             outerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
@@ -110,7 +112,7 @@ public class DistanceSensors {
     }
 
     public boolean isBackSensorTriggered() {
-        return getSensorDistance(backSensor) < backTrigger;
+        return getSensorDistance(backSensor) < awayFromReefError;
     }
 
     public boolean isAtReefSide() {

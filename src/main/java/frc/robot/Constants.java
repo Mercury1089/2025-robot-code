@@ -129,11 +129,11 @@ public final class Constants {
     public static final int ELEVATOR_RIGHT = 14;
     public static final int CORAL_INTAKE = 15;
 
-    public static final int LEFT_OUTER_LASER_CAN = 16;
-    public static final int LEFT_INNER_LASER_CAN = 17;
+    public static final int LEFT_OUTER_LASER_CAN = 19;
+    public static final int LEFT_INNER_LASER_CAN = 18;
  
-    public static final int RIGHT_INNER_LASER_CAN = 19;
-    public static final int RIGHT_OUTER_LASER_CAN = 18;
+    public static final int RIGHT_INNER_LASER_CAN = 17; // 19
+    public static final int RIGHT_OUTER_LASER_CAN = 16;
 
     public static final int BACK_LASER_CAN = 24;
 

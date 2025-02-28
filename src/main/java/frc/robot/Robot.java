@@ -68,6 +68,9 @@ public class Robot extends TimedRobot {
 
     if (m_alliance != KnownLocations.getKnownLocations().alliance) {
       m_robotContainer.initializeTriggers();
+      m_robotContainer.getAutonomous().updateAutonLocations();
+
+      m_alliance = KnownLocations.getKnownLocations().alliance;
     }
   }
 

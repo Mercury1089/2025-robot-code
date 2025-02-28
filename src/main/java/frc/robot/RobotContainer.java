@@ -107,7 +107,7 @@ public class RobotContainer {
     // buttons & bindings
     leftJoystick = new CommandJoystick(DS_USB.LEFT_STICK);
     rightJoystick = new CommandJoystick(DS_USB.RIGHT_STICK);
-    // gamepad = new CommandXboxController(DS_USB.GAMEPAD);
+    gamepad = new CommandXboxController(DS_USB.GAMEPAD);
     reefBoard = new CommandGenericHID(DS_USB.REEF_BOARD);
     secondEncoderBoard = new CommandGenericHID(DS_USB.SECOND_ENCODER_BOARD);
     gamepadHID = new GenericHID(DS_USB.GAMEPAD);
@@ -139,15 +139,17 @@ public class RobotContainer {
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
     );
 
-    // gamepadA.and(hasCoral.and(hasCoralEntered)).onTrue(new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent()).andThen(
-    //   new InstantCommand(() -> coralIntake.setEjecting(false))
-    // ));
+    gamepadA.and(hasCoral.and(hasCoralEntered)).onTrue(new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent()).andThen(
+      new InstantCommand(() -> coralIntake.setEjecting(false))
+    ));
 
     algaeIntake = new AlgaeIntake();
     algaeIntake.setDefaultCommand(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP), algaeIntake));
-    // right2.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake).until(() -> algaeIntake.hasAlgae()));
+    gamepadX.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
 
     articulator = new AlgaeArticulator();
+    articulator.setDefaultCommand(new RunCommand(() -> articulator.setSpeed(gamepadRightX), articulator));
+
     
     leds = new RobotModeLEDs();
 
