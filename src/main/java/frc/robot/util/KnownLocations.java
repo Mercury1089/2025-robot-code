@@ -85,11 +85,11 @@ public class KnownLocations {
     public static final double ALGAE_SAFE_DISTANCE = 34.5;
     public static final double ALGAE_SCORE_DISTANCE = 16.5;
 
-    public static final double CORAL_STATION_DISTANCE_X = 16;
-    public static final double CORAL_STATION_DISTANCE_Y = 13;
+    public static final double CORAL_STATION_DISTANCE_X = 16; // measure
+    public static final double CORAL_STATION_DISTANCE_Y = 13; // measure
 
-    public final double X_OFFSET = 19;
-    public final double Y_OFFSET = 8;
+    public final double X_OFFSET = 19; // measure
+    public final double Y_OFFSET = 8; // check
     public final double BIGGER_Y_OFFSET = 10; // calc this with acc robot
 
     /**
@@ -242,7 +242,7 @@ public class KnownLocations {
 
             Pose2d closeLeftTag = getFieldLayout().getTagPose(6).get().toPose2d();
             leftCloseSideLeftBranch = new Pose2d(closeLeftTag.transformBy(posXnegYOffsets).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
-            leftCloseSideRightBranch = new Pose2d(closeLeftTag.transformBy(posXposYOffsets).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
+            leftCloseSideRightBranch = new Pose2d(closeLeftTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
 
             Pose2d leftBargeTag = getFieldLayout().getTagPose(11).get().toPose2d();
             leftBargeSideLeftBranch = new Pose2d(leftBargeTag.transformBy(posXposBiggerYOffsets).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));

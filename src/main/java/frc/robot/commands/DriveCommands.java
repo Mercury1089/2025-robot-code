@@ -157,7 +157,7 @@ public class DriveCommands {
                                 side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
                                 side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
 
-        Supplier<Double> invert = () -> !proximitySensor.get().isTooFarLeft() ? 1.0 : -1.0;
+        Supplier<Double> invert = () -> !proximitySensor.get().isTooFarLeft(zone, side) ? 1.0 : -1.0;
 
         return goCloserToReef(drivetrain, zone, side).andThen(new RunCommand(
             () -> drivetrain.drive(

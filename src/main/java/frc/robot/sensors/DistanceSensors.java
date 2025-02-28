@@ -119,12 +119,11 @@ public class DistanceSensors {
         return isInnerSensorTriggered() && isOuterSensorTriggered();
     }
 
-    public boolean isTooFarLeft() {
-        RobotZone currentPref = ReefscapeUtils.preferredZone();
+    public boolean isTooFarLeft(Supplier<RobotZone> zone, Supplier<BranchSide> side) {
         boolean tooLeft = false;
 
-        if (((currentPref == RobotZone.BARGE || currentPref == RobotZone.BARGE_LEFT || currentPref == RobotZone.BARGE_RIGHT) && ReefscapeUtils.branchSide() == BranchSide.RIGHT) || 
-            ((currentPref == RobotZone.CLOSE || currentPref == RobotZone.CLOSE_LEFT || currentPref == RobotZone.CLOSE_RIGHT) && ReefscapeUtils.branchSide() == BranchSide.LEFT)) {
+        if (((zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT) && side.get() == BranchSide.RIGHT) || 
+            ((zone.get() == RobotZone.CLOSE || zone.get() == RobotZone.CLOSE_LEFT || zone.get() == RobotZone.CLOSE_RIGHT) && side.get() == BranchSide.LEFT)) {
             if (isInnerSensorTriggered() && !isOuterSensorTriggered()) {
                 tooLeft = false;
             } else if (!isInnerSensorTriggered() && isOuterSensorTriggered()) {
