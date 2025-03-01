@@ -397,14 +397,20 @@ public class ReefscapeUtils {
     }
 
     public enum CoralStation {
-        INSIDELEFT("insideLeft"),
-        OUTSIDELEFT("outsideLeft"),
-        INSIDERIGHT("insideRight"),
-        OUTSIDERIGHT("outsideRight");
+        INSIDELEFT("insideLeft", KnownLocations.getKnownLocations().leftCoralStationInside),
+        OUTSIDELEFT("outsideLeft", KnownLocations.getKnownLocations().leftCoralStationOutside),
+        INSIDERIGHT("insideRight", KnownLocations.getKnownLocations().rightCoralStationInside),
+        OUTSIDERIGHT("outsideRight", KnownLocations.getKnownLocations().rightCoralStationOutside);
      
         public String coralStation;
-          CoralStation(String station) {
+        public Pose2d stationPose;
+
+        public void setStation(Pose2d station) {
+            this.stationPose = station;
+        }
+          CoralStation(String station, Pose2d pos) {
             this.coralStation = station;
+            this.stationPose = pos;
           }
     }
 

@@ -174,8 +174,8 @@ public class DriveCommands {
     */
     public static Command goToCoralStation(Drivetrain drivetrain, Pose2d station) {
         return new SequentialCommandGroup(
-            ReefscapeUtils.getPathToPreferredCoralStation(),
-            goToPose(drivetrain, () -> station).until(() -> drivetrain.isAtPreferredCoralStation()));
+            PathUtils.getPathToPose(station, () -> 0.5),
+            goToPose(drivetrain, () -> station).until(() -> drivetrain.isAtPose(station)));
     }
     /**
     * input: Sensors, Human Input (Preferred Branch), Human Input (Preferred Level)
@@ -201,8 +201,8 @@ public class DriveCommands {
                 new RunCommand(() -> coralIntake.spitCoral(), coralIntake),
                 new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
             ).until(() -> coralIntake.noCoralPresent()),
-            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isInPosition()),
-            new InstantCommand(() -> coralIntake.setEjecting(false))
+            new InstantCommand(() -> coralIntake.setEjecting(false)),
+            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.SAFE_POS), elevator).until(() -> elevator.isInPosition())
         );
     }
 
@@ -211,10 +211,10 @@ public class DriveCommands {
     * @param : Drivetrain, Elevator, Coral Intake
     * @return : Command to drive to coral station and put elevator in position
     */
-    public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake, Pose2d station) {
-        return new SequentialCommandGroup(
+    public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake, Supplier<Pose2d> station) {
+        return new ParallelCommandGroup(
             new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.CORAL_STATION), elevator).until(() -> elevator.isInPosition()),
-            goToCoralStation(drivetrain, station).until(() -> coralIntake.hasCoralEntered())
+            goToCoralStation(drivetrain, station.get()).until(() -> coralIntake.hasCoralEntered())
         );
     }//untested
     /**

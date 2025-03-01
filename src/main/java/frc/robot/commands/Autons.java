@@ -139,12 +139,12 @@ public class Autons {
             DriveCommands.driveAndScoreAtBranch(drivetrain, () -> firstBranch.getZone(), () -> firstBranch.getSide(), () ->  firstBranch.getPose(), elevator, coralIntake),
 
             new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
-            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, ReefscapeUtils.getPreferredCoralStation()),
+            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> firstStation.stationPose),
 
             DriveCommands.driveAndScoreAtBranch(drivetrain, () -> secondBranch.getZone(), () -> secondBranch.getSide(), () -> secondBranch.getPose(), elevator, coralIntake),
 
             new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(secondStation)),
-            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, ReefscapeUtils.getPreferredCoralStation()),
+            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> secondStation.stationPose),
 
             DriveCommands.driveAndScoreAtBranch(drivetrain, () -> thirdBranch.getZone(), () -> thirdBranch.getSide(), () -> thirdBranch.getPose(), elevator, coralIntake)
         );
@@ -333,6 +333,11 @@ public class Autons {
         AutonLocations.RIGHTINRIGHTCLOSEZONE.setPose(locs.closeRightSideRightBranch);
         AutonLocations.LEFTINLEFTCLOSEZONE.setPose(locs.leftCloseSideLeftBranch);
         AutonLocations.RIGHTINLEFTCLOSEZONE.setPose(locs.leftCloseSideRightBranch);
+
+        CoralStation.INSIDELEFT.setStation(locs.leftCoralStationInside);
+        CoralStation.INSIDERIGHT.setStation(locs.rightCoralStationInside);
+        CoralStation.OUTSIDELEFT.setStation(locs.leftCoralStationOutside);
+        CoralStation.OUTSIDERIGHT.setStation(locs.rightCoralStationOutside);
     }
 
     //field relative

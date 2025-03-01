@@ -253,20 +253,24 @@ public class RobotContainer {
 
     outerLeftStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
       // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationOutside)
-      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().leftCoralStationOutside)
-    );
+      new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDELEFT)).andThen(
+      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().leftCoralStationOutside)
+    ));
     outerRightStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
       // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationOutside)  
-      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().rightCoralStationOutside)
-    );
+      new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDERIGHT)).andThen(
+      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().rightCoralStationOutside)
+    ));
     innerLeftStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
       // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationInside)
-      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().leftCoralStationInside)
-    );
+      new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.INSIDELEFT)).andThen(
+      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().leftCoralStationInside)
+    ));
     innerRightStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
+      new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDERIGHT)).andThen(
       // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationInside)
-      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, KnownLocations.getKnownLocations().rightCoralStationInside)
-    );
+      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().rightCoralStationInside)
+    ));
 
     level1BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL1)));
     level2BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)));
