@@ -118,8 +118,8 @@ public class Drivetrain extends SubsystemBase {
     backLeftModule = new MAXSwerveModule(CAN.DRIVING_BACK_LEFT, CAN.TURNING_BACK_LEFT, Math.PI);
     backRightModule = new MAXSwerveModule(CAN.DRIVING_BACK_RIGHT, CAN.TURNING_BACK_RIGHT, Math.PI / 2);
 
-    leftSensors = new DistanceSensors(CAN.LEFT_INNER_LASER_CAN, CAN.LEFT_OUTER_LASER_CAN, 415, 445, 425);
-    rightSensors = new DistanceSensors(CAN.RIGHT_INNER_LASER_CAN, CAN.RIGHT_OUTER_LASER_CAN, 300, 330, 310);
+    leftSensors = new DistanceSensors(CAN.LEFT_INNER_LASER_CAN, CAN.LEFT_OUTER_LASER_CAN, 430, 445, 400);
+    rightSensors = new DistanceSensors(CAN.RIGHT_INNER_LASER_CAN, CAN.RIGHT_OUTER_LASER_CAN, 270, 220, 280);
     backSensor = new DistanceSensors(CAN.BACK_LASER_CAN, 135.0); // check this error
 
     //configure gyro

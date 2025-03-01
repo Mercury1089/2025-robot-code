@@ -47,14 +47,14 @@ public class RobotModeLEDs extends SubsystemBase {
 
   public enum LEDState {
     OFF(0.99),
-    FIDO_ON_L1(-0.11), //strobe red
-    FIDO_ON_L2(-0.09), //strobe blue
-    FIDO_ON_L3(-0.07), //strobe gold
-    FIDO_ON_L4(-0.05), //strobe white
-    FIDO_OFF_L1(0.61), //red
-    FIDO_OFF_L2(0.87), //blue
-    FIDO_OFF_L3(0.67), //gold
-    FIDO_OFF_L4(0.93); //white
+    FIDO_ON_L4(-0.11), //strobe red
+    FIDO_ON_L3(-0.09), //strobe blue
+    FIDO_ON_L2(-0.07), //strobe gold
+    FIDO_ON_L1(-0.05), //strobe white
+    FIDO_OFF_L4(0.61), //red
+    FIDO_OFF_L3(0.87), //blue
+    FIDO_OFF_L2(0.67), //gold
+    FIDO_OFF_L1(0.93); //white
 
 
     public final double colorValue;

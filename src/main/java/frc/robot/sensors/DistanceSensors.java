@@ -32,7 +32,7 @@ public class DistanceSensors {
         this.awayFromReefError = awayFromReefError;
         try {
             outerSensor.setRangingMode(LaserCan.RangingMode.SHORT);
-            outerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+            outerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 8, 8));
             outerSensor.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
           } catch (ConfigurationFailedException e) {
             System.out.println("Configuration failed! " + e);
@@ -40,7 +40,7 @@ public class DistanceSensors {
         innerSensor = new LaserCan(innerCANID);
         try {
             innerSensor.setRangingMode(LaserCan.RangingMode.SHORT);
-            innerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+            innerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 8, 8));
             innerSensor.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
           } catch (ConfigurationFailedException e) {
             System.out.println("Configuration failed! " + e);

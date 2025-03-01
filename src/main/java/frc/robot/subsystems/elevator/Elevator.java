@@ -98,8 +98,8 @@ public class Elevator extends SubsystemBase {
     leftMotor.set((speedSupplier.get()));
   }
 
-  public void setPosition(ElevatorPosition pos) {
-    setPosition(pos.degreePos);
+  public void setPosition(Supplier<ElevatorPosition> pos) {
+    setPosition(pos.get().degreePos);
   }
 
   public void changePos() {

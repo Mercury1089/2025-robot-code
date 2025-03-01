@@ -127,6 +127,7 @@ public class RobotContainer {
     Trigger hasCoral = new Trigger(() -> coralIntake.hasCoral() && DriverStation.isTeleop());
     Trigger hasCoralEntered = new Trigger(() -> coralIntake.hasCoralEntered() && DriverStation.isTeleop());
     Trigger ejecting = new Trigger(() -> coralIntake.getEjecting() && DriverStation.isTeleop());
+    Trigger fidoOff = new Trigger(() -> !leds.isFIDOEnabled() && DriverStation.isTeleop());
 
     (hasCoral.negate().and(hasCoralEntered)).and(ejecting.negate()).onTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake)
@@ -148,7 +149,7 @@ public class RobotContainer {
     algaeIntake.setDefaultCommand(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP), algaeIntake));
 
     articulator = new AlgaeArticulator();
-    articulator.setDefaultCommand(new RunCommand(() -> articulator.setSpeed(gamepadRightX), articulator));
+    // articulator.setDefaultCommand(new RunCommand(() -> articulator.setSpeed(gamepadRightX), articulator));
 
     
     leds = new RobotModeLEDs();
@@ -158,20 +159,20 @@ public class RobotContainer {
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     right2.onTrue(drivetrain.getDefaultCommand());
     right2.onTrue(new InstantCommand(() -> leds.disableFIDO()));
+    right2.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator));
     
     right1.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain));
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
 
     right4.onTrue(
-      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
-      // .andThen(
-      // /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
+      // DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch())
+      // .andThen
+      (DriveCommands.scoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.LEFT, elevator, coralIntake)));
       // DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
-    right5.onTrue(
-      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
-      // .andThen(
-      // /* DriveCommands.scoreAtCurrentZoneBranch(drivetrain, elevator, coralIntake) */
-      // DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
+      right5.onTrue(
+        // DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch())
+        // .andThen
+        (DriveCommands.scoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.RIGHT, elevator, coralIntake)));
 
     left1.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
     left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain, elevator, algaeIntake, articulator));
@@ -184,7 +185,12 @@ public class RobotContainer {
       new RunCommand(() -> articulator.setPosition(ArticulatorPosition.IN), articulator).alongWith(
       new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP)))
     );
-    left2.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(2.0));
+
+    left8.and(fidoOff).onTrue(new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator).until(() -> elevator.isInPosition()));
+    left9.and(fidoOff).onTrue(new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent()));
+
+    left2.whileTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake)
+      .alongWith(new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator)));
 
     initializeTriggers();
   }

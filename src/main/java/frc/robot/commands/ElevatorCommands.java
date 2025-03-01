@@ -21,17 +21,17 @@ public class ElevatorCommands {
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
                 new RunCommand(() -> articulator.setPosition(ArticulatorPosition.IN), articulator),
-                new RunCommand(() -> elevator.setPosition(ElevatorPosition.SAFE_POS), elevator)
+                new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.SAFE_POS), elevator)
             ).until(() -> articulator.isAtPosition(ArticulatorPosition.IN)),
-            new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator)
+            new RunCommand(() -> elevator.setPosition(() ->ElevatorPosition.HOME), elevator)
         );
     }
 
     public static Command getArticulatorOutCommand(Elevator elevator, AlgaeArticulator articulator, Supplier<RobotZone> zone) {
         return new SequentialCommandGroup(
             new ConditionalCommand(
-                new RunCommand(() -> elevator.setPosition(ElevatorPosition.L2_ALGAE), elevator), 
-                new RunCommand(() -> elevator.setPosition(ElevatorPosition.L3_ALGAE), elevator), 
+                new RunCommand(() -> elevator.setPosition(() ->ElevatorPosition.L2_ALGAE), elevator), 
+                new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.L3_ALGAE), elevator), 
                 () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.CLOSE_LEFT || zone.get() == RobotZone.CLOSE_RIGHT)
         );
     }

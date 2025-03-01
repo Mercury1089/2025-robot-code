@@ -60,7 +60,7 @@ public class AlgaeArticulator extends SubsystemBase {
       .inverted(false);
     articulatorConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-      .pid(0.085,0,0)
+      .pid(0.022,0,0)
       .positionWrappingEnabled(false)
       .outputRange(-1,1);
     articulatorConfig.absoluteEncoder
@@ -120,17 +120,6 @@ public class AlgaeArticulator extends SubsystemBase {
     return isAtPosition(setPosition);
   }
 
-  public enum IntakeSpeed {
-    IN(0.0),
-    OUT(90.0);
-
-    public final double speed;
-
-    IntakeSpeed(double speed) {
-        this.speed = speed;
-    }
-}
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -140,7 +129,7 @@ public class AlgaeArticulator extends SubsystemBase {
   }
   
   public enum ArticulatorPosition {
-    IN(185.0),
+    IN(192.0),
     OUT(278.0),
     OUT_THRESHOLD(30.0);
     

@@ -175,8 +175,7 @@ public class DriveCommands {
     public static Command goToCoralStation(Drivetrain drivetrain, Pose2d station) {
         return new SequentialCommandGroup(
             ReefscapeUtils.getPathToPreferredCoralStation(),
-            goToPose(drivetrain, () -> station).until(() -> drivetrain.isAtPreferredCoralStation()),
-            goCloserWithBackLaserCan(drivetrain));
+            goToPose(drivetrain, () -> station).until(() -> drivetrain.isAtPreferredCoralStation()));
     }
     /**
     * input: Sensors, Human Input (Preferred Branch), Human Input (Preferred Level)
@@ -186,7 +185,7 @@ public class DriveCommands {
     */
     public static Command driveAndScoreAtBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Supplier<Pose2d> branch, Elevator elevator, CoralIntake coralIntake) {
         return new SequentialCommandGroup(
-            new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME)),
+            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME)),
             goToPreferredBranch(drivetrain, zone.get(), branch.get()),
             scoreAtBranch(drivetrain, zone, side, elevator, coralIntake)
         );
@@ -196,13 +195,14 @@ public class DriveCommands {
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
                 alignwithSensors(drivetrain, zone, side),
-                new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator).until(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel()))
+                new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator).until(() -> elevator.isInPosition())
             ),
             new ParallelCommandGroup(
                 new RunCommand(() -> coralIntake.spitCoral(), coralIntake),
-                new RunCommand(() -> elevator.setPosition(ReefscapeUtils.getPreferredLevel()), elevator)
+                new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
             ).until(() -> coralIntake.noCoralPresent()),
-            new RunCommand(() -> elevator.setPosition(ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME))
+            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isInPosition()),
+            new InstantCommand(() -> coralIntake.setEjecting(false))
         );
     }
 
@@ -213,7 +213,7 @@ public class DriveCommands {
     */
     public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake, Pose2d station) {
         return new SequentialCommandGroup(
-            new RunCommand(() -> elevator.setPosition(ElevatorPosition.CORAL_STATION), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.CORAL_STATION)),
+            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.CORAL_STATION), elevator).until(() -> elevator.isInPosition()),
             goToCoralStation(drivetrain, station).until(() -> coralIntake.hasCoralEntered())
         );
     }//untested
@@ -225,10 +225,10 @@ public class DriveCommands {
     */
     public static Command pickUpAlgaeInCurrentZone(Drivetrain drivetrain, Elevator elevator, AlgaeIntake intake, AlgaeArticulator articulator) {
         return new ParallelCommandGroup(
-            new SequentialCommandGroup(
-                goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneSafeAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneSafeAlgaePoint())),
-                goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()))
-            ),
+            // new SequentialCommandGroup(
+            //     goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneSafeAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneSafeAlgaePoint())),
+            //     goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()))
+            // ),
             ElevatorCommands.getArticulatorOutCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone())
         );
     }
@@ -267,7 +267,7 @@ public class DriveCommands {
                     ), drivetrain),
                     // new ParallelCommandGroup(
                     //     new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator),
-                        new RunCommand(() -> elevator.setPosition(ElevatorPosition.PROCESSOR), elevator)
+                        new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.PROCESSOR), elevator)
                     // )
                 )
             )
