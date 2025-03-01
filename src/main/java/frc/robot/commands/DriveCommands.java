@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -202,7 +203,11 @@ public class DriveCommands {
                 new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
             ).until(() -> coralIntake.noCoralPresent()),
             new InstantCommand(() -> coralIntake.setEjecting(false)),
-            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.SAFE_POS), elevator).until(() -> elevator.isInPosition())
+            new ConditionalCommand(
+                new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.SAFE_POS), elevator),
+                new InstantCommand(),
+                () -> elevator.isAboveSafePosition() 
+            )
         );
     }
 

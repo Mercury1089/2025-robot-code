@@ -153,7 +153,7 @@ public class Elevator extends SubsystemBase {
     L2_ALGAE(5.9, "level2Algae"), // check
     L3_ALGAE(10.3, "level3Algae"), // check
     CORAL_STATION(0.0, "coralStation"),
-    SAFE_POS(0.0, "safePos"),
+    SAFE_POS(7.14, "safePos"),
     PROCESSOR(0.0, "processor");
     
     public final double degreePos;
