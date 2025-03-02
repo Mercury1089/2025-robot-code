@@ -139,9 +139,9 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
 
-    if (leftMotor.getReverseLimitSwitch().isPressed() && getArmPosition() != 0.0) {
-      resetEncoders();
-    }
+    // if (leftMotor.getReverseLimitSwitch().isPressed() && getArmPosition() != 0.0) {
+    //   resetEncoders();
+    // }
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Elevator/Position", getArmPosition());
     SmartDashboard.putBoolean("Elevator/isInPosition", isInPosition());

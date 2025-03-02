@@ -153,11 +153,11 @@ public class DriveCommands {
     */
     public static Command alignwithSensors(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side) {
 
-        Supplier<DistanceSensors> proximitySensor;
+        Supplier<DistanceSensors> proximitySensor = () -> side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
 
-        proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
-                                side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
-                                side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
+        // proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
+        //                         side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
+        //                         side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
 
         Supplier<Double> invert = () -> !proximitySensor.get().isTooFarLeft(zone, side) ? 1.0 : -1.0;
 
@@ -247,10 +247,10 @@ public class DriveCommands {
     * @return : Run Command 
     */
     public static Command goCloserToReef(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side) {
-        Supplier<DistanceSensors> proximitySensor; // this is the other inner sensor
-        proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
-                                side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors() :
-                                side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors();
+        Supplier<DistanceSensors> proximitySensor = () -> side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors(); // this is the other inner sensor
+        // proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
+        //                         side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors() :
+        //                         side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors();
 
         Supplier<Double> invert = () -> proximitySensor.get().isTooFarAway() ? 1.0 : -1.0;
 
