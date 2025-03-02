@@ -96,8 +96,12 @@ public class CoralIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (!hasCoral()) {
+            setEjecting(false);
+        }
         SmartDashboard.putBoolean("Intake/hasCoralEntered", hasCoralEntered());
         SmartDashboard.putBoolean("Intake/hasCoral", hasCoral());
+        SmartDashboard.putBoolean("Intake/ejecting", ejecting);
         SmartDashboard.putBoolean("Intake/shouldRun",(!hasCoral() && hasCoralEntered()) || (hasCoral() && !hasCoralEntered()));
     }
 }

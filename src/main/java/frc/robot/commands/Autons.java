@@ -35,6 +35,7 @@ import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
 import frc.robot.util.PathUtils;
@@ -136,6 +137,7 @@ public class Autons {
         SequentialCommandGroup autonCommandGroup = new SequentialCommandGroup();
 
         autonCommandGroup.addCommands(
+            new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)),
             DriveCommands.driveAndScoreAtBranch(drivetrain, () -> firstBranch.getZone(), () -> firstBranch.getSide(), () ->  firstBranch.getPose(), elevator, coralIntake),
 
             new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
@@ -295,18 +297,18 @@ public class Autons {
 
     private SendableChooser<AutonLocations> getBranchChooser() {
         SendableChooser<AutonLocations> branchChooser = new SendableChooser<AutonLocations>();
-        branchChooser.setDefaultOption("Barge Zone Right Branch", AutonLocations.RIGHTINBARGEZONE);
-        branchChooser.addOption("Right Barge Zone Left Branch", AutonLocations.LEFTINRIGHTBARGEZONE);
-        branchChooser.addOption("Right Barge Zone Right Branch", AutonLocations.RIGHTINRIGHTBARGEZONE);
-        branchChooser.addOption("Right Close Zone Right Branch", AutonLocations.RIGHTINRIGHTCLOSEZONE);
-        branchChooser.addOption("Right Close Zone Left Branch", AutonLocations.LEFTINRIGHTCLOSEZONE);
-        branchChooser.addOption("Close Zone Right Branch", AutonLocations.RIGHTINCLOSEZONE);
-        branchChooser.addOption("Close Zone Left Branch", AutonLocations.LEFTINCLOSEZONE);
-        branchChooser.addOption("Left Close Zone Right Branch", AutonLocations.RIGHTINLEFTCLOSEZONE);
-        branchChooser.addOption("Left Close Zone Left Branch", AutonLocations.LEFTINLEFTCLOSEZONE);
-        branchChooser.addOption("Left Barge Zone Left Branch", AutonLocations.LEFTINLEFTBARGEZONE);
-        branchChooser.addOption("Left Barge Zone Right Branch", AutonLocations.RIGHTINLEFTBARGEZONE);
-        branchChooser.addOption("Barge Zone Left Branch", AutonLocations.LEFTINBARGEZONE);
+        branchChooser.setDefaultOption("D Right", AutonLocations.RIGHTINBARGEZONE);
+        branchChooser.addOption("E Left", AutonLocations.LEFTINRIGHTBARGEZONE);
+        branchChooser.addOption("E Right", AutonLocations.RIGHTINRIGHTBARGEZONE);
+        branchChooser.addOption("F Right", AutonLocations.RIGHTINRIGHTCLOSEZONE);
+        branchChooser.addOption("F Left", AutonLocations.LEFTINRIGHTCLOSEZONE);
+        branchChooser.addOption("A Right", AutonLocations.RIGHTINCLOSEZONE);
+        branchChooser.addOption("A Left", AutonLocations.LEFTINCLOSEZONE);
+        branchChooser.addOption("B Right", AutonLocations.RIGHTINLEFTCLOSEZONE);
+        branchChooser.addOption("B Left", AutonLocations.LEFTINLEFTCLOSEZONE);
+        branchChooser.addOption("C Left", AutonLocations.LEFTINLEFTBARGEZONE);
+        branchChooser.addOption("C Right", AutonLocations.RIGHTINLEFTBARGEZONE);
+        branchChooser.addOption("D Left", AutonLocations.LEFTINBARGEZONE);
         return branchChooser;
     }
 

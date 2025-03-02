@@ -27,6 +27,7 @@ import frc.robot.subsystems.elevator.AlgaeIntake;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.AlgaeArticulator.ArticulatorPosition;
+import frc.robot.subsystems.elevator.CoralIntake.IntakeSpeed;
 import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
@@ -163,10 +164,11 @@ public class DriveCommands {
         return goCloserToReef(drivetrain, zone, side).andThen(new RunCommand(
             () -> drivetrain.drive(
               0.0, 
-              invert.get() * 0.1,
+              invert.get() * 0.05,
               0.0,
               false)
-        ).until(() -> proximitySensor.get().isAtReefSide()));
+        ).until(() -> proximitySensor.get().isAtReefSide())
+            .andThen(new RunCommand(() -> drivetrain.drive(0.0,0.0,0.0))).until(() -> drivetrain.isNotMoving()));
     }
     /**
     * SELECT SIDE AND CORAL STATION BEFORE USING
@@ -195,16 +197,17 @@ public class DriveCommands {
     public static Command scoreAtBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Elevator elevator, CoralIntake coralIntake) {
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
-                alignwithSensors(drivetrain, zone, side),
+                // alignwithSensors(drivetrain, zone, side),
                 new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator).until(() -> elevator.isInPosition())
             ),
             new ParallelCommandGroup(
-                new RunCommand(() -> coralIntake.spitCoral(), coralIntake),
+                new RunCommand(() -> drivetrain.drive(0.0, 0.0, 0.0), drivetrain),
+                // new RunCommand(() -> coralIntake.spitCoral(), coralIntake),
                 new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
             ).until(() -> coralIntake.noCoralPresent()),
             new InstantCommand(() -> coralIntake.setEjecting(false)),
             new ConditionalCommand(
-                new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.SAFE_POS), elevator),
+                new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator),
                 new InstantCommand(),
                 () -> elevator.isAboveSafePosition() 
             )
@@ -218,8 +221,9 @@ public class DriveCommands {
     */
     public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake, Supplier<Pose2d> station) {
         return new ParallelCommandGroup(
-            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.CORAL_STATION), elevator).until(() -> elevator.isInPosition()),
-            goToCoralStation(drivetrain, station.get()).until(() -> coralIntake.hasCoralEntered())
+            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isInPosition()),
+            goToCoralStation(drivetrain, station.get()).until(() -> coralIntake.hasCoralEntered()),
+            new InstantCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP))
         );
     }//untested
     /**

@@ -32,7 +32,7 @@ public class DistanceSensors {
         this.awayFromReefError = awayFromReefError;
         try {
             outerSensor.setRangingMode(LaserCan.RangingMode.SHORT);
-            outerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 8, 8));
+            outerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
             outerSensor.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
           } catch (ConfigurationFailedException e) {
             System.out.println("Configuration failed! " + e);
@@ -40,7 +40,7 @@ public class DistanceSensors {
         innerSensor = new LaserCan(innerCANID);
         try {
             innerSensor.setRangingMode(LaserCan.RangingMode.SHORT);
-            innerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 8, 8));
+            innerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
             innerSensor.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
           } catch (ConfigurationFailedException e) {
             System.out.println("Configuration failed! " + e);
@@ -122,8 +122,7 @@ public class DistanceSensors {
     public boolean isTooFarLeft(Supplier<RobotZone> zone, Supplier<BranchSide> side) {
         boolean tooLeft = false;
 
-        if (((zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT) && side.get() == BranchSide.RIGHT) || 
-            ((zone.get() == RobotZone.CLOSE || zone.get() == RobotZone.CLOSE_LEFT || zone.get() == RobotZone.CLOSE_RIGHT) && side.get() == BranchSide.LEFT)) {
+        if (side.get() == BranchSide.LEFT) {
             if (isInnerSensorTriggered() && !isOuterSensorTriggered()) {
                 tooLeft = false;
             } else if (!isInnerSensorTriggered() && isOuterSensorTriggered()) {

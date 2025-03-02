@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
@@ -130,6 +131,10 @@ public class Elevator extends SubsystemBase {
   public boolean isAboveSafePosition() {
     return getArmPosition() > ElevatorPosition.SAFE_POS.degreePos;
   }
+  
+  public boolean isSwitchEngaged() {
+    return leftMotor.getReverseLimitSwitch().isPressed();
+  }
 
   @Override
   public void periodic() {
@@ -141,6 +146,7 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator/Position", getArmPosition());
     SmartDashboard.putBoolean("Elevator/isInPosition", isInPosition());
     SmartDashboard.putBoolean("Elevator/limitSwitchEngaged", leftMotor.getReverseLimitSwitch().isPressed());
+    SmartDashboard.putBoolean("Elevator/isHome", isAtPosition(ElevatorPosition.HOME));
   }
   
 
@@ -149,9 +155,9 @@ public class Elevator extends SubsystemBase {
     LEVEL3(12.9, "level3"),
     LEVEL2(7.14, "level2"),
     LEVEL1(5.07, "level1"), // check this
-    HOME(0.0, "home"),
+    HOME(-0.15, "home"),
     L2_ALGAE(5.9, "level2Algae"), // check
-    L3_ALGAE(10.3, "level3Algae"), // check
+    L3_ALGAE(10.75, "level3Algae"), // check
     CORAL_STATION(0.0, "coralStation"),
     SAFE_POS(7.14, "safePos"),
     PROCESSOR(0.0, "processor");

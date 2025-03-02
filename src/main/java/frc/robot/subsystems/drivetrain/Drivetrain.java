@@ -50,6 +50,7 @@ import frc.robot.util.KnownLocations;
 import frc.robot.util.PathUtils;
 import frc.robot.util.SwerveUtils;
 import frc.robot.util.TargetUtils;
+import frc.robot.util.ReefscapeUtils.BranchSide;
 import frc.robot.util.ReefscapeUtils;
 
 import au.grapplerobotics.LaserCan;
@@ -66,7 +67,7 @@ public class Drivetrain extends SubsystemBase {
   private ProfiledPIDController rotationPIDController, xPIDController, yPIDController;
   private Pose2d startingPosition;
 
-  private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.125, I = 0.0, D = 0.0;
+  private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.5, I = 0.0, D = 0.0;
   private final double THRESHOLD_DEGREES = 3.0;
   private final double THRESHOLD_SPEED = 0.5;
 
@@ -74,12 +75,12 @@ public class Drivetrain extends SubsystemBase {
   private double targetHeadingToStation = 0.0;
 
   private Transform3d frontCam = new Transform3d(
-    new Translation3d(Units.inchesToMeters(1.0), Units.inchesToMeters(9.0), Units.inchesToMeters(5.75)), 
-    new Rotation3d(0.0, Rotation2d.fromDegrees(20).getRadians(), Rotation2d.fromDegrees(0).getRadians())
+    new Translation3d(Units.inchesToMeters(9.0), Units.inchesToMeters(-1.0), Units.inchesToMeters(5.75)), 
+    new Rotation3d(0.0, Rotation2d.fromDegrees(10).getRadians(), Rotation2d.fromDegrees(0).getRadians())
   );
     
   private Transform3d backCam = new Transform3d(
-    new Translation3d(Units.inchesToMeters(2.5), Units.inchesToMeters(-9.0), Units.inchesToMeters(38.0)), 
+    new Translation3d(Units.inchesToMeters(-9.0), Units.inchesToMeters(-2.5), Units.inchesToMeters(38.0)), 
     new Rotation3d(0.0, Rotation2d.fromDegrees(20).getRadians(), Rotation2d.fromDegrees(180).getRadians())
   );
 
@@ -132,10 +133,10 @@ public class Drivetrain extends SubsystemBase {
     rotationPIDController.setTolerance(1.0);
 
     xPIDController = new ProfiledPIDController(DIRECTION_P, I, D, new TrapezoidProfile.Constraints(SWERVE.MAX_DIRECTION_SPEED,SWERVE.MAX_ACCELERATION));
-    xPIDController.setTolerance(0.0254);
+    xPIDController.setTolerance(0.1);
     
     yPIDController = new ProfiledPIDController(DIRECTION_P, I, D, new TrapezoidProfile.Constraints(SWERVE.MAX_DIRECTION_SPEED,SWERVE.MAX_ACCELERATION));
-    yPIDController.setTolerance(0.0254);
+    yPIDController.setTolerance(0.1);
 
     startingPosition = new Pose2d();
 
@@ -353,7 +354,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void resetPose(Pose2d pose) {
     // Set gyro offset for field orieneted rotatioon (zero faces away from alliance station wall)
-    // gyroOffset = KnownLocations.getKnownLocations().ZERO_GYRO_ROTAION.plus(pose.getRotation()); *TODO: ADD THIS OFFSET BACK*
+    gyroOffset = KnownLocations.getKnownLocations().zeroGyroRotation.plus(pose.getRotation());
 
     odometry.resetPosition(
     getRotation(), 
@@ -523,6 +524,8 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putBoolean("Drivetrain/isFarFromReefLEFT", leftSensors.isTooFarAway());
     SmartDashboard.putBoolean("Drivetrain/isFarFromReefRIGHT", rightSensors.isTooFarAway());
     SmartDashboard.putBoolean("Drivetrain/isAtScoreCoralPoint",isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()));
+    SmartDashboard.putBoolean("Drivetrain/isTooFarLeftRIGHT", rightSensors.isTooFarLeft(() -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.RIGHT));
+    SmartDashboard.putBoolean("Drivetrain/isTooFarLeftLEFT", rightSensors.isTooFarLeft(() -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.LEFT));
     SmartDashboard.putNumber("Drivetrain/rightInner", rightSensors.getSensorDistance(rightSensors.getInnerSensor()));
     SmartDashboard.putNumber("Drivetrain/rightOuter", rightSensors.getSensorDistance(rightSensors.getOuterSensor()));
     SmartDashboard.putNumber("Drivetrain/rotationToStation", ReefscapeUtils.getTargetHeadingToStation(getPose()));

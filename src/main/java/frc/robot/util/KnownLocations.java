@@ -82,6 +82,9 @@ public class KnownLocations {
     public final Pose2d
         processor;
 
+    public final Rotation2d
+        zeroGyroRotation;
+
     public static final double ALGAE_SAFE_DISTANCE = 34.5;
     public static final double ALGAE_SCORE_DISTANCE = 21.0;
 
@@ -89,8 +92,8 @@ public class KnownLocations {
     public static final double CORAL_STATION_DISTANCE_Y = 13;
 
     public final double X_OFFSET = 20;
-    public final double Y_OFFSET = 8;
-    public final double BIGGER_Y_OFFSET = 10;
+    public final double Y_OFFSET = 6;
+    public final double BIGGER_Y_OFFSET = 13;
 
     /**
      * Load the field layout for the current year (currently CHARGED UP).
@@ -154,6 +157,9 @@ public class KnownLocations {
         
         //TODO: check headings
         if (alliance == Alliance.Blue) {
+            // Assumes we start with the robot facing away
+            zeroGyroRotation = Rotation2d.fromDegrees(0);
+
             // closeRightSideRightBranch = PathPointInch(159.522, 112.559, 60.0);
             Pose2d closeRightTag = getFieldLayout().getTagPose(17).get().toPose2d();
             closeRightSideRightBranch = new Pose2d(closeRightTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
@@ -224,6 +230,9 @@ public class KnownLocations {
 
 
         } else {
+            // Assumes we start with the robot facing away
+            zeroGyroRotation = Rotation2d.fromDegrees(180);
+
             Pose2d closeRightTag = getFieldLayout().getTagPose(8).get().toPose2d();
             closeRightSideRightBranch = new Pose2d(closeRightTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
             closeRightSideLeftBranch = new Pose2d(closeRightTag.transformBy(posXnegYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
