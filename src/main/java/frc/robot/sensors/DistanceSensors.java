@@ -100,7 +100,7 @@ public class DistanceSensors {
         //     ProxSensor.OUTER_LEFT_SENSOR:
         //     ProxSensor.OUTER_RIGHT_SENSOR;
         
-        return getSensorDistance(outerSensor) > outerTrigger;
+        return getSensorDistance(outerSensor) < outerTrigger;
     }
 
     public boolean isInnerSensorTriggered() {
@@ -116,22 +116,22 @@ public class DistanceSensors {
     }
 
     public boolean isAtReefSide() {
-        return isInnerSensorTriggered() && isOuterSensorTriggered();
+        return isInnerSensorTriggered() && !isOuterSensorTriggered();
     }
 
     public boolean isTooFarLeft(Supplier<RobotZone> zone, Supplier<BranchSide> side) {
         boolean tooLeft = false;
 
         if (side.get() == BranchSide.LEFT) {
-            if (isInnerSensorTriggered() && !isOuterSensorTriggered()) {
+            if (isInnerSensorTriggered() && isOuterSensorTriggered()) {
                 tooLeft = false;
-            } else if (!isInnerSensorTriggered() && isOuterSensorTriggered()) {
+            } else if (!isInnerSensorTriggered() && !isOuterSensorTriggered()) {
                 tooLeft = true;
             }
         } else {
-            if (isInnerSensorTriggered() && !isOuterSensorTriggered()) {
+            if (isInnerSensorTriggered() && isOuterSensorTriggered()) {
                 tooLeft = true;
-            } else if (!isInnerSensorTriggered() && isOuterSensorTriggered()) {
+            } else if (!isInnerSensorTriggered() && !isOuterSensorTriggered()) {
                 tooLeft = false;
             }
         }
