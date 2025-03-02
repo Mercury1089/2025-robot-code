@@ -517,8 +517,8 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredStation", isAtPreferredCoralStation());
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredBranch", isAtPreferredBranch());
     SmartDashboard.putString("Drivetrain/preferredLevel", ReefscapeUtils.getPreferredLevel().lev);
-    SmartDashboard.putNumber("Drivetrain/leftInner", leftSensors.getSensorDistance(leftSensors.getInnerSensor()));
-    SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getSensorDistance(leftSensors.getOuterSensor()));
+    SmartDashboard.putNumber("Drivetrain/leftInner", leftSensors.getInnerSensorDistance());
+    SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getOuterSensorDistance());
     SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsLEFT", leftSensors.isAtReefSide());
     SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsRIGHT", rightSensors.isAtReefSide());
     SmartDashboard.putBoolean("Drivetrain/isFarFromReefLEFT", leftSensors.isTooFarAway());
@@ -526,8 +526,8 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putBoolean("Drivetrain/isAtScoreCoralPoint",isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()));
     SmartDashboard.putBoolean("Drivetrain/isTooFarLeftRIGHT", rightSensors.isTooFarLeft(() -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.RIGHT));
     SmartDashboard.putBoolean("Drivetrain/isTooFarLeftLEFT", rightSensors.isTooFarLeft(() -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.LEFT));
-    SmartDashboard.putNumber("Drivetrain/rightInner", rightSensors.getSensorDistance(rightSensors.getInnerSensor()));
-    SmartDashboard.putNumber("Drivetrain/rightOuter", rightSensors.getSensorDistance(rightSensors.getOuterSensor()));
+    SmartDashboard.putNumber("Drivetrain/rightInner", rightSensors.getInnerSensorDistance());
+    SmartDashboard.putNumber("Drivetrain/rightOuter", rightSensors.getOuterSensorDistance());
     SmartDashboard.putNumber("Drivetrain/rotationToStation", ReefscapeUtils.getTargetHeadingToStation(getPose()));
     SmartDashboard.putBoolean("Drivetrain/isAtStartingPosition", isAtPose(startingPosition, Units.inchesToMeters(2.0), Units.inchesToMeters(2.0)));
   }

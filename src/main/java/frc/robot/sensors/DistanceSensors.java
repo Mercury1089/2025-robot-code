@@ -1,6 +1,7 @@
 package frc.robot.sensors;
 
 import au.grapplerobotics.LaserCan;
+import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.Constants.CAN;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.ReefscapeUtils.BranchSide;
@@ -17,6 +18,10 @@ public class DistanceSensors {
     private LaserCan innerSensor;
     private LaserCan outerSensor;
     private LaserCan backSensor;
+
+    private LinearFilter innerFilter;
+    private LinearFilter outerFilter;
+    private LinearFilter backFilter;
 
     private double outerTrigger;
     private double innerTrigger;
@@ -45,6 +50,11 @@ public class DistanceSensors {
           } catch (ConfigurationFailedException e) {
             System.out.println("Configuration failed! " + e);
           } //i copied this whole thing
+        
+        innerFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+        outerFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+        backFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+
     }
 
     public DistanceSensors(int backCANID, double error) {
@@ -72,12 +82,22 @@ public class DistanceSensors {
     }
 
     // returns in millimters
-    public int getSensorDistance(LaserCan sensor) {
+    private int getSensorDistance(LaserCan sensor) {
         LaserCan.Measurement measurement = sensor.getMeasurement();
         if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
             return measurement.distance_mm;
         }
         return Integer.MAX_VALUE;
+    }
+
+    public int getInnerSensorDistance() {
+        return (int)Math.round(innerFilter.calculate((float)getSensorDistance(innerSensor)));
+    }
+    public int getOuterSensorDistance() {
+        return (int)Math.round(outerFilter.calculate((float)getSensorDistance(outerSensor)));
+    }
+    public int getBackSensorDistance() {
+        return (int)Math.round(backFilter.calculate((float)getSensorDistance(backSensor)));
     }
 
     // private LaserCan getLaserCan(ProxSensor sensor) {
@@ -100,7 +120,7 @@ public class DistanceSensors {
         //     ProxSensor.OUTER_LEFT_SENSOR:
         //     ProxSensor.OUTER_RIGHT_SENSOR;
         
-        return getSensorDistance(outerSensor) < outerTrigger;
+        return getOuterSensorDistance() < outerTrigger;
     }
 
     public boolean isInnerSensorTriggered() {
@@ -108,11 +128,11 @@ public class DistanceSensors {
         //     ProxSensor.INNER_LEFT_SENSOR:
         //     ProxSensor.INNER_RIGHT_SENSOR;
         
-        return getSensorDistance(innerSensor) < innerTrigger;
+        return getInnerSensorDistance() < innerTrigger;
     }
 
     public boolean isBackSensorTriggered() {
-        return getSensorDistance(backSensor) < awayFromReefError;
+        return getBackSensorDistance() < awayFromReefError;
     }
 
     public boolean isAtReefSide() {
