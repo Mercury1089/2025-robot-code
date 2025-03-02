@@ -119,30 +119,16 @@ public class DistanceSensors {
         return isInnerSensorTriggered() && !isOuterSensorTriggered();
     }
 
+    public boolean isTooFarInside() {
+        return isInnerSensorTriggered() && isOuterSensorTriggered();
+    }
+
+    public boolean isTooFarOutside() {
+        return !isInnerSensorTriggered() && !isOuterSensorTriggered();
+    }
+
     public boolean isTooFarLeft(Supplier<RobotZone> zone, Supplier<BranchSide> side) {
-        boolean tooLeft = false;
-
-        if (side.get() == BranchSide.LEFT) {
-            if (isInnerSensorTriggered() && isOuterSensorTriggered()) {
-                tooLeft = false;
-            } else if (!isInnerSensorTriggered() && !isOuterSensorTriggered()) {
-                tooLeft = true;
-            }
-        } else {
-            if (isInnerSensorTriggered() && isOuterSensorTriggered()) {
-                tooLeft = true;
-            } else if (!isInnerSensorTriggered() && !isOuterSensorTriggered()) {
-                tooLeft = false;
-            }
-        }
-
-        
-
-        // if (currentPref == RobotZone.BARGE || currentPref == RobotZone.BARGE_LEFT || currentPref == RobotZone.BARGE_RIGHT) {
-        //     tooLeft = !tooLeft;
-        // }
-
-        return tooLeft;
+        return side.get() == BranchSide.LEFT ? isTooFarOutside() : isTooFarInside();
     }
 
     public boolean isTooFarAway() {
