@@ -159,12 +159,13 @@ public class DriveCommands {
         //                         side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
         //                         side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
 
-        Supplier<Double> invert = () -> !proximitySensor.get().isTooFarLeft(zone, side) ? 1.0 : -1.0;
+        // Positive Y moves right, negative Y moves left
+        Supplier<Double> yDirection = () -> proximitySensor.get().isTooFarLeft(zone, side) ? -1.0 : 1.0;
 
         return goCloserToReef(drivetrain, zone, side).andThen(new RunCommand(
             () -> drivetrain.drive(
               0.0, 
-              invert.get() * 0.05,
+              yDirection.get() * 0.05,
               0.0,
               false)
         ).until(() -> proximitySensor.get().isAtReefSide())
@@ -252,11 +253,12 @@ public class DriveCommands {
         //                         side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors() :
         //                         side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors();
 
-        Supplier<Double> invert = () -> proximitySensor.get().isTooFarAway() ? 1.0 : -1.0;
+        // Positive X moves closer, negative X moves away
+        Supplier<Double> xDirection = () -> proximitySensor.get().isTooFarAway() ? 1.0 : -1.0;
 
         return new RunCommand(
             () -> drivetrain.drive(
-              invert.get() * 0.1, // away from reef num
+              xDirection.get() * 0.1, // away from reef num
               0.0,
               0.0,
               false)
