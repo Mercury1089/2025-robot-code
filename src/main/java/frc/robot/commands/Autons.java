@@ -138,7 +138,9 @@ public class Autons {
 
         autonCommandGroup.addCommands(
             new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)),
-            DriveCommands.driveAndScoreAtBranch(drivetrain, () -> firstBranch.getZone(), () -> firstBranch.getSide(), () ->  firstBranch.getPose(), elevator, coralIntake),
+            PathUtils.getPathToPose(firstBranch.getPose(), () -> 0.5),
+            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL2), elevator).until(() -> elevator.isInPosition()),
+            new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() ->coralIntake.noCoralPresent()),
 
             new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
             DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> firstStation.stationPose),

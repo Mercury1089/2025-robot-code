@@ -141,7 +141,6 @@ public class DriveCommands {
         return new SequentialCommandGroup(
             new InstantCommand(() -> drivetrain.setIgnoreBackCam(true)),
             PathUtils.getPathToPose(branch, () -> 0.5),
-            goToPose(drivetrain, () -> branch),
             new InstantCommand(() -> drivetrain.setIgnoreBackCam(false))
         );
     }
@@ -285,19 +284,19 @@ public class DriveCommands {
         );
     }
 
-    public static Command goCloserWithBackLaserCan(Drivetrain drivetrain) {
-        DistanceSensors proximitySensor = drivetrain.getBackSensor();
+    // public static Command goCloserWithBackLaserCan(Drivetrain drivetrain) {
+    //     DistanceSensors proximitySensor = drivetrain.getBackSensor();
 
-        Supplier<Double> invert = () -> proximitySensor.isTooFarAway() ? -1.0 : 1.0;
+    //     Supplier<Double> invert = () -> proximitySensor.isTooFarAway() ? -1.0 : 1.0;
 
-        return new RunCommand(
-            () -> drivetrain.drive(
-              invert.get() * 0.1, // away from reef num
-              0.0,
-              0.0,
-              false)
-          , drivetrain).until(() -> !proximitySensor.isTooFarAway());
-    }
+    //     return new RunCommand(
+    //         () -> drivetrain.drive(
+    //           invert.get() * 0.1, // away from reef num
+    //           0.0,
+    //           0.0,
+    //           false)
+    //       , drivetrain).until(() -> !proximitySensor.isTooFarAway());
+    // }
     /**
      * Construct a command that will follow a path provided when the command initializes.
      * @param pathSupplier Supplier that provides the path to follow.

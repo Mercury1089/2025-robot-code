@@ -92,7 +92,7 @@ public class KnownLocations {
     public static final double CORAL_STATION_DISTANCE_Y = 13;
 
     public final double X_OFFSET = 20;
-    public final double Y_OFFSET = 6;
+    public final double Y_OFFSET = 10;
     public final double BIGGER_Y_OFFSET = 13;
 
     /**

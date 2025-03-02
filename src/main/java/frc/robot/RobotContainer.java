@@ -192,7 +192,8 @@ public class RobotContainer {
       new InstantCommand(() -> coralIntake.setEjecting(false))
     ));
 
-    right10.onTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.1)));
+    right10.onTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.25)));
+    right11.onTrue(new InstantCommand(() -> elevator.resetEncoders()));
 
     initializeTriggers();
   }

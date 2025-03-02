@@ -2,6 +2,7 @@ package frc.robot.sensors;
 
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.MedianFilter;
 import frc.robot.Constants.CAN;
 import frc.robot.util.ReefscapeUtils;
 import frc.robot.util.ReefscapeUtils.BranchSide;
@@ -19,9 +20,9 @@ public class DistanceSensors {
     private LaserCan outerSensor;
     private LaserCan backSensor;
 
-    private LinearFilter innerFilter;
-    private LinearFilter outerFilter;
-    private LinearFilter backFilter;
+    // private MedianFilter innerFilter;
+    // private MedianFilter outerFilter;
+    // private MedianFilter backFilter;
 
     private double outerTrigger;
     private double innerTrigger;
@@ -36,7 +37,7 @@ public class DistanceSensors {
         this.outerTrigger = outerTrigger;
         this.awayFromReefError = awayFromReefError;
         try {
-            outerSensor.setRangingMode(LaserCan.RangingMode.SHORT);
+            outerSensor.setRangingMode(LaserCan.RangingMode.LONG);
             outerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
             outerSensor.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
           } catch (ConfigurationFailedException e) {
@@ -44,16 +45,16 @@ public class DistanceSensors {
           } //i copied this whole thing
         innerSensor = new LaserCan(innerCANID);
         try {
-            innerSensor.setRangingMode(LaserCan.RangingMode.SHORT);
+            innerSensor.setRangingMode(LaserCan.RangingMode.LONG);
             innerSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
             innerSensor.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
           } catch (ConfigurationFailedException e) {
             System.out.println("Configuration failed! " + e);
           } //i copied this whole thing
         
-        innerFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
-        outerFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
-        backFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+        // innerFilter = new MedianFilter(5);
+        // outerFilter = new MedianFilter(5);
+        // backFilter = new MedianFilter(5);
 
     }
 
@@ -91,13 +92,16 @@ public class DistanceSensors {
     }
 
     public int getInnerSensorDistance() {
-        return (int)Math.round(innerFilter.calculate((float)getSensorDistance(innerSensor)));
+        return getSensorDistance(innerSensor);
+        // return (int)Math.round(innerFilter.calculate((float)getSensorDistance(innerSensor)));
     }
     public int getOuterSensorDistance() {
-        return (int)Math.round(outerFilter.calculate((float)getSensorDistance(outerSensor)));
+        return getSensorDistance(outerSensor);
+        //return (int)Math.round(outerFilter.calculate((float)getSensorDistance(outerSensor)));
     }
     public int getBackSensorDistance() {
-        return (int)Math.round(backFilter.calculate((float)getSensorDistance(backSensor)));
+        return getSensorDistance(backSensor);
+        // return (int)Math.round(backFilter.calculate((float)getSensorDistance(backSensor)));
     }
 
     // private LaserCan getLaserCan(ProxSensor sensor) {
@@ -152,7 +156,7 @@ public class DistanceSensors {
     }
 
     public boolean isTooFarAway() {
-        return getSensorDistance(innerSensor) > awayFromReefError;
+        return getInnerSensorDistance() > awayFromReefError;
     }  
 
     public boolean isTooFarAwayFromReefBack() {
