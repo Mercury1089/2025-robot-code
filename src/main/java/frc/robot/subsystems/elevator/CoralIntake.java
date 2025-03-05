@@ -51,24 +51,24 @@ public class CoralIntake extends SubsystemBase {
         return backCoralSensor.isTriggered();
     }
 
-    public boolean hasCoral() {
-        return frontCoralSensor.isTriggered();
+    public boolean isCoralEntering() {
+        return backCoralSensor.isTriggered() && !frontCoralSensor.isTriggered();
     }
-
+    public boolean isCoralExiting() {
+        return !backCoralSensor.isTriggered() && frontCoralSensor.isTriggered();
+    }
+    public boolean hasCoral() {
+        return backCoralSensor.isTriggered() && frontCoralSensor.isTriggered();
+    }
     public boolean noCoralPresent() {
         return !backCoralSensor.isTriggered() && !frontCoralSensor.isTriggered();
-    }
-
-    public void spitCoral() {
-        ejecting = true;
-        setSpeed(IntakeSpeed.OUTTAKE);
     }
 
     public void setEjecting(boolean eject) {
         ejecting = eject;
     }
 
-    public boolean getEjecting() {
+    public boolean isEjecting() {
         return ejecting;
     }
  
@@ -96,7 +96,7 @@ public class CoralIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (!hasCoral()) {
+        if (noCoralPresent()) {
             setEjecting(false);
         }
         SmartDashboard.putBoolean("Intake/hasCoralEntered", hasCoralEntered());

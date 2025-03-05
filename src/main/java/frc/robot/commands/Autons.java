@@ -35,6 +35,7 @@ import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.CoralIntake.IntakeSpeed;
 import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.MercMath;
@@ -140,7 +141,7 @@ public class Autons {
             new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)),
             PathUtils.getPathToPose(firstBranch.getPose(), () -> 0.5),
             new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL2), elevator).until(() -> elevator.isInPosition()),
-            new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() ->coralIntake.noCoralPresent()),
+            new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE)).until(() -> coralIntake.noCoralPresent()),
 
             new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
             DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> firstStation.stationPose),
@@ -333,8 +334,8 @@ public class Autons {
         AutonLocations.RIGHTINLEFTBARGEZONE.setPose(locs.leftBargeSideRightBranch);
         AutonLocations.LEFTINCLOSEZONE.setPose(locs.closeSideLeftBranch);
         AutonLocations.RIGHTINCLOSEZONE.setPose(locs.closeSideRightBranch);
-        AutonLocations.LEFTINRIGHTCLOSEZONE.setPose(locs.closeRightSideLeftBranch);
-        AutonLocations.RIGHTINRIGHTCLOSEZONE.setPose(locs.closeRightSideRightBranch);
+        AutonLocations.LEFTINRIGHTCLOSEZONE.setPose(locs.rightCloseSideLeftBranch);
+        AutonLocations.RIGHTINRIGHTCLOSEZONE.setPose(locs.rightCloseSideRightBranch);
         AutonLocations.LEFTINLEFTCLOSEZONE.setPose(locs.leftCloseSideLeftBranch);
         AutonLocations.RIGHTINLEFTCLOSEZONE.setPose(locs.leftCloseSideRightBranch);
 

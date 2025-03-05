@@ -340,7 +340,7 @@ public class ReefscapeUtils {
                 leftBranch = locs.rightBargeSideLeftBranch;
                 break;
             case CLOSE_RIGHT:
-                leftBranch = locs.closeRightSideLeftBranch;
+                leftBranch = locs.rightCloseSideLeftBranch;
                 break;
             case CLOSE:
                 leftBranch = locs.closeSideLeftBranch;
@@ -366,7 +366,7 @@ public class ReefscapeUtils {
                 rightBranch = locs.rightBargeSideRightBranch;
                 break;
             case CLOSE_RIGHT:
-                rightBranch = locs.closeRightSideRightBranch;
+                rightBranch = locs.rightCloseSideRightBranch;
                 break;
             case CLOSE:
                 rightBranch = locs.closeSideRightBranch;

@@ -43,8 +43,8 @@ public class KnownLocations {
         bargeSideRightBranch,
         rightBargeSideLeftBranch,
         rightBargeSideRightBranch,
-        closeRightSideRightBranch,
-        closeRightSideLeftBranch,
+        rightCloseSideRightBranch,
+        rightCloseSideLeftBranch,
         closeSideRightBranch,
         closeSideLeftBranch,
         leftCloseSideRightBranch,
@@ -162,8 +162,8 @@ public class KnownLocations {
 
             // closeRightSideRightBranch = PathPointInch(159.522, 112.559, 60.0);
             Pose2d closeRightTag = getFieldLayout().getTagPose(17).get().toPose2d();
-            closeRightSideRightBranch = new Pose2d(closeRightTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
-            closeRightSideLeftBranch = new Pose2d(closeRightTag.transformBy(posXnegYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
+            rightCloseSideRightBranch = new Pose2d(closeRightTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
+            rightCloseSideLeftBranch = new Pose2d(closeRightTag.transformBy(posXnegYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
 
             Pose2d bargeRightTag = getFieldLayout().getTagPose(22).get().toPose2d();
             rightBargeSideRightBranch = new Pose2d(bargeRightTag.transformBy(posXnegYOffsets).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
@@ -234,8 +234,8 @@ public class KnownLocations {
             zeroGyroRotation = Rotation2d.fromDegrees(180);
 
             Pose2d closeRightTag = getFieldLayout().getTagPose(8).get().toPose2d();
-            closeRightSideRightBranch = new Pose2d(closeRightTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
-            closeRightSideLeftBranch = new Pose2d(closeRightTag.transformBy(posXnegYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
+            rightCloseSideRightBranch = new Pose2d(closeRightTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
+            rightCloseSideLeftBranch = new Pose2d(closeRightTag.transformBy(posXnegYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
 
             Pose2d bargeRightTag = getFieldLayout().getTagPose(9).get().toPose2d();
             rightBargeSideRightBranch = new Pose2d(bargeRightTag.transformBy(posXnegYOffsets).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
