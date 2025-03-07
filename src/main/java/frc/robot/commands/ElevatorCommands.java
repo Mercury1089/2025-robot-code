@@ -27,18 +27,19 @@ public class ElevatorCommands {
         );
     }
 
-    public static Command getArticulatorOutCommand(Elevator elevator, AlgaeArticulator articulator, Supplier<RobotZone> zone) {
-        return new SequentialCommandGroup(
+    public static Command getAlgaeRemovalCommand(Elevator elevator, AlgaeArticulator articulator, Supplier<RobotZone> zone) {
+        return new ParallelCommandGroup(
             new ConditionalCommand(
                 new RunCommand(() -> elevator.setPosition(() ->ElevatorPosition.L2_ALGAE), elevator), 
                 new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.L3_ALGAE), elevator), 
-                () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.CLOSE_LEFT || zone.get() == RobotZone.CLOSE_RIGHT)
+                () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.CLOSE_LEFT || zone.get() == RobotZone.CLOSE_RIGHT),
+            new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator)
         );
     }
 
     public static Command getAlgaeElevatorCommand(Elevator elevator, AlgaeArticulator articulator, Supplier<RobotZone> zone, AlgaeIntake intake) {
         return new ParallelCommandGroup(
-            getArticulatorOutCommand(elevator, articulator, zone),
+            getAlgaeRemovalCommand(elevator, articulator, zone),
             new RunCommand(() -> intake.intakeAlgae(), intake)
         );
     }

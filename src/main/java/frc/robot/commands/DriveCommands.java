@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.SWERVE;
-import frc.robot.sensors.DistanceSensors;
+// import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.AlgaeArticulator;
 import frc.robot.subsystems.elevator.AlgaeIntake;
@@ -83,16 +83,14 @@ public class DriveCommands {
     * @return : Returns a RunCommand telling the drivetrain to drive and calculates heading degrees required to target reef
     */
     public static Command targetDriveToReef(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
-        Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
-        return new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getPose().getRotation().getDegrees())).andThen(
-            new RunCommand(
+        Supplier<Double> heading = () -> ReefscapeUtils.getTargetHeadingToReef(drivetrain.getPose());
+        return new RunCommand(
                 () -> drivetrain.drive(
                   -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
                   -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
                   drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), heading.get()),
                   true)
-              , drivetrain) 
-        ) ;
+              , drivetrain);
     }
     /**
     * @param : Supplier (xSpeed, ySpeed), 
@@ -100,36 +98,26 @@ public class DriveCommands {
     */
     public static Command targetDriveToStation(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToStation();
-        return new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getPose().getRotation().getDegrees())).andThen(
-            new RunCommand(
+        return new RunCommand(
                 () -> drivetrain.drive(
                   -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
                   -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
                   drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), heading.get()),
                   true)
-              , drivetrain) 
-        ) ;
+              , drivetrain);
     }
     /**
     * @param : Drivetrain, Pose2d Supplier 
     * @return : Outputs a Run Command 
     */
     public static Command goToPose(Drivetrain drivetrain, Supplier<Pose2d> desiredPose) {
-        return new ParallelCommandGroup(
-            new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getRotation().getDegrees())),
-            new InstantCommand(() -> drivetrain.getXController().reset(drivetrain.getPose().getX())),
-            new InstantCommand(() -> drivetrain.getYController().reset(drivetrain.getPose().getY()))
-            // new InstantCommand(() -> drivetrain.setIgnoreBackCam(true))
-        ).andThen(
-            new RunCommand(
+        return new RunCommand(
             () -> drivetrain.drive(
               drivetrain.getXController().calculate(drivetrain.getPose().getX(), desiredPose.get().getX()),
               drivetrain.getYController().calculate(drivetrain.getPose().getY(), desiredPose.get().getY()),
               drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), desiredPose.get().getRotation().getDegrees()),
               true)
-          , drivetrain).until(() -> drivetrain.isAtPose(desiredPose.get()))
-        //   new InstantCommand(() -> drivetrain.setIgnoreBackCam(false))
-        );
+          , drivetrain).until(() -> drivetrain.isAtPose(desiredPose.get()));
     }
     /**
     * @param : Drivetrain 
@@ -150,26 +138,26 @@ public class DriveCommands {
     * @return : Outputs a Run Command and calculates if the robot is too far left or right it will adjust itself
     * SELECT BRANCH AND ZONE BEFORE USING
     */
-    public static Command alignwithSensors(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side) {
+    // public static Command alignwithSensors(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side) {
 
-        Supplier<DistanceSensors> proximitySensor = () -> side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
+    //     Supplier<DistanceSensors> proximitySensor = () -> side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
 
-        // proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
-        //                         side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
-        //                         side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
+    //     // proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
+    //     //                         side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors() :
+    //     //                         side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors();
 
-        // Positive Y moves right, negative Y moves left
-        Supplier<Double> yDirection = () -> proximitySensor.get().isTooFarLeft(zone, side) ? -1.0 : 1.0;
+    //     // Positive Y moves right, negative Y moves left
+    //     Supplier<Double> yDirection = () -> proximitySensor.get().isTooFarLeft(zone, side) ? -1.0 : 1.0;
 
-        return goCloserToReef(drivetrain, zone, side).andThen(new RunCommand(
-            () -> drivetrain.drive(
-              0.0, 
-              yDirection.get() * 0.05,
-              0.0,
-              false)
-        ).until(() -> proximitySensor.get().isAtReefSide())
-            .andThen(new RunCommand(() -> drivetrain.drive(0.0,0.0,0.0))).until(() -> drivetrain.isNotMoving()));
-    }
+    //     return goCloserToReef(drivetrain, zone, side).andThen(new RunCommand(
+    //         () -> drivetrain.drive(
+    //           0.0, 
+    //           yDirection.get() * 0.05,
+    //           0.0,
+    //           false)
+    //     ).until(() -> proximitySensor.get().isAtReefSide())
+    //         .andThen(new RunCommand(() -> drivetrain.drive(0.0,0.0,0.0))).until(() -> drivetrain.isNotMoving()));
+    // }
     /**
     * SELECT SIDE AND CORAL STATION BEFORE USING
     * @param : Drivetrain 
@@ -198,6 +186,7 @@ public class DriveCommands {
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
                 // alignwithSensors(drivetrain, zone, side),
+                //TODO: pid to pose here?
                 new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator).until(() -> elevator.isInPosition())
             ),
             new ParallelCommandGroup(
@@ -238,7 +227,7 @@ public class DriveCommands {
             //     goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneSafeAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneSafeAlgaePoint())),
             //     goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneScoreAlgaePoint()).until(() -> drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()))
             // ),
-            ElevatorCommands.getArticulatorOutCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone())
+            ElevatorCommands.getAlgaeRemovalCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone())
         );
     }
     /**
@@ -246,41 +235,38 @@ public class DriveCommands {
     * @param : Drivetrain
     * @return : Run Command 
     */
-    public static Command goCloserToReef(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side) {
-        Supplier<DistanceSensors> proximitySensor = () -> side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors(); // this is the other inner sensor
-        // proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
-        //                         side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors() :
-        //                         side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors();
+    // public static Command goCloserToReef(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side) {
+    //     Supplier<DistanceSensors> proximitySensor = () -> side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors(); // this is the other inner sensor
+    //     // proximitySensor = () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.BARGE_LEFT || zone.get() == RobotZone.BARGE_RIGHT ?
+    //     //                         side.get() == BranchSide.LEFT ? drivetrain.getLeftSensors() : drivetrain.getRightSensors() :
+    //     //                         side.get() == BranchSide.LEFT ? drivetrain.getRightSensors() : drivetrain.getLeftSensors();
 
-        // Positive X moves closer, negative X moves away
-        Supplier<Double> xDirection = () -> proximitySensor.get().isTooFarAway() ? 1.0 : -1.0;
+    //     // Positive X moves closer, negative X moves away
+    //     Supplier<Double> xDirection = () -> proximitySensor.get().isTooFarAway() ? 1.0 : -1.0;
 
-        return new RunCommand(
-            () -> drivetrain.drive(
-              xDirection.get() * 0.1, // away from reef num
-              0.0,
-              0.0,
-              false)
-          , drivetrain).until(() -> !proximitySensor.get().isTooFarAway());
-    }
+    //     return new RunCommand(
+    //         () -> drivetrain.drive(
+    //           xDirection.get() * 0.1, // away from reef num
+    //           0.0,
+    //           0.0,
+    //           false)
+    //       , drivetrain).until(() -> !proximitySensor.get().isTooFarAway());
+    // }
 
     public static Command lockToProcessor(Drivetrain drivetrain, Supplier<Double> ySpeedSupplier, Elevator elevator, AlgaeArticulator articulator) {
         Supplier<KnownLocations> locs = () -> KnownLocations.getKnownLocations();
-        return new InstantCommand(() -> drivetrain.getXController().reset(drivetrain.getPose().getX())).andThen(
-            new InstantCommand(() -> drivetrain.getRotationalController().reset(drivetrain.getRotation().getDegrees())).andThen(
-                new ParallelCommandGroup(
-                    new RunCommand(() -> drivetrain.drive(
+        return new ParallelCommandGroup(
+                new RunCommand(() -> drivetrain.drive(
                         drivetrain.getXController().calculate(drivetrain.getPose().getX(), locs.get().processor.getX()),
                         -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-                        drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(),locs.get().processor.getRotation().getDegrees()),
-                        true
-                    ), drivetrain),
-                    // new ParallelCommandGroup(
-                    //     new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator),
-                        new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.PROCESSOR), elevator)
-                    // )
-                )
-            )
+                        drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(),
+                                locs.get().processor.getRotation().getDegrees()),
+                        true), drivetrain),
+                // new ParallelCommandGroup(
+                // new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT),
+                // articulator),
+                new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.PROCESSOR), elevator)
+        // )
         );
     }
 

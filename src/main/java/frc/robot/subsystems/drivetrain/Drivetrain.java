@@ -44,7 +44,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.SWERVE;
 import frc.robot.sensors.AprilTagCamera;
-import frc.robot.sensors.DistanceSensors;
+// import frc.robot.sensors.DistanceSensors;
 import frc.robot.sensors.ProximitySensor;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.PathUtils;
@@ -64,7 +64,7 @@ public class Drivetrain extends SubsystemBase {
   private SwerveDriveKinematics swerveKinematics;
   private AprilTagCamera photonCam, photonCam2;
   private Field2d smartdashField;
-  private ProfiledPIDController rotationPIDController, xPIDController, yPIDController;
+  private PIDController rotationPIDController, xPIDController, yPIDController;
   private Pose2d startingPosition;
 
   private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.5, I = 0.0, D = 0.0;
@@ -103,10 +103,10 @@ public class Drivetrain extends SubsystemBase {
   private SlewRateLimiter angularSpeedLimiter = new SlewRateLimiter(SWERVE.ROTATIONAL_SLEW_RATE);
   private double prevTime = WPIUtilJNI.now() * 1e-6;
 
-  private double laserCanMeasurement = 0.0;
-  private double laserCanMeasurement2 = 0.0;
+  // private double laserCanMeasurement = 0.0;
+  // private double laserCanMeasurement2 = 0.0;
   private boolean ignoreBackCamera = false;
-  private DistanceSensors leftSensors, rightSensors;
+  // private DistanceSensors leftSensors, rightSensors;
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -119,8 +119,8 @@ public class Drivetrain extends SubsystemBase {
     backLeftModule = new MAXSwerveModule(CAN.DRIVING_BACK_LEFT, CAN.TURNING_BACK_LEFT, Math.PI);
     backRightModule = new MAXSwerveModule(CAN.DRIVING_BACK_RIGHT, CAN.TURNING_BACK_RIGHT, Math.PI / 2);
 
-    leftSensors = new DistanceSensors(CAN.LEFT_INNER_LASER_CAN, CAN.LEFT_OUTER_LASER_CAN, 430, 445, 400);
-    rightSensors = new DistanceSensors(CAN.RIGHT_INNER_LASER_CAN, CAN.RIGHT_OUTER_LASER_CAN, 270, 220, 280);
+    // leftSensors = new DistanceSensors(CAN.LEFT_INNER_LASER_CAN, CAN.LEFT_OUTER_LASER_CAN, 430, 445, 400);
+    // rightSensors = new DistanceSensors(CAN.RIGHT_INNER_LASER_CAN, CAN.RIGHT_OUTER_LASER_CAN, 270, 220, 280);
     // backSensor = new DistanceSensors(CAN.BACK_LASER_CAN, 135.0); // check this error
 
     //configure gyro
@@ -128,14 +128,14 @@ public class Drivetrain extends SubsystemBase {
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.getYaw().setUpdateFrequency(10);
 
-    rotationPIDController = new ProfiledPIDController(ROTATION_P, I, D, new TrapezoidProfile.Constraints(Units.radiansToDegrees(4.75),720));
+    rotationPIDController = new PIDController(ROTATION_P, I, D);
     rotationPIDController.enableContinuousInput(-180, 180);
     rotationPIDController.setTolerance(1.0);
 
-    xPIDController = new ProfiledPIDController(DIRECTION_P, I, D, new TrapezoidProfile.Constraints(SWERVE.MAX_DIRECTION_SPEED,SWERVE.MAX_ACCELERATION));
+    xPIDController = new PIDController(DIRECTION_P, I, D);
     xPIDController.setTolerance(0.1);
     
-    yPIDController = new ProfiledPIDController(DIRECTION_P, I, D, new TrapezoidProfile.Constraints(SWERVE.MAX_DIRECTION_SPEED,SWERVE.MAX_ACCELERATION));
+    yPIDController = new PIDController(DIRECTION_P, I, D);
     yPIDController.setTolerance(0.1);
 
     startingPosition = new Pose2d();
@@ -178,25 +178,25 @@ public class Drivetrain extends SubsystemBase {
     );
   }
 
-  public ProfiledPIDController getRotationalController() {
+  public PIDController getRotationalController() {
     return rotationPIDController;
   }
 
-  public ProfiledPIDController getXController() {
+  public PIDController getXController() {
     return xPIDController;
   }
 
-  public ProfiledPIDController getYController() {
+  public PIDController getYController() {
     return yPIDController;
   }
 
-  public DistanceSensors getLeftSensors() {
-    return leftSensors;
-  }
+  // public DistanceSensors getLeftSensors() {
+  //   return leftSensors;
+  // }
 
-  public DistanceSensors getRightSensors() {
-    return rightSensors;
-  }
+  // public DistanceSensors getRightSensors() {
+  //   return rightSensors;
+  // }
 
   // public DistanceSensors getBackSensor() {
   //   return backSensor;
@@ -517,17 +517,17 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredStation", isAtPreferredCoralStation());
     SmartDashboard.putBoolean("Drivetrain/isAtPreferredBranch", isAtPreferredBranch());
     SmartDashboard.putString("Drivetrain/preferredLevel", ReefscapeUtils.getPreferredLevel().lev);
-    SmartDashboard.putNumber("Drivetrain/leftInner", leftSensors.getInnerSensorDistance());
-    SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getOuterSensorDistance());
-    SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsLEFT", leftSensors.isAtReefSide());
-    SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsRIGHT", rightSensors.isAtReefSide());
-    SmartDashboard.putBoolean("Drivetrain/isFarFromReefLEFT", leftSensors.isTooFarAway());
-    SmartDashboard.putBoolean("Drivetrain/isFarFromReefRIGHT", rightSensors.isTooFarAway());
+    // SmartDashboard.putNumber("Drivetrain/leftInner", leftSensors.getInnerSensorDistance());
+    // SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getOuterSensorDistance());
+    // SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsLEFT", leftSensors.isAtReefSide());
+    // SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsRIGHT", rightSensors.isAtReefSide());
+    // SmartDashboard.putBoolean("Drivetrain/isFarFromReefLEFT", leftSensors.isTooFarAway());
+    // SmartDashboard.putBoolean("Drivetrain/isFarFromReefRIGHT", rightSensors.isTooFarAway());
     SmartDashboard.putBoolean("Drivetrain/isAtScoreCoralPoint",isAtPose(ReefscapeUtils.getCurrentZoneScoreAlgaePoint()));
-    SmartDashboard.putBoolean("Drivetrain/isTooFarLeftRIGHT", rightSensors.isTooFarLeft(() -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.RIGHT));
-    SmartDashboard.putBoolean("Drivetrain/isTooFarLeftLEFT", rightSensors.isTooFarLeft(() -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.LEFT));
-    SmartDashboard.putNumber("Drivetrain/rightInner", rightSensors.getInnerSensorDistance());
-    SmartDashboard.putNumber("Drivetrain/rightOuter", rightSensors.getOuterSensorDistance());
+    // SmartDashboard.putBoolean("Drivetrain/isTooFarLeftRIGHT", rightSensors.isTooFarLeft(() -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.RIGHT));
+    // SmartDashboard.putBoolean("Drivetrain/isTooFarLeftLEFT", rightSensors.isTooFarLeft(() -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.LEFT));
+    // SmartDashboard.putNumber("Drivetrain/rightInner", rightSensors.getInnerSensorDistance());
+    // SmartDashboard.putNumber("Drivetrain/rightOuter", rightSensors.getOuterSensorDistance());
     SmartDashboard.putNumber("Drivetrain/rotationToStation", ReefscapeUtils.getTargetHeadingToStation(getPose()));
     SmartDashboard.putBoolean("Drivetrain/isAtStartingPosition", isAtPose(startingPosition, Units.inchesToMeters(2.0), Units.inchesToMeters(2.0)));
   }

@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.SWERVE;
-import frc.robot.sensors.DistanceSensors;
+// import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
@@ -76,13 +76,13 @@ public class Autons {
     private Drivetrain drivetrain;
     private CoralIntake coralIntake;
     private Elevator elevator;
-    private DistanceSensors proximitySensor;
+    // private DistanceSensors proximitySensor;
     private RobotConfig config;
 
     public Autons(Drivetrain drivetrain, CoralIntake coralIntake, Elevator elevator) {
 
         this.drivetrain = drivetrain;
-        this.proximitySensor = proximitySensor;
+        // this.proximitySensor = proximitySensor;
         this.elevator = elevator;
         this.coralIntake = coralIntake;
 

@@ -61,7 +61,7 @@ public class Elevator extends SubsystemBase {
     leftConfig
       .idleMode(IdleMode.kBrake)
       .inverted(false)
-      .closedLoopRampRate(0.6);
+      .closedLoopRampRate(0.4);
     leftConfig.softLimit
       .forwardSoftLimitEnabled(true)
       .forwardSoftLimit(21.0);
