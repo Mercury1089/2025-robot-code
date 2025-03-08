@@ -35,6 +35,8 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.TriggerEvent;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -173,12 +175,14 @@ public class RobotContainer {
     right1.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain));
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
 
+    Pose2d pose2 = new Pose2d(3.87,3.01, Rotation2d.fromDegrees(60.0));
     right4.onTrue(
-      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
+      DriveCommands.goToPose(drivetrain, () -> pose2));
       // .andThen(DriveCommands.scoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.LEFT, elevator, coralIntake)));
       // DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
+    Pose2d pose = new Pose2d(4.17,2.83, Rotation2d.fromDegrees(60.0));
     right5.onTrue(
-      DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
+      DriveCommands.goToPose(drivetrain, () -> pose));
       // .andThen(DriveCommands.scoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.RIGHT, elevator, coralIntake)));
 
     left1.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));

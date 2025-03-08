@@ -62,7 +62,7 @@ public class Drivetrain extends SubsystemBase {
   private Pigeon2 pigeon;
   private SwerveDrivePoseEstimator odometry;
   private SwerveDriveKinematics swerveKinematics;
-  private AprilTagCamera photonCam, photonCam2;
+  private AprilTagCamera leftCam, rightCam, backCam;
   private Field2d smartdashField;
   private PIDController rotationPIDController, xPIDController, yPIDController;
   private Pose2d startingPosition;
@@ -74,12 +74,17 @@ public class Drivetrain extends SubsystemBase {
   private double targetHeadingToReef = 0.0;
   private double targetHeadingToStation = 0.0;
 
-  private Transform3d frontCam = new Transform3d(
-    new Translation3d(Units.inchesToMeters(9.0), Units.inchesToMeters(-1.0), Units.inchesToMeters(5.75)), 
+  private Transform3d leftCamTransform3d = new Transform3d(
+    new Translation3d(Units.inchesToMeters(8.75), Units.inchesToMeters(12.5), Units.inchesToMeters(9.0)), 
+    new Rotation3d(0.0, Rotation2d.fromDegrees(10).getRadians(), Rotation2d.fromDegrees(0).getRadians())
+  );
+
+  private Transform3d rightCamTransform3d = new Transform3d(
+    new Translation3d(Units.inchesToMeters(8.75), Units.inchesToMeters(1.0), Units.inchesToMeters(9.0)), 
     new Rotation3d(0.0, Rotation2d.fromDegrees(10).getRadians(), Rotation2d.fromDegrees(0).getRadians())
   );
     
-  private Transform3d backCam = new Transform3d(
+  private Transform3d backCamTransform3d = new Transform3d(
     new Translation3d(Units.inchesToMeters(-9.0), Units.inchesToMeters(-2.5), Units.inchesToMeters(38.0)), 
     new Rotation3d(0.0, Rotation2d.fromDegrees(20).getRadians(), Rotation2d.fromDegrees(180).getRadians())
   );
@@ -133,17 +138,18 @@ public class Drivetrain extends SubsystemBase {
     rotationPIDController.setTolerance(1.0);
 
     xPIDController = new PIDController(DIRECTION_P, I, D);
-    xPIDController.setTolerance(0.1);
+    xPIDController.setTolerance(0.0254);
     
     yPIDController = new PIDController(DIRECTION_P, I, D);
-    yPIDController.setTolerance(0.1);
+    yPIDController.setTolerance(0.0254);
 
     startingPosition = new Pose2d();
 
     // photonvision wrapper
-    photonCam = new AprilTagCamera("AprilTagCamera" , frontCam);
+    leftCam = new AprilTagCamera("LeftCamera" , leftCamTransform3d);
+    rightCam = new AprilTagCamera("RightCamera" , rightCamTransform3d);
 
-    photonCam2 = new AprilTagCamera("BackTagCamera" , backCam);
+    backCam = new AprilTagCamera("BackTagCamera" , backCamTransform3d);
 
 
     smartdashField = new Field2d();
@@ -406,7 +412,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public AprilTagCamera getAprilTagCamera() {
-    return this.photonCam;
+    return this.leftCam;
   }
 
   public double getTargetHeadingToReef() {
@@ -418,7 +424,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public boolean isTargetPresent() {
-    Optional<EstimatedRobotPose> result = photonCam.getGlobalPose();
+    Optional<EstimatedRobotPose> result = leftCam.getGlobalPose();
     return result.isPresent();
   }
 
@@ -474,18 +480,28 @@ public class Drivetrain extends SubsystemBase {
         backRightModule.getPosition()
     });
     
-    Optional<EstimatedRobotPose> result = photonCam.getGlobalPose();
-    if (result.isPresent() && !photonCam.rejectUpdate(result.get())) {
+    Optional<EstimatedRobotPose> leftResult = leftCam.getGlobalPose();
+    if (leftResult.isPresent() && !leftCam.rejectUpdate(leftResult.get())) {
       // Uncomment the following to check camera position on robot
       // Pose3d estimatedPose = result.get().estimatedPose;
       // SmartDashboard.putNumber("Cam/Yaw", estimatedPose.getRotation().getZ());
       // SmartDashboard.putNumber("Cam/Pitch", estimatedPose.getRotation().getY());
       // SmartDashboard.putNumber("Cam/Roll", estimatedPose.getRotation().getX());
-      odometry.addVisionMeasurement(result.get().estimatedPose.toPose2d(), result.get().timestampSeconds);
+      odometry.addVisionMeasurement(leftResult.get().estimatedPose.toPose2d(), leftResult.get().timestampSeconds);
     }
 
-    Optional<EstimatedRobotPose> backResult = photonCam2.getGlobalPose();
-    if (backResult.isPresent() && !ignoreBackCamera && !photonCam2.rejectUpdate(backResult.get())){
+    Optional<EstimatedRobotPose> rightResult = rightCam.getGlobalPose();
+    if (rightResult.isPresent() && !rightCam.rejectUpdate(rightResult.get())) {
+      // Uncomment the following to check camera position on robot
+      // Pose3d estimatedPose = result.get().estimatedPose;
+      // SmartDashboard.putNumber("Cam/Yaw", estimatedPose.getRotation().getZ());
+      // SmartDashboard.putNumber("Cam/Pitch", estimatedPose.getRotation().getY());
+      // SmartDashboard.putNumber("Cam/Roll", estimatedPose.getRotation().getX());
+      odometry.addVisionMeasurement(rightResult.get().estimatedPose.toPose2d(), rightResult.get().timestampSeconds);
+    }
+
+    Optional<EstimatedRobotPose> backResult = backCam.getGlobalPose();
+    if (backResult.isPresent() && !ignoreBackCamera && !backCam.rejectUpdate(backResult.get())){
       // Uncomment the following to check camera position on robot
       // Pose3d estimatedPose = result.get().estimatedPose;
       // SmartDashboard.putNumber("Cam/Yaw", estimatedPose.getRotation().getZ());

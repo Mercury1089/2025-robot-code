@@ -88,12 +88,12 @@ public class KnownLocations {
     public static final double ALGAE_SAFE_DISTANCE = 34.5;
     public static final double ALGAE_SCORE_DISTANCE = 21.0;
 
-    public static final double CORAL_STATION_DISTANCE_X = 18;
+    public static final double CORAL_STATION_DISTANCE_X = 17.5;
     public static final double CORAL_STATION_DISTANCE_Y = 13;
 
-    public final double X_OFFSET = 20;
-    public final double Y_OFFSET = 10;
-    public final double BIGGER_Y_OFFSET = 13;
+    public final double X_OFFSET = 19;
+    public final double Y_OFFSET = 0.25;
+    public final double BIGGER_Y_OFFSET = 12.75;
 
     /**
      * Load the field layout for the current year (currently CHARGED UP).
