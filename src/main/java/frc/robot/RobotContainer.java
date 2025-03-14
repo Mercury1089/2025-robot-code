@@ -175,18 +175,15 @@ public class RobotContainer {
     right1.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain));
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
 
-    Pose2d pose2 = new Pose2d(3.87,3.01, Rotation2d.fromDegrees(60.0));
-    right4.onTrue(
-      DriveCommands.goToPose(drivetrain, () -> pose2));
-      // .andThen(DriveCommands.scoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.LEFT, elevator, coralIntake)));
-      // DriveCommands.alignwithSensors(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone())));
-    Pose2d pose = new Pose2d(4.17,2.83, Rotation2d.fromDegrees(60.0));
-    right5.onTrue(
-      DriveCommands.goToPose(drivetrain, () -> pose));
-      // .andThen(DriveCommands.scoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentRobotZone(), () -> BranchSide.RIGHT, elevator, coralIntake)));
+    // right4.onTrue(
+    //   DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
+    // right5.onTrue(
+    //   DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
+    right4.onTrue(DriveCommands.driveAndScoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch(), elevator, coralIntake));
+    right5.onTrue(DriveCommands.driveAndScoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch(), elevator, coralIntake));
 
     left1.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
-    left3.whileTrue(DriveCommands.pickUpAlgaeInCurrentZone(drivetrain, elevator, algaeIntake, articulator));
+    left3.whileTrue(DriveCommands.targetDriveToClosestAlgaePickUp(leftJoystickX, drivetrain));
 
     left9.onTrue(
       new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator).alongWith(

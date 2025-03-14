@@ -10,6 +10,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -106,6 +107,18 @@ public class DriveCommands {
                   true)
               , drivetrain);
     }
+
+    public static Command targetDriveToClosestAlgaePickUp(Supplier<Double> xSpeedSupplier, Drivetrain drivetrain) {
+        Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
+        Supplier<Pose2d> currentTagPose = () -> drivetrain.getCurrentZoneTagPose();
+        return new RunCommand(
+                () -> drivetrain.drive(
+                  -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+                  drivetrain.getYController().calculate(currentTagPose.get().relativeTo(drivetrain.getPose()).getY(), 0.0),
+                  drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), Rotation2d.fromDegrees(heading.get()).rotateBy(Rotation2d.fromDegrees(180)).getDegrees()),
+                  false)
+              , drivetrain);
+    }
     /**
     * @param : Drivetrain, Pose2d Supplier 
     * @return : Outputs a Run Command 
@@ -117,7 +130,8 @@ public class DriveCommands {
               drivetrain.getYController().calculate(drivetrain.getPose().getY(), desiredPose.get().getY()),
               drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), desiredPose.get().getRotation().getDegrees()),
               true)
-          , drivetrain).until(() -> drivetrain.isAtPose(desiredPose.get()));
+          , drivetrain);//.until(() -> drivetrain.isAtPose(desiredPose.get()))
+          //this seems like a bad idea to comment this out
     }
     /**
     * @param : Drivetrain 
@@ -174,11 +188,21 @@ public class DriveCommands {
     * @param : Drivetrain, Elevator, and Coral Intake
     * @return : Returns Sequential Command Group 
     */
-    public static Command driveAndScoreAtBranch(Drivetrain drivetrain, Supplier<RobotZone> zone, Supplier<BranchSide> side, Supplier<Pose2d> branch, Elevator elevator, CoralIntake coralIntake) {
+    public static Command driveAndScoreAtBranch(Drivetrain drivetrain, Supplier<Pose2d> branch, Elevator elevator, CoralIntake coralIntake) {
         return new SequentialCommandGroup(
-            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isAtPosition(ElevatorPosition.HOME)),
-            goToPreferredBranch(drivetrain, zone.get(), branch.get()),
-            scoreAtBranch(drivetrain, zone, side, elevator, coralIntake)
+            new ParallelCommandGroup(
+                goToPose(drivetrain, branch),
+                new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.SAFE_POS), elevator)
+            ).until(() -> drivetrain.isAtPose(branch.get(), 0.0254,0.0254)),
+            new ParallelCommandGroup(
+                goToPose(drivetrain, branch),
+                new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
+            ).until(() -> elevator.isInPosition()),
+            new ParallelCommandGroup(
+                new InstantCommand(() -> coralIntake.setEjecting(true), coralIntake),
+                new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
+            ).until(() -> coralIntake.noCoralPresent()),
+            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isInPosition())
         );
     }
 

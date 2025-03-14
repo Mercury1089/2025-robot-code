@@ -67,20 +67,21 @@ public class Drivetrain extends SubsystemBase {
   private PIDController rotationPIDController, xPIDController, yPIDController;
   private Pose2d startingPosition;
 
-  private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.5, I = 0.0, D = 0.0;
+  private static final double ROTATION_P = 1.0 / 90.0, DIRECTION_P = 1 / 1.25, I = 0.0, D = 0.0;
   private final double THRESHOLD_DEGREES = 3.0;
   private final double THRESHOLD_SPEED = 0.5;
 
   private double targetHeadingToReef = 0.0;
   private double targetHeadingToStation = 0.0;
+  private Pose2d currentZoneTagPose;
 
   private Transform3d leftCamTransform3d = new Transform3d(
-    new Translation3d(Units.inchesToMeters(8.75), Units.inchesToMeters(12.5), Units.inchesToMeters(9.0)), 
+    new Translation3d(Units.inchesToMeters(9.0), Units.inchesToMeters(12.375), Units.inchesToMeters(9.0)), 
     new Rotation3d(0.0, Rotation2d.fromDegrees(10).getRadians(), Rotation2d.fromDegrees(0).getRadians())
   );
 
   private Transform3d rightCamTransform3d = new Transform3d(
-    new Translation3d(Units.inchesToMeters(8.75), Units.inchesToMeters(1.0), Units.inchesToMeters(9.0)), 
+    new Translation3d(Units.inchesToMeters(9.0), Units.inchesToMeters(1.0), Units.inchesToMeters(9.0)), 
     new Rotation3d(0.0, Rotation2d.fromDegrees(10).getRadians(), Rotation2d.fromDegrees(0).getRadians())
   );
     
@@ -138,10 +139,10 @@ public class Drivetrain extends SubsystemBase {
     rotationPIDController.setTolerance(1.0);
 
     xPIDController = new PIDController(DIRECTION_P, I, D);
-    xPIDController.setTolerance(0.0254);
+    xPIDController.setTolerance(0.01);
     
     yPIDController = new PIDController(DIRECTION_P, I, D);
-    yPIDController.setTolerance(0.0254);
+    yPIDController.setTolerance(0.01);
 
     startingPosition = new Pose2d();
 
@@ -468,6 +469,10 @@ public class Drivetrain extends SubsystemBase {
     ignoreBackCamera = ignore;
   }
 
+  public Pose2d getCurrentZoneTagPose() {
+    return currentZoneTagPose;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -519,6 +524,7 @@ public class Drivetrain extends SubsystemBase {
 
     targetHeadingToReef = ReefscapeUtils.getTargetHeadingToReef(getPose());
     targetHeadingToStation = ReefscapeUtils.getTargetHeadingToStation(getPose());
+    currentZoneTagPose = KnownLocations.getFieldLayout().getTagPose(ReefscapeUtils.getCurrentRobotZoneAprilTag()).get().toPose2d();
 
     SmartDashboard.putNumber("Drivetrain/CurrentPose X", getPose().getX());
     SmartDashboard.putNumber("Drivetrain/CurrentPose Y", getPose().getY());
@@ -530,8 +536,8 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Drivetrain/preferredZone", ReefscapeUtils.preferredZone().robotZone);
     SmartDashboard.putString("Drivetrain/branchSide", ReefscapeUtils.branchSide().side);
     SmartDashboard.putString("Drivetrain/coralStation", ReefscapeUtils.preferredCoralStation().coralStation);
-    SmartDashboard.putBoolean("Drivetrain/isAtPreferredStation", isAtPreferredCoralStation());
-    SmartDashboard.putBoolean("Drivetrain/isAtPreferredBranch", isAtPreferredBranch());
+    SmartDashboard.putBoolean("Drivetrain/isAtRightCurrentZone", isAtPose(ReefscapeUtils.getCurrentZoneRightBranch()));
+    SmartDashboard.putBoolean("Drivetrain/isAtLeftCurrentZone", isAtPose(ReefscapeUtils.getCurrentZoneLeftBranch()));
     SmartDashboard.putString("Drivetrain/preferredLevel", ReefscapeUtils.getPreferredLevel().lev);
     // SmartDashboard.putNumber("Drivetrain/leftInner", leftSensors.getInnerSensorDistance());
     // SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getOuterSensorDistance());
@@ -546,5 +552,8 @@ public class Drivetrain extends SubsystemBase {
     // SmartDashboard.putNumber("Drivetrain/rightOuter", rightSensors.getOuterSensorDistance());
     SmartDashboard.putNumber("Drivetrain/rotationToStation", ReefscapeUtils.getTargetHeadingToStation(getPose()));
     SmartDashboard.putBoolean("Drivetrain/isAtStartingPosition", isAtPose(startingPosition, Units.inchesToMeters(2.0), Units.inchesToMeters(2.0)));
+    SmartDashboard.putNumber("Drivetrain/fLeftX", KnownLocations.getKnownLocations().rightCloseSideLeftBranch.getX());
+    SmartDashboard.putNumber("Drivetrain/fLeftY", KnownLocations.getKnownLocations().rightCloseSideLeftBranch.getY());
+    
   }
 }

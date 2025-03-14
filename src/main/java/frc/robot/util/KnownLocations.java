@@ -88,10 +88,10 @@ public class KnownLocations {
     public static final double ALGAE_SAFE_DISTANCE = 34.5;
     public static final double ALGAE_SCORE_DISTANCE = 21.0;
 
-    public static final double CORAL_STATION_DISTANCE_X = 17.5;
+    public static final double CORAL_STATION_DISTANCE_X = 16;
     public static final double CORAL_STATION_DISTANCE_Y = 13;
 
-    public final double X_OFFSET = 19;
+    public final double X_OFFSET = 15.5;
     public final double Y_OFFSET = 0.25;
     public final double BIGGER_Y_OFFSET = 12.75;
 

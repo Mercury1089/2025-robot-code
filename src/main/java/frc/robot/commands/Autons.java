@@ -137,7 +137,7 @@ public class Autons {
 
         SequentialCommandGroup autonCommandGroup = new SequentialCommandGroup();
 
-        autonCommandGroup.addCommands(
+        autonCommandGroup.addCommands(//TODO: fix
             new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)),
             PathUtils.getPathToPose(firstBranch.getPose(), () -> 0.5),
             new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL2), elevator).until(() -> elevator.isInPosition()),
@@ -146,12 +146,12 @@ public class Autons {
             new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
             DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> firstStation.stationPose),
 
-            DriveCommands.driveAndScoreAtBranch(drivetrain, () -> secondBranch.getZone(), () -> secondBranch.getSide(), () -> secondBranch.getPose(), elevator, coralIntake),
+            // DriveCommands.driveAndScoreAtBranch(drivetrain, () -> secondBranch.getZone(), () -> secondBranch.getSide(), () -> secondBranch.getPose(), elevator, coralIntake),
 
             new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(secondStation)),
-            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> secondStation.stationPose),
+            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> secondStation.stationPose)
 
-            DriveCommands.driveAndScoreAtBranch(drivetrain, () -> thirdBranch.getZone(), () -> thirdBranch.getSide(), () -> thirdBranch.getPose(), elevator, coralIntake)
+            // DriveCommands.driveAndScoreAtBranch(drivetrain, () -> thirdBranch.getZone(), () -> thirdBranch.getSide(), () -> thirdBranch.getPose(), elevator, coralIntake)
         );
 
         return autonCommandGroup;

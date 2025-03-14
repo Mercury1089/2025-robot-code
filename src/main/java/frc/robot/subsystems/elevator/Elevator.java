@@ -9,6 +9,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLimitSwitch;
@@ -43,7 +44,7 @@ public class Elevator extends SubsystemBase {
   private static final double ANGLE_OFFSET = -3.5;
 
   public final double GEAR_RATIO = 125.0 / 1.0;
-  public final double THRESHOLD_DEGREES = 0.5;
+  public final double THRESHOLD_DEGREES = 0.1;
 
   
   private SparkFlex leftMotor, rightMotor;
@@ -61,7 +62,7 @@ public class Elevator extends SubsystemBase {
     leftConfig
       .idleMode(IdleMode.kBrake)
       .inverted(false)
-      .closedLoopRampRate(0.4);
+      .closedLoopRampRate(0.3);
     leftConfig.softLimit
       .forwardSoftLimitEnabled(true)
       .forwardSoftLimit(21.0);
@@ -69,7 +70,7 @@ public class Elevator extends SubsystemBase {
     //   .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
     leftConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
-      .pid(0.225,0,0)
+      .pid(1.0 / 3.5,0,0)
       .positionWrappingEnabled(false)
       .outputRange(-1,1);
 
@@ -84,7 +85,7 @@ public class Elevator extends SubsystemBase {
 
 
     elevatorClosedLoopController = leftMotor.getClosedLoopController();
-
+    
     relativeEncoder = leftMotor.getExternalEncoder();
     setPosition = getArmPosition();
 
@@ -109,7 +110,7 @@ public class Elevator extends SubsystemBase {
 
   public void setPosition(double pos) {
     setPosition = pos;
-    elevatorClosedLoopController.setReference(pos, SparkMax.ControlType.kPosition);
+    elevatorClosedLoopController.setReference(pos, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0,1.2);
   }
 
   public boolean isAtPosition(double pos) {
@@ -151,8 +152,8 @@ public class Elevator extends SubsystemBase {
   
 
   public enum ElevatorPosition {
-    LEVEL4(20.6,"level4"),
-    LEVEL3(12.9, "level3"),
+    LEVEL4(20.85,"level4"),
+    LEVEL3(13.1, "level3"),//increased by 0.2
     LEVEL2(7.14, "level2"),
     LEVEL1(5.07, "level1"), // check this
     HOME(-0.15, "home"),
