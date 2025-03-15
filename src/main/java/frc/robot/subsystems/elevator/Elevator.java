@@ -137,6 +137,10 @@ public class Elevator extends SubsystemBase {
     return leftMotor.getReverseLimitSwitch().isPressed();
   }
 
+  public boolean isAtScoreLevel() {
+    return (isAtPosition(ElevatorPosition.LEVEL2) || isAtPosition(ElevatorPosition.LEVEL3) || isAtPosition(ElevatorPosition.LEVEL4));
+  }
+
   @Override
   public void periodic() {
 

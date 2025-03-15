@@ -59,15 +59,15 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
   private CommandJoystick rightJoystick, leftJoystick;
-  // private CommandXboxController gamepad;
+  private CommandXboxController gamepad;
   private CommandGenericHID reefBoard;
   private CommandGenericHID secondEncoderBoard;
 
   private Trigger left1, left2, left3, left4, left5, left6, left7, left8, left9, left10, left11;
   private Trigger right1, right2, right3, right4, right5, right6, right7, right8, right9, right10, right11;
-  // private Trigger gamepadA, gamepadB, gamepadX, gamepadY, gamepadRB, gamepadLB, gamepadL3, gamepadBack, 
-  // gamepadStart, gamepadLeftStickButton, gamepadRightStickButton, gamepadLT, gamepadRT, gamepadPOVDown, gamepadPOVUpLeft, 
-  // gamepadPOVUp, gamepadPOVUpRight, gamepadPOVLeft, gamepadPOVRight, gamepadPOVDownRight, gamepadPOVDownLeft;
+  private Trigger gamepadA, gamepadB, gamepadX, gamepadY, gamepadRB, gamepadLB, gamepadL3, gamepadBack, 
+  gamepadStart, gamepadLeftStickButton, gamepadRightStickButton, gamepadLT, gamepadRT, gamepadPOVDown, gamepadPOVUpLeft, 
+  gamepadPOVUp, gamepadPOVUpRight, gamepadPOVLeft, gamepadPOVRight, gamepadPOVDownRight, gamepadPOVDownLeft;
 
   private Trigger bargeSideLeftBranchBTN,
                   bargeSideRightBranchBTN,
@@ -89,7 +89,7 @@ public class RobotContainer {
   private Trigger fidoBTN;
 
   private GenericHID gamepadHID;
-  // private Supplier<Double> gamepadLeftX, gamepadLeftY, gamepadRightX, gamepadRightY;
+  private Supplier<Double> gamepadLeftX, gamepadLeftY, gamepadRightX, gamepadRightY;
   private Supplier<Double> rightJoystickX, rightJoystickY, leftJoystickX, leftJoystickY;
 
   private Autons auton;
@@ -110,7 +110,7 @@ public class RobotContainer {
     // buttons & bindings
     leftJoystick = new CommandJoystick(DS_USB.LEFT_STICK);
     rightJoystick = new CommandJoystick(DS_USB.RIGHT_STICK);
-    // gamepad = new CommandXboxController(DS_USB.GAMEPAD);
+    gamepad = new CommandXboxController(DS_USB.GAMEPAD);
     reefBoard = new CommandGenericHID(DS_USB.REEF_BOARD);
     secondEncoderBoard = new CommandGenericHID(DS_USB.SECOND_ENCODER_BOARD);
     gamepadHID = new GenericHID(DS_USB.GAMEPAD);
@@ -126,11 +126,23 @@ public class RobotContainer {
     coralIntake = new CoralIntake();
     coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
 
+    /**
+     * CORAL MECHANISM TRIGGERS
+     */
+
     Trigger hasCoral = new Trigger(() -> coralIntake.hasCoral());
     Trigger noCoralPresent = new Trigger(() -> coralIntake.noCoralPresent() && !coralIntake.isEjecting());
     Trigger isCoralEntering = new Trigger(() -> coralIntake.isCoralEntering() && !coralIntake.isEjecting());
     Trigger isCoralExiting = new Trigger(() -> coralIntake.isCoralExiting() && !coralIntake.isEjecting());
     Trigger ejecting = new Trigger(() -> coralIntake.isEjecting());
+
+    Trigger readyToScore = new Trigger(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel()) &&
+                                            drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneLeftBranch(), 0.0254) && 
+                                            drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneRightBranch(), 0.0254));
+
+    readyToScore.and(hasCoral).onTrue(
+      new InstantCommand(() -> coralIntake.setEjecting(true))
+    );
 
     isCoralEntering.whileTrue(
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake)
@@ -150,8 +162,6 @@ public class RobotContainer {
 
     Trigger fidoOff = new Trigger(() -> !leds.isFIDOEnabled() && DriverStation.isTeleop());
 
-    right9.and(fidoOff).onTrue(new InstantCommand(() -> coralIntake.setEjecting(true), coralIntake));
-
     // gamepadA.and(hasCoral.and(hasCoralEntered)).onTrue(new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent()).andThen(
     //   new InstantCommand(() -> coralIntake.setEjecting(false))
     // ));
@@ -167,41 +177,46 @@ public class RobotContainer {
 
     auton = new Autons(drivetrain, coralIntake, elevator);
 
+
+    /**
+     * MANUAL CONTROL
+     */
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     right2.onTrue(drivetrain.getDefaultCommand());
-    right2.onTrue(new InstantCommand(() -> leds.disableFIDO()));
     right2.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isInPosition()));
-    
+    right8.onTrue(new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator));
+    right9.onTrue(new InstantCommand(() -> coralIntake.setEjecting(true), coralIntake));
+    right10.onTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.25)));
+
+    /**
+     * TARGET DRIVE BUTTONS & AUTO SCORE
+     */
     right1.onTrue(DriveCommands.targetDriveToStation(leftJoystickY, leftJoystickX, drivetrain));
     right3.onTrue(DriveCommands.targetDriveToReef(leftJoystickY, leftJoystickX, drivetrain));
+    right4.onTrue(DriveCommands.driveAndScoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch(), elevator, coralIntake));
+    right5.onTrue(DriveCommands.driveAndScoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch(), elevator, coralIntake));
 
     // right4.onTrue(
     //   DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch()));
     // right5.onTrue(
     //   DriveCommands.goToPose(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch()));
-    right4.onTrue(DriveCommands.driveAndScoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentZoneLeftBranch(), elevator, coralIntake));
-    right5.onTrue(DriveCommands.driveAndScoreAtBranch(drivetrain, () -> ReefscapeUtils.getCurrentZoneRightBranch(), elevator, coralIntake));
 
-    left1.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
-    left3.whileTrue(DriveCommands.targetDriveToClosestAlgaePickUp(leftJoystickX, drivetrain));
+    /**
+     * ALGAE BUTTONS
+     */
+    left3.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
+    left1.whileTrue(ElevatorCommands.getAlgaeRemovalCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone()))
+      .onFalse(new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator));
+    gamepadA.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
+    gamepadX.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake));
 
-    left9.onTrue(
-      new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator).alongWith(
-      new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake))
-    );
-    left8.and(() -> !algaeIntake.hasAlgae()).onTrue(
-      new RunCommand(() -> articulator.setPosition(ArticulatorPosition.IN), articulator).alongWith(
-      new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.STOP)))
-    );
-
-    left2.whileTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake)
-      .alongWith(new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator)));
-                          
-    right8.and(fidoOff).onTrue(new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator));
-    
-
-    right10.onTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.25)));
-    right11.onTrue(new InstantCommand(() -> elevator.resetEncoders()));
+    /**
+     * ELEVATOR LEVELS
+     */
+    level1BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL1)));
+    level2BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)));
+    level3BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL3)));
+    level4BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)));
 
     initializeTriggers();
   }
@@ -281,11 +296,6 @@ public class RobotContainer {
       DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().rightCoralStationInside)
     ));
 
-    level1BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL1)));
-    level2BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)));
-    level3BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL3)));
-    level4BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)));
-
     fidoBTN.onTrue(new InstantCommand(() -> leds.toggleFIDO()));
   }
 
@@ -349,32 +359,32 @@ public class RobotContainer {
         outerLeftStationBTN = secondEncoderBoard.button(9);
 
 
-        // gamepadA = gamepad.a();
-        // gamepadB = gamepad.b();
-        // gamepadX = gamepad.x();
-        // gamepadY = gamepad.y();
-        // gamepadRB = gamepad.rightBumper();
-        // gamepadLB = gamepad.leftBumper();
-        // gamepadBack = gamepad.back();
-        // gamepadStart = gamepad.start();
-        // gamepadLeftStickButton = gamepad.leftStick();
-        // gamepadRightStickButton = gamepad.rightStick();
-        // gamepadLT = gamepad.leftTrigger();
-        // gamepadRT = gamepad.rightTrigger();
+        gamepadA = gamepad.a();
+        gamepadB = gamepad.b();
+        gamepadX = gamepad.x();
+        gamepadY = gamepad.y();
+        gamepadRB = gamepad.rightBumper();
+        gamepadLB = gamepad.leftBumper();
+        gamepadBack = gamepad.back();
+        gamepadStart = gamepad.start();
+        gamepadLeftStickButton = gamepad.leftStick();
+        gamepadRightStickButton = gamepad.rightStick();
+        gamepadLT = gamepad.leftTrigger();
+        gamepadRT = gamepad.rightTrigger();
         
-        // gamepadPOVDown = gamepad.povDown();
-        // gamepadPOVUpLeft = gamepad.povUpLeft();
-        // gamepadPOVUp = gamepad.povUp();
-        // gamepadPOVUpRight = gamepad.povUpRight();
-        // gamepadPOVLeft = gamepad.povLeft();
-        // gamepadPOVRight = gamepad.povRight();
-        // gamepadPOVDownRight = gamepad.povDownRight();
-        // gamepadPOVDownLeft = gamepad.povDownLeft();
+        gamepadPOVDown = gamepad.povDown();
+        gamepadPOVUpLeft = gamepad.povUpLeft();
+        gamepadPOVUp = gamepad.povUp();
+        gamepadPOVUpRight = gamepad.povUpRight();
+        gamepadPOVLeft = gamepad.povLeft();
+        gamepadPOVRight = gamepad.povRight();
+        gamepadPOVDownRight = gamepad.povDownRight();
+        gamepadPOVDownLeft = gamepad.povDownLeft();
 
-        // gamepadLeftX = () -> gamepad.getLeftX();
-        // gamepadRightX = () -> gamepad.getRightX();
-        // gamepadLeftY = () -> -gamepad.getLeftY();
-        // gamepadRightY = () -> -gamepad.getRightY();
+        gamepadLeftX = () -> gamepad.getLeftX();
+        gamepadRightX = () -> gamepad.getRightX();
+        gamepadLeftY = () -> -gamepad.getLeftY();
+        gamepadRightY = () -> -gamepad.getRightY();
 
         leftJoystickX = () -> leftJoystick.getX();
         leftJoystickY = () -> leftJoystick.getY();
