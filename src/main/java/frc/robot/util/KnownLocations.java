@@ -82,6 +82,14 @@ public class KnownLocations {
     public final Pose2d
         processor;
 
+    public final Pose2d
+        bargeZone,
+        bargeRightZone, 
+        bargeLeftZone,
+        closeRightZone,
+        closeLeftZone,
+        closeZone;
+
     public final Rotation2d
         zeroGyroRotation;
 
@@ -94,6 +102,7 @@ public class KnownLocations {
     public final double X_OFFSET = 15.5;
     public final double Y_OFFSET = 0.25;
     public final double BIGGER_Y_OFFSET = 12.75;
+    public final double ZONE_X_OFFSET = 36.0;
 
     /**
      * Load the field layout for the current year (currently CHARGED UP).
@@ -154,6 +163,8 @@ public class KnownLocations {
 
         Transform2d coralStationPosY = new Transform2d(Units.inchesToMeters(CORAL_STATION_DISTANCE_X), Units.inchesToMeters(CORAL_STATION_DISTANCE_Y), Rotation2d.fromDegrees(0.0));
         Transform2d coralStationNegY = new Transform2d(Units.inchesToMeters(CORAL_STATION_DISTANCE_X), Units.inchesToMeters(-CORAL_STATION_DISTANCE_Y), Rotation2d.fromDegrees(0.0));
+
+        Transform2d zoneTransform = new Transform2d(Units.inchesToMeters(ZONE_X_OFFSET), 0.0, Rotation2d.fromDegrees(0.0));
         
         //TODO: check headings
         if (alliance == Alliance.Blue) {
@@ -164,26 +175,37 @@ public class KnownLocations {
             Pose2d closeRightTag = getFieldLayout().getTagPose(17).get().toPose2d();
             rightCloseSideRightBranch = new Pose2d(closeRightTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
             rightCloseSideLeftBranch = new Pose2d(closeRightTag.transformBy(posXnegYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
+            closeRightZone = new Pose2d(closeRightTag.transformBy(zoneTransform).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
 
             Pose2d bargeRightTag = getFieldLayout().getTagPose(22).get().toPose2d();
             rightBargeSideLeftBranch = new Pose2d(bargeRightTag.transformBy(posXnegYOffsets).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
             rightBargeSideRightBranch = new Pose2d(bargeRightTag.transformBy(posXposBiggerYOffsets).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
+            bargeRightZone = new Pose2d(bargeRightTag.transformBy(zoneTransform).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
+
 
             Pose2d closeTag = getFieldLayout().getTagPose(18).get().toPose2d();
             closeSideRightBranch = new Pose2d(closeTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
             closeSideLeftBranch = new Pose2d(closeTag.transformBy(posXnegYOffsets).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
+            closeZone = new Pose2d(closeTag.transformBy(zoneTransform).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
+
 
             Pose2d bargeTag = getFieldLayout().getTagPose(21).get().toPose2d();
             bargeSideLeftBranch = new Pose2d(bargeTag.transformBy(posXnegYOffsets).getTranslation(), bargeTag.getRotation().rotateBy(rotate180));
             bargeSideRightBranch = new Pose2d(bargeTag.transformBy(posXposBiggerYOffsets).getTranslation(), bargeTag.getRotation().rotateBy(rotate180));
+            bargeZone = new Pose2d(bargeTag.transformBy(zoneTransform).getTranslation(), bargeTag.getRotation().rotateBy(rotate180));
+
 
             Pose2d closeLeftTag = getFieldLayout().getTagPose(19).get().toPose2d();
             leftCloseSideLeftBranch = new Pose2d(closeLeftTag.transformBy(posXnegYOffsets).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
             leftCloseSideRightBranch = new Pose2d(closeLeftTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
+            closeLeftZone = new Pose2d(closeLeftTag.transformBy(zoneTransform).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
+
 
             Pose2d leftBargeTag = getFieldLayout().getTagPose(20).get().toPose2d();
             leftBargeSideRightBranch = new Pose2d(leftBargeTag.transformBy(posXposBiggerYOffsets).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
             leftBargeSideLeftBranch = new Pose2d(leftBargeTag.transformBy(posXnegYOffsets).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
+            bargeLeftZone = new Pose2d(leftBargeTag.transformBy(zoneTransform).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
+
 
             Pose2d rightCoralStationTag = getFieldLayout().getTagPose(12).get().toPose2d();
             rightCoralStationOutside = new Pose2d(rightCoralStationTag.transformBy(coralStationNegY).getTranslation(), rightCoralStationTag.getRotation().rotateBy(rotate0));
@@ -221,9 +243,9 @@ public class KnownLocations {
             double averageY = (topTagPose.getY() + bottomTagPose.getY()) / 2.0;
             Pose2d middleFictionalTagPose = new Pose2d(averageX, averageY, Rotation2d.fromDegrees(180.0));
             
-            topMostStart = new Pose2d(topTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
-            middleStart = new Pose2d(middleFictionalTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
-            bottomMostStart = new Pose2d(bottomTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
+            topMostStart = new Pose2d(topTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(135));
+            middleStart = new Pose2d(middleFictionalTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(135));
+            bottomMostStart = new Pose2d(bottomTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(135));
 
             Pose2d processorTagPose = getFieldLayout().getTagPose(16).get().toPose2d();
             processor = new Pose2d(processorTagPose.getTranslation(), processorTagPose.getRotation().rotateBy(Rotation2d.fromDegrees(180.0)));
@@ -236,27 +258,32 @@ public class KnownLocations {
             Pose2d closeRightTag = getFieldLayout().getTagPose(8).get().toPose2d();
             rightCloseSideRightBranch = new Pose2d(closeRightTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
             rightCloseSideLeftBranch = new Pose2d(closeRightTag.transformBy(posXnegYOffsets).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
+            closeRightZone = new Pose2d(closeRightTag.transformBy(zoneTransform).getTranslation(), closeRightTag.getRotation().rotateBy(rotate180));
 
             Pose2d bargeRightTag = getFieldLayout().getTagPose(9).get().toPose2d();
             rightBargeSideLeftBranch = new Pose2d(bargeRightTag.transformBy(posXnegYOffsets).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
             rightBargeSideRightBranch = new Pose2d(bargeRightTag.transformBy(posXposBiggerYOffsets).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
+            bargeRightZone = new Pose2d(bargeRightTag.transformBy(zoneTransform).getTranslation(), bargeRightTag.getRotation().rotateBy(rotate180));
 
             Pose2d closeTag = getFieldLayout().getTagPose(7).get().toPose2d();
             closeSideRightBranch = new Pose2d(closeTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
             closeSideLeftBranch = new Pose2d(closeTag.transformBy(posXnegYOffsets).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
+            closeZone = new Pose2d(closeTag.transformBy(zoneTransform).getTranslation(), closeTag.getRotation().rotateBy(rotate180));
 
             Pose2d bargeTag = getFieldLayout().getTagPose(10).get().toPose2d();
             bargeSideLeftBranch = new Pose2d(bargeTag.transformBy(posXnegYOffsets).getTranslation(), bargeTag.getRotation().rotateBy(rotate180));
             bargeSideRightBranch = new Pose2d(bargeTag.transformBy(posXposBiggerYOffsets).getTranslation(), bargeTag.getRotation().rotateBy(rotate180));
+            bargeZone = new Pose2d(bargeTag.transformBy(zoneTransform).getTranslation(), bargeTag.getRotation().rotateBy(rotate180));
 
             Pose2d closeLeftTag = getFieldLayout().getTagPose(6).get().toPose2d();
             leftCloseSideLeftBranch = new Pose2d(closeLeftTag.transformBy(posXnegYOffsets).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
             leftCloseSideRightBranch = new Pose2d(closeLeftTag.transformBy(posXposBiggerYOffsets).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
+            closeLeftZone = new Pose2d(closeLeftTag.transformBy(zoneTransform).getTranslation(), closeLeftTag.getRotation().rotateBy(rotate180));
 
             Pose2d leftBargeTag = getFieldLayout().getTagPose(11).get().toPose2d();
             leftBargeSideRightBranch = new Pose2d(leftBargeTag.transformBy(posXposBiggerYOffsets).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
             leftBargeSideLeftBranch = new Pose2d(leftBargeTag.transformBy(posXnegYOffsets).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
-            
+            bargeLeftZone = new Pose2d(leftBargeTag.transformBy(zoneTransform).getTranslation(), leftBargeTag.getRotation().rotateBy(rotate180));
 
             Pose2d rightCoralStationTag = getFieldLayout().getTagPose(2).get().toPose2d();
             rightCoralStationOutside = new Pose2d(rightCoralStationTag.transformBy(coralStationNegY).getTranslation(), rightCoralStationTag.getRotation().rotateBy(rotate0));
@@ -294,9 +321,9 @@ public class KnownLocations {
             double averageY = (topTagPose.getY() + bottomTagPose.getY()) / 2.0;
             Pose2d middleFictionalTagPose = new Pose2d(averageX, averageY, Rotation2d.fromDegrees(0.0));
             
-            topMostStart = new Pose2d(topTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
-            middleStart = new Pose2d(middleFictionalTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
-            bottomMostStart = new Pose2d(bottomTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), topTagPose.getRotation().rotateBy(rotate0));
+            topMostStart = new Pose2d(topTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(45.0));
+            middleStart = new Pose2d(middleFictionalTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(45.0));
+            bottomMostStart = new Pose2d(bottomTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(45.0));
 
             Pose2d processorTagPose = getFieldLayout().getTagPose(3).get().toPose2d();
             processor = new Pose2d(processorTagPose.getTranslation(), processorTagPose.getRotation().rotateBy(Rotation2d.fromDegrees(180.0)));

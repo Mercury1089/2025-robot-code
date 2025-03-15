@@ -29,10 +29,7 @@ public class ElevatorCommands {
 
     public static Command getAlgaeRemovalCommand(Elevator elevator, AlgaeArticulator articulator, Supplier<RobotZone> zone) {
         return new ParallelCommandGroup(
-            new ConditionalCommand(
-                new RunCommand(() -> elevator.setPosition(() ->ElevatorPosition.L2_ALGAE), elevator), 
-                new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.L3_ALGAE), elevator), 
-                () -> zone.get() == RobotZone.BARGE || zone.get() == RobotZone.CLOSE_LEFT || zone.get() == RobotZone.CLOSE_RIGHT),
+            new RunCommand(() -> elevator.setPosition(() -> elevator.getAlgaeRemovalElevatorPosition()), elevator),
             new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator)
         );
     }

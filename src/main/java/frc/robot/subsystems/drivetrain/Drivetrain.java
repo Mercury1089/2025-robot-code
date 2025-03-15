@@ -539,6 +539,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putBoolean("Drivetrain/isAtRightCurrentZone", isAtPose(ReefscapeUtils.getCurrentZoneRightBranch()));
     SmartDashboard.putBoolean("Drivetrain/isAtLeftCurrentZone", isAtPose(ReefscapeUtils.getCurrentZoneLeftBranch()));
     SmartDashboard.putString("Drivetrain/preferredLevel", ReefscapeUtils.getPreferredLevel().lev);
+    SmartDashboard.putNumber("Drivetrain/gyroOffset", gyroOffset.getDegrees());
     // SmartDashboard.putNumber("Drivetrain/leftInner", leftSensors.getInnerSensorDistance());
     // SmartDashboard.putNumber("Drivetrain/leftOuter", leftSensors.getOuterSensorDistance());
     // SmartDashboard.putBoolean("Drivetrain/isAlignedWithSensorsLEFT", leftSensors.isAtReefSide());
@@ -554,6 +555,8 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putBoolean("Drivetrain/isAtStartingPosition", isAtPose(startingPosition, Units.inchesToMeters(2.0), Units.inchesToMeters(2.0)));
     SmartDashboard.putNumber("Drivetrain/fLeftX", KnownLocations.getKnownLocations().rightCloseSideLeftBranch.getX());
     SmartDashboard.putNumber("Drivetrain/fLeftY", KnownLocations.getKnownLocations().rightCloseSideLeftBranch.getY());
+    SmartDashboard.putBoolean("Drivetrain/isLeftCamUpdating", leftResult.isPresent() && !leftCam.rejectUpdate(leftResult.get()));
+    SmartDashboard.putBoolean("Drivetrain/isRightCamUpdating", rightResult.isPresent() && !rightCam.rejectUpdate(rightResult.get()));
     
   }
 }

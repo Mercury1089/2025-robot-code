@@ -205,10 +205,12 @@ public class RobotContainer {
      * ALGAE BUTTONS
      */
     left3.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
-    left1.whileTrue(ElevatorCommands.getAlgaeRemovalCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone()))
+    left1.whileTrue(ElevatorCommands.getAlgaeRemovalCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone()).alongWith(DriveCommands.targetDriveToClosestAlgaePickUp(leftJoystickY, leftJoystickX, drivetrain)))
       .onFalse(new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator));
-    gamepadA.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
-    gamepadX.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake));
+    gamepadRB.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
+    gamepadLB.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(1.5));
+    gamepadRT.onTrue(new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator));
+    gamepadLT.onTrue(new RunCommand(() -> articulator.setPosition(ArticulatorPosition.IN), articulator));
 
     /**
      * ELEVATOR LEVELS
@@ -219,6 +221,10 @@ public class RobotContainer {
     level4BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)));
 
     initializeTriggers();
+  }
+
+  public Drivetrain getDrivetrain() {
+    return drivetrain;
   }
 
   public void initializeTriggers() {

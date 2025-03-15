@@ -144,7 +144,7 @@ public class AprilTagCamera extends PhotonCamera {
             tagArea += t.getArea();
         }
 
-        if (tagArea < 0.15) {
+        if (tagArea < 0.25) {
             return true;
         }
         

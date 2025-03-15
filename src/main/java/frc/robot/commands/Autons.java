@@ -137,29 +137,16 @@ public class Autons {
 
         SequentialCommandGroup autonCommandGroup = new SequentialCommandGroup();
 
-        autonCommandGroup.addCommands(//TODO: fix
-            new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)),
-            PathUtils.getPathToPose(firstBranch.getPose(), () -> 0.5),
-            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL2), elevator).until(() -> elevator.isInPosition()),
-            new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE)).until(() -> coralIntake.noCoralPresent()),
+        autonCommandGroup.addCommands(
+            new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)),
+            PathUtils.getPathToPose(firstBranch.getZonePose(), () -> 0.5),
+            DriveCommands.driveAndScoreAtBranch(drivetrain, () -> firstBranch.getBranch(), elevator, coralIntake),
 
             new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
-            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> firstStation.stationPose),
-
-            // DriveCommands.driveAndScoreAtBranch(drivetrain, () -> secondBranch.getZone(), () -> secondBranch.getSide(), () -> secondBranch.getPose(), elevator, coralIntake),
-
-            new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(secondStation)),
-            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> secondStation.stationPose)
-
-            // DriveCommands.driveAndScoreAtBranch(drivetrain, () -> thirdBranch.getZone(), () -> thirdBranch.getSide(), () -> thirdBranch.getPose(), elevator, coralIntake)
+            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> firstStation.stationPose)
         );
 
         return autonCommandGroup;
-    }
-
-    public void changePreferredScoringLocation(AutonLocations loc) {
-        ReefscapeUtils.changePreferredZone(loc.getZone());
-        ReefscapeUtils.changePreferredBranchSide(loc.getSide());
     }
 
 
@@ -247,6 +234,13 @@ public class Autons {
         startingPoseChooser.addOption("Middle", knownLocations.middleStart);
         startingPoseChooser.addOption("Top", knownLocations.topMostStart);
 
+        startingPoseChooser.addOption("A", knownLocations.closeZone);
+        startingPoseChooser.addOption("B", knownLocations.closeLeftZone);
+        startingPoseChooser.addOption("C", knownLocations.bargeLeftZone);
+        startingPoseChooser.addOption("D", knownLocations.bargeZone);
+        startingPoseChooser.addOption("E", knownLocations.bargeRightZone);
+        startingPoseChooser.addOption("F", knownLocations.closeRightZone);
+
         // startingPoseChooser.addOption("closeRightRight", knownLocations.closeRightSideRightBranch);
         // startingPoseChooser.addOption("closeRightLeft", knownLocations.closeRightSideLeftBranch);
         // startingPoseChooser.addOption("bargeLeftRight", knownLocations.leftBargeSideRightBranch);
@@ -326,18 +320,31 @@ public class Autons {
 
     public void updateAutonLocations() {
         KnownLocations locs = KnownLocations.getKnownLocations();
-        AutonLocations.LEFTINBARGEZONE.setPose(locs.bargeSideLeftBranch);
-        AutonLocations.RIGHTINBARGEZONE.setPose(locs.bargeSideRightBranch);
-        AutonLocations.LEFTINRIGHTBARGEZONE.setPose(locs.rightBargeSideLeftBranch);
-        AutonLocations.RIGHTINRIGHTBARGEZONE.setPose(locs.rightBargeSideRightBranch);
-        AutonLocations.LEFTINLEFTBARGEZONE.setPose(locs.leftBargeSideLeftBranch);
-        AutonLocations.RIGHTINLEFTBARGEZONE.setPose(locs.leftBargeSideRightBranch);
-        AutonLocations.LEFTINCLOSEZONE.setPose(locs.closeSideLeftBranch);
-        AutonLocations.RIGHTINCLOSEZONE.setPose(locs.closeSideRightBranch);
-        AutonLocations.LEFTINRIGHTCLOSEZONE.setPose(locs.rightCloseSideLeftBranch);
-        AutonLocations.RIGHTINRIGHTCLOSEZONE.setPose(locs.rightCloseSideRightBranch);
-        AutonLocations.LEFTINLEFTCLOSEZONE.setPose(locs.leftCloseSideLeftBranch);
-        AutonLocations.RIGHTINLEFTCLOSEZONE.setPose(locs.leftCloseSideRightBranch);
+        AutonLocations.LEFTINBARGEZONE.setZonePose(locs.bargeZone);
+        AutonLocations.RIGHTINBARGEZONE.setZonePose(locs.bargeZone);
+        AutonLocations.LEFTINRIGHTBARGEZONE.setZonePose(locs.bargeRightZone);
+        AutonLocations.RIGHTINRIGHTBARGEZONE.setZonePose(locs.bargeRightZone);
+        AutonLocations.LEFTINLEFTBARGEZONE.setZonePose(locs.bargeLeftZone);
+        AutonLocations.RIGHTINLEFTBARGEZONE.setZonePose(locs.bargeLeftZone);
+        AutonLocations.LEFTINCLOSEZONE.setZonePose(locs.closeZone);
+        AutonLocations.RIGHTINCLOSEZONE.setZonePose(locs.closeZone);
+        AutonLocations.LEFTINRIGHTCLOSEZONE.setZonePose(locs.closeRightZone);
+        AutonLocations.RIGHTINRIGHTCLOSEZONE.setZonePose(locs.closeRightZone);
+        AutonLocations.LEFTINLEFTCLOSEZONE.setZonePose(locs.closeLeftZone);
+        AutonLocations.RIGHTINLEFTCLOSEZONE.setZonePose(locs.closeLeftZone);
+
+        AutonLocations.LEFTINBARGEZONE.setBranch(locs.bargeSideLeftBranch);
+        AutonLocations.RIGHTINBARGEZONE.setBranch(locs.bargeSideRightBranch);
+        AutonLocations.LEFTINRIGHTBARGEZONE.setBranch(locs.rightBargeSideLeftBranch);
+        AutonLocations.RIGHTINRIGHTBARGEZONE.setBranch(locs.rightBargeSideRightBranch);
+        AutonLocations.LEFTINLEFTBARGEZONE.setBranch(locs.leftBargeSideLeftBranch);
+        AutonLocations.RIGHTINLEFTBARGEZONE.setBranch(locs.leftBargeSideRightBranch);
+        AutonLocations.LEFTINCLOSEZONE.setBranch(locs.closeSideLeftBranch);
+        AutonLocations.RIGHTINCLOSEZONE.setBranch(locs.closeSideRightBranch);
+        AutonLocations.LEFTINRIGHTCLOSEZONE.setBranch(locs.rightCloseSideLeftBranch);
+        AutonLocations.RIGHTINRIGHTCLOSEZONE.setBranch(locs.rightCloseSideRightBranch);
+        AutonLocations.LEFTINLEFTCLOSEZONE.setBranch(locs.leftCloseSideLeftBranch);
+        AutonLocations.RIGHTINLEFTCLOSEZONE.setBranch(locs.leftCloseSideRightBranch);
 
         CoralStation.INSIDELEFT.setStation(locs.leftCoralStationInside);
         CoralStation.INSIDERIGHT.setStation(locs.rightCoralStationInside);
@@ -347,42 +354,41 @@ public class Autons {
 
     //field relative
     public enum AutonLocations {
-        LEFTINBARGEZONE(RobotZone.BARGE, BranchSide.LEFT),
-        RIGHTINBARGEZONE(RobotZone.BARGE, BranchSide.RIGHT),
-        LEFTINRIGHTBARGEZONE(RobotZone.BARGE_RIGHT, BranchSide.LEFT),
-        RIGHTINRIGHTBARGEZONE(RobotZone.BARGE_RIGHT, BranchSide.RIGHT),
-        LEFTINRIGHTCLOSEZONE(RobotZone.CLOSE_RIGHT, BranchSide.LEFT),
-        RIGHTINRIGHTCLOSEZONE(RobotZone.CLOSE_RIGHT, BranchSide.RIGHT),
-        LEFTINCLOSEZONE(RobotZone.CLOSE, BranchSide.LEFT),
-        RIGHTINCLOSEZONE(RobotZone.CLOSE, BranchSide.RIGHT),
-        LEFTINLEFTCLOSEZONE(RobotZone.CLOSE_LEFT, BranchSide.LEFT),
-        RIGHTINLEFTCLOSEZONE(RobotZone.CLOSE_LEFT, BranchSide.RIGHT),
-        LEFTINLEFTBARGEZONE(RobotZone.BARGE_LEFT, BranchSide.LEFT),
-        RIGHTINLEFTBARGEZONE(RobotZone.BARGE_LEFT, BranchSide.RIGHT);
+        LEFTINBARGEZONE(KnownLocations.getKnownLocations().bargeZone, KnownLocations.getKnownLocations().bargeSideLeftBranch),
+        RIGHTINBARGEZONE(KnownLocations.getKnownLocations().bargeZone, KnownLocations.getKnownLocations().bargeSideRightBranch),
+        LEFTINRIGHTBARGEZONE(KnownLocations.getKnownLocations().bargeRightZone, KnownLocations.getKnownLocations().rightBargeSideLeftBranch),
+        RIGHTINRIGHTBARGEZONE(KnownLocations.getKnownLocations().bargeRightZone, KnownLocations.getKnownLocations().rightBargeSideRightBranch),
+        LEFTINRIGHTCLOSEZONE(KnownLocations.getKnownLocations().closeRightZone, KnownLocations.getKnownLocations().rightCloseSideLeftBranch),
+        RIGHTINRIGHTCLOSEZONE(KnownLocations.getKnownLocations().closeRightZone, KnownLocations.getKnownLocations().rightBargeSideRightBranch),
+        LEFTINCLOSEZONE(KnownLocations.getKnownLocations().closeZone, KnownLocations.getKnownLocations().closeSideLeftBranch),
+        RIGHTINCLOSEZONE(KnownLocations.getKnownLocations().closeZone, KnownLocations.getKnownLocations().closeSideRightBranch),
+        LEFTINLEFTCLOSEZONE(KnownLocations.getKnownLocations().closeLeftZone, KnownLocations.getKnownLocations().leftCloseSideLeftBranch),
+        RIGHTINLEFTCLOSEZONE(KnownLocations.getKnownLocations().closeLeftZone, KnownLocations.getKnownLocations().leftCloseSideRightBranch),
+        LEFTINLEFTBARGEZONE(KnownLocations.getKnownLocations().bargeLeftZone, KnownLocations.getKnownLocations().leftBargeSideLeftBranch),
+        RIGHTINLEFTBARGEZONE(KnownLocations.getKnownLocations().bargeLeftZone, KnownLocations.getKnownLocations().leftBargeSideRightBranch);
 
-        private RobotZone zone;
-        private BranchSide side;
-        private Pose2d branchPose;
+        private Pose2d zonePose;
+        private Pose2d branch;
 
-        AutonLocations(RobotZone z, BranchSide s) {
-            this.zone = z;
-            this.side = s;
+        AutonLocations(Pose2d zonePose, Pose2d branchPose) {
+            this.zonePose = zonePose;
+            this.branch = branchPose;
         }
 
-        public RobotZone getZone() {
-            return zone;
+        public Pose2d getZonePose() {
+            return zonePose;
         }
 
-        public BranchSide getSide() {
-            return side;
+        public void setZonePose(Pose2d zonePose) {
+            this.zonePose = zonePose;
         }
 
-        public Pose2d getPose() {
-            return branchPose;
+        public Pose2d getBranch() {
+            return branch;
         }
 
-        public void setPose(Pose2d pose) {
-            branchPose = pose;
+        public void setBranch(Pose2d branchPose) {
+            branch = branchPose;
         }
     }
 }

@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CAN;
 import frc.robot.subsystems.elevator.AlgaeArticulator.ArticulatorPosition;
+import frc.robot.util.ReefscapeUtils;
+import frc.robot.util.ReefscapeUtils.RobotZone;
 
 public class Elevator extends SubsystemBase {
 
@@ -104,6 +106,14 @@ public class Elevator extends SubsystemBase {
     setPosition(pos.get().degreePos);
   }
 
+  public ElevatorPosition getAlgaeRemovalElevatorPosition() {
+    RobotZone zone = ReefscapeUtils.getCurrentRobotZone();
+
+    return zone == RobotZone.BARGE || zone == RobotZone.CLOSE_LEFT || zone == RobotZone.CLOSE_RIGHT ?
+      ElevatorPosition.L2_ALGAE :
+      ElevatorPosition.L3_ALGAE;
+  }
+
   public void changePos() {
     setPosition(SmartDashboard.getNumber("Elevator/Position", 110.0));
   }
@@ -129,8 +139,8 @@ public class Elevator extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
-  public boolean isAboveSafePosition() {
-    return getArmPosition() > ElevatorPosition.SAFE_POS.degreePos;
+  public boolean isSafe() {
+    return getArmPosition() <= ElevatorPosition.SAFE_POS.degreePos;
   }
   
   public boolean isSwitchEngaged() {
@@ -152,13 +162,14 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putBoolean("Elevator/isInPosition", isInPosition());
     SmartDashboard.putBoolean("Elevator/limitSwitchEngaged", leftMotor.getReverseLimitSwitch().isPressed());
     SmartDashboard.putBoolean("Elevator/isHome", isAtPosition(ElevatorPosition.HOME));
+    SmartDashboard.putBoolean("Elevator/isSafe", isSafe());
   }
   
 
   public enum ElevatorPosition {
     LEVEL4(20.85,"level4"),
     LEVEL3(13.1, "level3"),//increased by 0.2
-    LEVEL2(7.14, "level2"),
+    LEVEL2(7.25, "level2"), // old 7.14
     LEVEL1(5.07, "level1"), // check this
     HOME(-0.15, "home"),
     L2_ALGAE(5.9, "level2Algae"), // check
