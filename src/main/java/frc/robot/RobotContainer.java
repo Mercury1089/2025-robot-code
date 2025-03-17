@@ -281,26 +281,26 @@ public class RobotContainer {
       // DriveCommands.driveAndScoreAtBranch(drivetrain, () -> RobotZone.BARGE_RIGHT, () -> BranchSide.RIGHT, () -> KnownLocations.getKnownLocations().rightBargeSideRightBranch, elevator, coralIntake)
     );
 
-    outerLeftStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
-      // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationOutside)
-      new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDELEFT)).andThen(
-      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().leftCoralStationOutside)
-    ));
-    outerRightStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
-      // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationOutside)  
-      new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDERIGHT)).andThen(
-      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().rightCoralStationOutside)
-    ));
-    innerLeftStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
-      // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationInside)
-      new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.INSIDELEFT)).andThen(
-      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().leftCoralStationInside)
-    ));
-    innerRightStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
-      new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDERIGHT)).andThen(
-      // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationInside)
-      DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().rightCoralStationInside)
-    ));
+    // outerLeftStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
+    //   // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationOutside)
+    //   new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDELEFT)).andThen(
+    //   DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().leftCoralStationOutside)
+    // ));
+    // outerRightStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
+    //   // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationOutside)  
+    //   new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDERIGHT)).andThen(
+    //   DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().rightCoralStationOutside)
+    // ));
+    // innerLeftStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
+    //   // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().leftCoralStationInside)
+    //   new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.INSIDELEFT)).andThen(
+    //   DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().leftCoralStation)
+    // ));
+    // innerRightStationBTN.and(fidoOn).and(hasCoralEntered.negate()).whileTrue(
+    //   new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(CoralStation.OUTSIDERIGHT)).andThen(
+    //   // DriveCommands.goToCoralStation(drivetrain, KnownLocations.getKnownLocations().rightCoralStationInside)
+    //   DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> KnownLocations.getKnownLocations().rightCoralStation)
+    // ));
 
     fidoBTN.onTrue(new InstantCommand(() -> leds.toggleFIDO()));
   }

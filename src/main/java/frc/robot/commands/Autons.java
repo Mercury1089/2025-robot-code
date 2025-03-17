@@ -1,70 +1,68 @@
 package frc.robot.commands;
 
 import java.nio.file.Path;
-import java.sql.Driver;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.SWERVE;
 // import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.CoralIntake.IntakeSpeed;
 import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.util.KnownLocations;
-import frc.robot.util.MercMath;
 import frc.robot.util.PathUtils;
 import frc.robot.util.ReefscapeUtils;
-import frc.robot.util.TargetUtils;
-import frc.robot.util.ReefscapeUtils.BranchSide;
-import frc.robot.util.ReefscapeUtils.RobotZone;
 import frc.robot.util.ReefscapeUtils.CoralStation;
 
 public class Autons {
 
-    private SendableChooser<Pose2d> startingPoseChooser;
-    private SendableChooser<AutonLocations> firstBranchChooser;
-    private SendableChooser<CoralStation> firstStationChooser;
-    private SendableChooser<AutonLocations> secondBranchChooser;
-    private SendableChooser<CoralStation> secondStationChooser;
-    private SendableChooser<AutonLocations> thirdBranchChooser;
-    private SendableChooser<CoralStation> thirdStationChooser;
-    private SendableChooser<AutonLocations> fourthBranchChooser;
+    private SendableChooser<AutonType> autonTypeChooser;
+    // private SendableChooser<Pose2d> startingPoseChooser;
+    // private SendableChooser<AutonLocations> firstBranchChooser;
+    // private SendableChooser<CoralStation> firstStationChooser;
+    // private SendableChooser<AutonLocations> secondBranchChooser;
+    // private SendableChooser<CoralStation> secondStationChooser;
+    // private SendableChooser<AutonLocations> thirdBranchChooser;
+    // private SendableChooser<CoralStation> thirdStationChooser;
+    // private SendableChooser<AutonLocations> fourthBranchChooser;
     private Pose2d startingPose;
     private AutonLocations firstBranch;
     private AutonLocations secondBranch;
     private AutonLocations thirdBranch;
-    private AutonLocations fourthBranch;
-    private CoralStation firstStation;
-    private CoralStation secondStation;
-    private CoralStation thirdStation;
-    private CoralStation fourthStation;
+    // private AutonLocations fourthBranch;
+    // private CoralStation firstStation;
+    // private CoralStation secondStation;
+    // private CoralStation thirdStation;
+    // private CoralStation fourthStation;
+
+
+
+    private AutonType autoType = AutonType.RIGHT;
+
     private Command autonCommand;
 
     private Alliance alliance;
@@ -131,22 +129,131 @@ public class Autons {
 
 
     public Command buildAutonCommand(KnownLocations knownLocations) {
+        PathPlannerPath firstZonePath = getBasePath(), 
+            firstStationPath= getBasePath(), 
+            secondZonePath= getBasePath(),
+            secondStationPath= getBasePath(),
+            thirdZonePath = getBasePath();
+
+        int traj = 0;
+
+        switch (autoType) {
+            case LEFT:
+                startingPose = knownLocations.leftStart;
+                firstBranch = AutonLocations.LEFTINLEFTBARGEZONE;
+                secondBranch = AutonLocations.LEFTINLEFTCLOSEZONE;
+                thirdBranch = AutonLocations.RIGHTINLEFTCLOSEZONE;
+
+                try {
+                    firstZonePath = PathPlannerPath.fromPathFile("leftStartToleftBargeSide");
+                    firstStationPath = PathPlannerPath.fromPathFile("leftBargeSideToleftStation");
+                    secondZonePath = PathPlannerPath.fromPathFile("leftStationToleftCloseSide");
+                    secondStationPath = PathPlannerPath.fromPathFile("leftCloseSideToleftStation");
+                    thirdZonePath = PathPlannerPath.fromPathFile("leftStationToleftCloseSide");
+                } catch (Exception e) {
+                    // TODO: handle exception
+                }
+
+                break;
+            case RIGHT:
+                startingPose = knownLocations.rightStart;
+                firstBranch = AutonLocations.LEFTINRIGHTBARGEZONE;
+                secondBranch = AutonLocations.LEFTINRIGHTCLOSEZONE;
+                thirdBranch = AutonLocations.RIGHTINRIGHTCLOSEZONE;
+                
+                try {
+                    firstZonePath = PathPlannerPath.fromPathFile("rightStartTorightBargeSide");
+                    firstStationPath = PathPlannerPath.fromPathFile("rightBargeSideTorightStation");
+                    secondZonePath = PathPlannerPath.fromPathFile("rightStationTorightCloseSide");
+                    secondStationPath = PathPlannerPath.fromPathFile("rightCloseSideTorightStation");
+                    thirdZonePath = PathPlannerPath.fromPathFile("rightStationTorightCloseSide");
+                } catch (Exception e) {
+                    // TODO: handle exception
+                }
+
+                break;
+            case MIDDLE:
+                startingPose = knownLocations.middleStart;
+                firstBranch = AutonLocations.LEFTINBARGEZONE;
+                try {
+                    firstZonePath = PathPlannerPath.fromPathFile("middleStartTobargeSide");
+                } catch (Exception e) {
+                    // TODO: handle exception
+                }
+                break;
+            default:
+                break;
+        }
+        
+        boolean isRedAlliance = (KnownLocations.getKnownLocations().alliance == Alliance.Red);
+        boolean isMiddleAuton = (autoType == AutonType.MIDDLE);
+        int trajIndex = 0;
+
+        PathPlannerPath[] paths = {firstZonePath, firstStationPath, secondZonePath, secondStationPath, thirdZonePath};
+
+        for (int i = 0; i < paths.length; i++) {
+            if (isMiddleAuton && i > 0) {
+                drivetrain.setTrajectorySmartdash(new Trajectory(), trajIndex + "");
+            } else {
+                PathPlannerPath path = isRedAlliance ? paths[i].flipPath() : paths[i];
+                drivetrain.setTrajectorySmartdash(PathUtils.TrajectoryFromPath(path, config), trajIndex + "");
+            }
+
+            trajIndex++;
+        }
+        
+        
+        
+
         // SET OUR INITIAL POSE
         drivetrain.resetPose(startingPose);
         drivetrain.setStartingPosition(startingPose);
 
         SequentialCommandGroup autonCommandGroup = new SequentialCommandGroup();
+        autonCommandGroup.addCommands(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)));
 
-        autonCommandGroup.addCommands(
-            new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)),
-            PathUtils.getPathToPose(firstBranch.getZonePose(), () -> 0.5),
-            DriveCommands.driveAndScoreAtBranch(drivetrain, () -> firstBranch.getBranch(), elevator, coralIntake),
+        switch (autoType) {
+            case MIDDLE:
+                autonCommandGroup.addCommands(
+                    AutoBuilder.followPath(firstZonePath),
+                    DriveCommands.driveAndScoreAtBranch(drivetrain, () -> firstBranch.getBranch(), elevator, coralIntake),
+                    new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator)
+                );
+                break;
+            default:
+                autonCommandGroup.addCommands(
+                    AutoBuilder.followPath(firstZonePath),
+                    DriveCommands.driveAndScoreAtBranch(drivetrain, () -> firstBranch.getBranch(), elevator, coralIntake),
+                    new ParallelCommandGroup(
+                        AutoBuilder.followPath(firstStationPath),
+                        new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator)
+                    ).until(() -> coralIntake.hasCoralEntered()),
 
-            new InstantCommand(() -> ReefscapeUtils.changePreferredCoralStation(firstStation)),
-            DriveCommands.getCoralFromStation(drivetrain, elevator, coralIntake, () -> firstStation.stationPose)
-        );
+                    AutoBuilder.followPath(secondZonePath),
+                    DriveCommands.driveAndScoreAtBranch(drivetrain, () -> secondBranch.getBranch(), elevator, coralIntake),
+                    new ParallelCommandGroup(
+                        AutoBuilder.followPath(secondStationPath),
+                        new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator)
+                    ).until(() -> coralIntake.hasCoralEntered()),
+
+                    AutoBuilder.followPath(thirdZonePath),
+                    DriveCommands.driveAndScoreAtBranch(drivetrain, () -> thirdBranch.getBranch(), elevator, coralIntake)
+                );
+                break;
+        }
 
         return autonCommandGroup;
+    }
+
+    public PathPlannerPath getBasePath() {
+        List<Waypoint> waypoints = new ArrayList<Waypoint>();
+        waypoints.add(new Waypoint(new Translation2d(), new Translation2d(), new Translation2d()));
+        waypoints.add(new Waypoint(new Translation2d(), new Translation2d(), new Translation2d()));
+
+        PathConstraints constraints = new PathConstraints(0.0,0.0,0.0,0.0,0.0, true);
+        IdealStartingState idealStartingState = new IdealStartingState(0.0, Rotation2d.fromDegrees(0.0));
+        GoalEndState goalEndState = new GoalEndState(0.0, Rotation2d.fromDegrees(0.0));
+        return new PathPlannerPath(waypoints, constraints, idealStartingState, goalEndState);
     }
 
 
@@ -170,51 +277,58 @@ public class Autons {
             rebuildAutonCommand = true;
         }
 
-        Pose2d startingPose = startingPoseChooser.getSelected();
+        AutonType type = autonTypeChooser.getSelected();
 
-        AutonLocations firstBranch = firstBranchChooser.getSelected();
-        AutonLocations secondBranch = secondBranchChooser.getSelected();
-        AutonLocations thirdBranch = thirdBranchChooser.getSelected();
-        // AutonLocations fourthBranch = fourthBranchChooser.getSelected();
-
-        CoralStation firstStation = firstStationChooser.getSelected();
-        CoralStation secondStation = secondStationChooser.getSelected();
-        // CoralStation thirdStation = thirdStationChooser.getSelected();
-
-        if (startingPose != this.startingPose) {
-            this.startingPose = startingPose;
+        if (type != this.autoType) {
+            this.autoType = type;
             rebuildAutonCommand = true;
         }
 
-        if (firstBranch != this.firstBranch) {
-            this.firstBranch = firstBranch;
-            rebuildAutonCommand = true;
-        }
+        // Pose2d startingPose = startingPoseChooser.getSelected();
 
-        if (secondBranch != this.secondBranch) {
-            this.secondBranch = secondBranch;
-            rebuildAutonCommand = true;
-        }
+        // AutonLocations firstBranch = firstBranchChooser.getSelected();
+        // AutonLocations secondBranch = secondBranchChooser.getSelected();
+        // AutonLocations thirdBranch = thirdBranchChooser.getSelected();
+        // // AutonLocations fourthBranch = fourthBranchChooser.getSelected();
 
-        if (thirdBranch != this.thirdBranch) {
-            this.thirdBranch = thirdBranch;
-            rebuildAutonCommand = true;
-        }
+        // CoralStation firstStation = firstStationChooser.getSelected();
+        // CoralStation secondStation = secondStationChooser.getSelected();
+        // // CoralStation thirdStation = thirdStationChooser.getSelected();
+
+        // if (startingPose != this.startingPose) {
+        //     this.startingPose = startingPose;
+        //     rebuildAutonCommand = true;
+        // }
+
+        // if (firstBranch != this.firstBranch) {
+        //     this.firstBranch = firstBranch;
+        //     rebuildAutonCommand = true;
+        // }
+
+        // if (secondBranch != this.secondBranch) {
+        //     this.secondBranch = secondBranch;
+        //     rebuildAutonCommand = true;
+        // }
+
+        // if (thirdBranch != this.thirdBranch) {
+        //     this.thirdBranch = thirdBranch;
+        //     rebuildAutonCommand = true;
+        // }
         
         // if (fourthBranch != this.fourthBranch) {
         //     this.fourthBranch = fourthBranch;
         //     rebuildAutonCommand = true;
         // }
 
-        if (firstStation != this.firstStation) {
-            this.firstStation = firstStation;
-            rebuildAutonCommand = true;
-        }
+        // if (firstStation != this.firstStation) {
+        //     this.firstStation = firstStation;
+        //     rebuildAutonCommand = true;
+        // }
 
-        if (secondStation != this.secondStation) {
-            this.secondStation = secondStation;
-            rebuildAutonCommand = true;
-        }
+        // if (secondStation != this.secondStation) {
+        //     this.secondStation = secondStation;
+        //     rebuildAutonCommand = true;
+        // }
 
         // if (thirdStation != this.thirdStation) {
         //     this.thirdStation = thirdStation;
@@ -228,68 +342,34 @@ public class Autons {
     }
 
     public void setChoosers(KnownLocations knownLocations) {
-        // select the MANUAL STARTING POSITION of the robot
-        this.startingPoseChooser = new SendableChooser<Pose2d>();
-        startingPoseChooser.setDefaultOption("Bottom", knownLocations.bottomMostStart);
-        startingPoseChooser.addOption("Middle", knownLocations.middleStart);
-        startingPoseChooser.addOption("Top", knownLocations.topMostStart);
+        autonTypeChooser = new SendableChooser<AutonType>();
+        autonTypeChooser.setDefaultOption("RIGHT", AutonType.RIGHT);
+        autonTypeChooser.addOption("MIDDLE", AutonType.MIDDLE);
+        autonTypeChooser.addOption("LEFT", AutonType.LEFT);
 
-        startingPoseChooser.addOption("A", knownLocations.closeZone);
-        startingPoseChooser.addOption("B", knownLocations.closeLeftZone);
-        startingPoseChooser.addOption("C", knownLocations.bargeLeftZone);
-        startingPoseChooser.addOption("D", knownLocations.bargeZone);
-        startingPoseChooser.addOption("E", knownLocations.bargeRightZone);
-        startingPoseChooser.addOption("F", knownLocations.closeRightZone);
-
-        // startingPoseChooser.addOption("closeRightRight", knownLocations.closeRightSideRightBranch);
-        // startingPoseChooser.addOption("closeRightLeft", knownLocations.closeRightSideLeftBranch);
-        // startingPoseChooser.addOption("bargeLeftRight", knownLocations.leftBargeSideRightBranch);
-        // startingPoseChooser.addOption("bargeLeftLeft", knownLocations.leftBargeSideLeftBranch);
-        // startingPoseChooser.addOption("bargeRightLeft", knownLocations.rightBargeSideLeftBranch);
-        // startingPoseChooser.addOption("bargeRightRight", knownLocations.rightBargeSideRightBranch);
-        // startingPoseChooser.addOption("closeLeftLeft", knownLocations.leftCloseSideLeftBranch);
-        // startingPoseChooser.addOption("closeLeftRight", knownLocations.leftCloseSideRightBranch);
-        // startingPoseChooser.addOption("closeLeft", knownLocations.closeSideLeftBranch);
-        // startingPoseChooser.addOption("closeRight", knownLocations.closeSideRightBranch);
-        // startingPoseChooser.addOption("bargeLeft", knownLocations.bargeSideLeftBranch);
-        // startingPoseChooser.addOption("bargeRight", knownLocations.bargeSideRightBranch);
-        // startingPoseChooser.addOption("reef", knownLocations.REEF);
-
-        // startingPoseChooser.addOption("BRSAFE", KnownLocations.rightBargeSideAlgaeSafePoint);
-        // startingPoseChooser.addOption("BRSCORE", KnownLocations.rightBargeSideALgaeScorePoint);
-        
-        // startingPoseChooser.addOption("BLSAFE", KnownLocations.rightCloseSideAlgaeSafePoint);
-        // startingPoseChooser.addOption("BLSCORE", KnownLocations.rightCloseSideAlgaeScorePoint);
-        
-        // startingPoseChooser.addOption("RSAFE", KnownLocations.bargeSideAlgaeSafePoint);
-        // startingPoseChooser.addOption("RSCORE", KnownLocations.bargeSideAlgaeScorePoint);
-        
-        // startingPoseChooser.addOption("TRSAFE", KnownLocations.leftBargeSideAlgaeSafePoint);
-        // startingPoseChooser.addOption("TRSCORE", KnownLocations.leftBargeSideAlgaeScorePoint);
-        
-        // startingPoseChooser.addOption("TLSAFE", KnownLocations.leftCloseSideAlgaeSafePoint);
-        // startingPoseChooser.addOption("TLSCORE", KnownLocations.leftCloseSideAlgaeScorePoint);
-        
-        // startingPoseChooser.addOption("LSAFE", KnownLocations.closeSideAlgaeSafePoint);
-        // startingPoseChooser.addOption("LSCORE", KnownLocations.closeSideAlgaeScorePoint);
+        // // select the MANUAL STARTING POSITION of the robot
+        // this.startingPoseChooser = new SendableChooser<Pose2d>();
+        // startingPoseChooser.setDefaultOption("RIGHT", knownLocations.rightStart);
+        // startingPoseChooser.addOption("Middle", knownLocations.middleStart);
+        // startingPoseChooser.addOption("LEFT", knownLocations.leftStart);
         
 
-        firstBranchChooser = getBranchChooser();
-        secondBranchChooser = getBranchChooser();
-        thirdBranchChooser = getBranchChooser();
-        // fourthBranchChooser = getBranchChooser();
-        firstStationChooser = getCoralStationChooser();
-        secondStationChooser = getCoralStationChooser();
-        // thirdStationChooser = getCoralStationChooser();
+        // firstBranchChooser = getBranchChooser();
+        // secondBranchChooser = getBranchChooser();
+        // thirdBranchChooser = getBranchChooser();
+        // // fourthBranchChooser = getBranchChooser();
+        // firstStationChooser = getCoralStationChooser();
+        // secondStationChooser = getCoralStationChooser();
+        // // thirdStationChooser = getCoralStationChooser();
 
-        SmartDashboard.putData("Starting Pose", startingPoseChooser);
-        SmartDashboard.putData("First Branch", firstBranchChooser);
-        SmartDashboard.putData("Second Branch", secondBranchChooser);
-        SmartDashboard.putData("Third Branch", thirdBranchChooser);
-        // SmartDashboard.putData("Fourth Branch", fourthBranchChooser);
-        SmartDashboard.putData("First Coral Station", firstStationChooser);
-        SmartDashboard.putData("Second Coral Station", secondStationChooser);
-        // SmartDashboard.putData("Third Coral Station", thirdStationChooser);
+        // SmartDashboard.putData("Starting Pose", startingPoseChooser);
+        // SmartDashboard.putData("First Branch", firstBranchChooser);
+        // SmartDashboard.putData("Second Branch", secondBranchChooser);
+        // SmartDashboard.putData("Third Branch", thirdBranchChooser);
+        // SmartDashboard.putData("First Coral Station", firstStationChooser);
+        // SmartDashboard.putData("Second Coral Station", secondStationChooser);
+
+        SmartDashboard.putData("Auton Type Chooser", autonTypeChooser);
     }
 
     private SendableChooser<AutonLocations> getBranchChooser() {
@@ -311,10 +391,8 @@ public class Autons {
 
     private SendableChooser<CoralStation> getCoralStationChooser() {
         SendableChooser<CoralStation> coralStationChooser = new SendableChooser<CoralStation>();
-        coralStationChooser.setDefaultOption("Outside Right", CoralStation.OUTSIDERIGHT);
-        coralStationChooser.addOption("Inside Right", CoralStation.INSIDERIGHT);
-        coralStationChooser.addOption("Inside Left", CoralStation.INSIDELEFT);
-        coralStationChooser.addOption("Outside Left", CoralStation.OUTSIDELEFT);
+        coralStationChooser.setDefaultOption("Right", CoralStation.RIGHT);
+        coralStationChooser.addOption("Left", CoralStation.LEFT);
         return coralStationChooser;
     }
 
@@ -322,16 +400,16 @@ public class Autons {
         KnownLocations locs = KnownLocations.getKnownLocations();
         AutonLocations.LEFTINBARGEZONE.setZonePose(locs.bargeZone);
         AutonLocations.RIGHTINBARGEZONE.setZonePose(locs.bargeZone);
-        AutonLocations.LEFTINRIGHTBARGEZONE.setZonePose(locs.bargeRightZone);
-        AutonLocations.RIGHTINRIGHTBARGEZONE.setZonePose(locs.bargeRightZone);
-        AutonLocations.LEFTINLEFTBARGEZONE.setZonePose(locs.bargeLeftZone);
-        AutonLocations.RIGHTINLEFTBARGEZONE.setZonePose(locs.bargeLeftZone);
+        AutonLocations.LEFTINRIGHTBARGEZONE.setZonePose(locs.rightBargeZone);
+        AutonLocations.RIGHTINRIGHTBARGEZONE.setZonePose(locs.rightBargeZone);
+        AutonLocations.LEFTINLEFTBARGEZONE.setZonePose(locs.leftBargeZone);
+        AutonLocations.RIGHTINLEFTBARGEZONE.setZonePose(locs.leftBargeZone);
         AutonLocations.LEFTINCLOSEZONE.setZonePose(locs.closeZone);
         AutonLocations.RIGHTINCLOSEZONE.setZonePose(locs.closeZone);
-        AutonLocations.LEFTINRIGHTCLOSEZONE.setZonePose(locs.closeRightZone);
-        AutonLocations.RIGHTINRIGHTCLOSEZONE.setZonePose(locs.closeRightZone);
-        AutonLocations.LEFTINLEFTCLOSEZONE.setZonePose(locs.closeLeftZone);
-        AutonLocations.RIGHTINLEFTCLOSEZONE.setZonePose(locs.closeLeftZone);
+        AutonLocations.LEFTINRIGHTCLOSEZONE.setZonePose(locs.rightCloseZone);
+        AutonLocations.RIGHTINRIGHTCLOSEZONE.setZonePose(locs.rightCloseZone);
+        AutonLocations.LEFTINLEFTCLOSEZONE.setZonePose(locs.leftCloseZone);
+        AutonLocations.RIGHTINLEFTCLOSEZONE.setZonePose(locs.leftCloseZone);
 
         AutonLocations.LEFTINBARGEZONE.setBranch(locs.bargeSideLeftBranch);
         AutonLocations.RIGHTINBARGEZONE.setBranch(locs.bargeSideRightBranch);
@@ -346,26 +424,24 @@ public class Autons {
         AutonLocations.LEFTINLEFTCLOSEZONE.setBranch(locs.leftCloseSideLeftBranch);
         AutonLocations.RIGHTINLEFTCLOSEZONE.setBranch(locs.leftCloseSideRightBranch);
 
-        CoralStation.INSIDELEFT.setStation(locs.leftCoralStationInside);
-        CoralStation.INSIDERIGHT.setStation(locs.rightCoralStationInside);
-        CoralStation.OUTSIDELEFT.setStation(locs.leftCoralStationOutside);
-        CoralStation.OUTSIDERIGHT.setStation(locs.rightCoralStationOutside);
+        CoralStation.LEFT.setStation(locs.leftCoralStation);
+        CoralStation.RIGHT.setStation(locs.rightCoralStation);
     }
 
     //field relative
     public enum AutonLocations {
         LEFTINBARGEZONE(KnownLocations.getKnownLocations().bargeZone, KnownLocations.getKnownLocations().bargeSideLeftBranch),
         RIGHTINBARGEZONE(KnownLocations.getKnownLocations().bargeZone, KnownLocations.getKnownLocations().bargeSideRightBranch),
-        LEFTINRIGHTBARGEZONE(KnownLocations.getKnownLocations().bargeRightZone, KnownLocations.getKnownLocations().rightBargeSideLeftBranch),
-        RIGHTINRIGHTBARGEZONE(KnownLocations.getKnownLocations().bargeRightZone, KnownLocations.getKnownLocations().rightBargeSideRightBranch),
-        LEFTINRIGHTCLOSEZONE(KnownLocations.getKnownLocations().closeRightZone, KnownLocations.getKnownLocations().rightCloseSideLeftBranch),
-        RIGHTINRIGHTCLOSEZONE(KnownLocations.getKnownLocations().closeRightZone, KnownLocations.getKnownLocations().rightBargeSideRightBranch),
+        LEFTINRIGHTBARGEZONE(KnownLocations.getKnownLocations().rightBargeZone, KnownLocations.getKnownLocations().rightBargeSideLeftBranch),
+        RIGHTINRIGHTBARGEZONE(KnownLocations.getKnownLocations().rightBargeZone, KnownLocations.getKnownLocations().rightBargeSideRightBranch),
+        LEFTINRIGHTCLOSEZONE(KnownLocations.getKnownLocations().rightCloseZone, KnownLocations.getKnownLocations().rightCloseSideLeftBranch),
+        RIGHTINRIGHTCLOSEZONE(KnownLocations.getKnownLocations().rightCloseZone, KnownLocations.getKnownLocations().rightBargeSideRightBranch),
         LEFTINCLOSEZONE(KnownLocations.getKnownLocations().closeZone, KnownLocations.getKnownLocations().closeSideLeftBranch),
         RIGHTINCLOSEZONE(KnownLocations.getKnownLocations().closeZone, KnownLocations.getKnownLocations().closeSideRightBranch),
-        LEFTINLEFTCLOSEZONE(KnownLocations.getKnownLocations().closeLeftZone, KnownLocations.getKnownLocations().leftCloseSideLeftBranch),
-        RIGHTINLEFTCLOSEZONE(KnownLocations.getKnownLocations().closeLeftZone, KnownLocations.getKnownLocations().leftCloseSideRightBranch),
-        LEFTINLEFTBARGEZONE(KnownLocations.getKnownLocations().bargeLeftZone, KnownLocations.getKnownLocations().leftBargeSideLeftBranch),
-        RIGHTINLEFTBARGEZONE(KnownLocations.getKnownLocations().bargeLeftZone, KnownLocations.getKnownLocations().leftBargeSideRightBranch);
+        LEFTINLEFTCLOSEZONE(KnownLocations.getKnownLocations().leftCloseZone, KnownLocations.getKnownLocations().leftCloseSideLeftBranch),
+        RIGHTINLEFTCLOSEZONE(KnownLocations.getKnownLocations().leftCloseZone, KnownLocations.getKnownLocations().leftCloseSideRightBranch),
+        LEFTINLEFTBARGEZONE(KnownLocations.getKnownLocations().leftBargeZone, KnownLocations.getKnownLocations().leftBargeSideLeftBranch),
+        RIGHTINLEFTBARGEZONE(KnownLocations.getKnownLocations().leftBargeZone, KnownLocations.getKnownLocations().leftBargeSideRightBranch);
 
         private Pose2d zonePose;
         private Pose2d branch;
@@ -390,5 +466,11 @@ public class Autons {
         public void setBranch(Pose2d branchPose) {
             branch = branchPose;
         }
+    }
+
+    public enum AutonType {
+        LEFT,
+        MIDDLE,
+        RIGHT;
     }
 }

@@ -17,7 +17,7 @@ public class ReefscapeUtils {
     private static RobotZone robotZone = RobotZone.CLOSE; // this is your current robotZone
 
     private static RobotZone preferredZone = RobotZone.CLOSE; // this is your intended robot zone to go to while in FIDO
-    private static CoralStation preferredCoralStation = CoralStation.INSIDERIGHT;
+    private static CoralStation preferredCoralStation = CoralStation.RIGHT;
     private static ElevatorPosition preferredLevel = ElevatorPosition.LEVEL1;
     private static BranchSide preferredBranchSide = BranchSide.LEFT;
 
@@ -64,17 +64,11 @@ public class ReefscapeUtils {
         Pose2d stationPose2d = new Pose2d();
 
         switch (preferredCoralStation) {
-            case INSIDELEFT:
-                stationPose2d = locs.leftCoralStationInside;
+            case LEFT:
+                stationPose2d = locs.leftCoralStation;
                 break;
-            case OUTSIDELEFT:
-                stationPose2d = locs.leftCoralStationOutside;
-                break;
-            case INSIDERIGHT:
-                stationPose2d = locs.rightCoralStationInside;
-                break;
-            case OUTSIDERIGHT:
-                stationPose2d = locs.rightCoralStationOutside;
+            case RIGHT:
+                stationPose2d = locs.rightCoralStation;
                 break;
         }
 
@@ -196,68 +190,68 @@ public class ReefscapeUtils {
 
         return tag;
     }
-    /**
-    * @return : Returns a ComditionalCommand
-    */
-    public static Command getPathToPreferredBranch() {
-            Supplier<Double> goalEndSupplier = () -> 0.5;
+    // /**
+    // * @return : Returns a ComditionalCommand
+    // */
+    // public static Command getPathToPreferredBranch() {
+    //         Supplier<Double> goalEndSupplier = () -> 0.5;
     
-            return new ConditionalCommand(
-                PathUtils.getPathToPose(getLeftBranch(RobotZone.CLOSE), goalEndSupplier), 
-                new ConditionalCommand(
-                    PathUtils.getPathToPose(getRightBranch(RobotZone.CLOSE), goalEndSupplier),
-                    new ConditionalCommand(
-                        PathUtils.getPathToPose(getLeftBranch(RobotZone.CLOSE_RIGHT), goalEndSupplier),
-                        new ConditionalCommand(
-                            PathUtils.getPathToPose(getRightBranch(RobotZone.CLOSE_RIGHT), goalEndSupplier),
-                            new ConditionalCommand(
-                                PathUtils.getPathToPose(getLeftBranch(RobotZone.BARGE_RIGHT), goalEndSupplier),
-                                new ConditionalCommand(
-                                    PathUtils.getPathToPose(getRightBranch(RobotZone.BARGE_RIGHT), goalEndSupplier),
-                                    new ConditionalCommand(
-                                        PathUtils.getPathToPose(getLeftBranch(RobotZone.BARGE), goalEndSupplier),
-                                        new ConditionalCommand(
-                                            PathUtils.getPathToPose(getRightBranch(RobotZone.BARGE), goalEndSupplier),
-                                            new ConditionalCommand(
-                                                PathUtils.getPathToPose(getLeftBranch(RobotZone.BARGE_LEFT), goalEndSupplier),
-                                                new ConditionalCommand(
-                                                    PathUtils.getPathToPose(getRightBranch(RobotZone.BARGE_LEFT), goalEndSupplier),
-                                                    new ConditionalCommand(
-                                                        PathUtils.getPathToPose(getLeftBranch(RobotZone.CLOSE_LEFT), goalEndSupplier),
-                                                        new ConditionalCommand(
-                                                            PathUtils.getPathToPose(getRightBranch(RobotZone.CLOSE_LEFT), goalEndSupplier),
-                                                            PathUtils.getPathToPose(getLeftBranch(RobotZone.CLOSE), goalEndSupplier), 
-                                                            () -> preferredZone == RobotZone.CLOSE_LEFT && preferredBranchSide == BranchSide.RIGHT),
-                                                        () -> preferredZone == RobotZone.CLOSE_LEFT && preferredBranchSide == BranchSide.LEFT),
-                                                    () -> preferredZone == RobotZone.BARGE_LEFT && preferredBranchSide == BranchSide.RIGHT),
-                                                () -> preferredZone == RobotZone.BARGE_LEFT && preferredBranchSide == BranchSide.LEFT),
-                                            () -> preferredZone == RobotZone.BARGE && preferredBranchSide == BranchSide.RIGHT),
-                                        () -> preferredZone == RobotZone.BARGE && preferredBranchSide == BranchSide.LEFT),
-                                    () -> preferredZone == RobotZone.BARGE_RIGHT && preferredBranchSide == BranchSide.RIGHT),
-                                () -> preferredZone == RobotZone.BARGE_RIGHT && preferredBranchSide == BranchSide.LEFT),
-                            () -> preferredZone == RobotZone.CLOSE_RIGHT && preferredBranchSide == BranchSide.RIGHT),
-                        () -> preferredZone == RobotZone.CLOSE_RIGHT && preferredBranchSide == BranchSide.LEFT),
-                    () -> preferredZone == RobotZone.CLOSE && preferredBranchSide == BranchSide.RIGHT), 
-                () -> preferredZone == RobotZone.CLOSE && preferredBranchSide == BranchSide.LEFT);
-    }
+    //         return new ConditionalCommand(
+    //             PathUtils.getPathToPose(getLeftBranch(RobotZone.CLOSE), goalEndSupplier), 
+    //             new ConditionalCommand(
+    //                 PathUtils.getPathToPose(getRightBranch(RobotZone.CLOSE), goalEndSupplier),
+    //                 new ConditionalCommand(
+    //                     PathUtils.getPathToPose(getLeftBranch(RobotZone.CLOSE_RIGHT), goalEndSupplier),
+    //                     new ConditionalCommand(
+    //                         PathUtils.getPathToPose(getRightBranch(RobotZone.CLOSE_RIGHT), goalEndSupplier),
+    //                         new ConditionalCommand(
+    //                             PathUtils.getPathToPose(getLeftBranch(RobotZone.BARGE_RIGHT), goalEndSupplier),
+    //                             new ConditionalCommand(
+    //                                 PathUtils.getPathToPose(getRightBranch(RobotZone.BARGE_RIGHT), goalEndSupplier),
+    //                                 new ConditionalCommand(
+    //                                     PathUtils.getPathToPose(getLeftBranch(RobotZone.BARGE), goalEndSupplier),
+    //                                     new ConditionalCommand(
+    //                                         PathUtils.getPathToPose(getRightBranch(RobotZone.BARGE), goalEndSupplier),
+    //                                         new ConditionalCommand(
+    //                                             PathUtils.getPathToPose(getLeftBranch(RobotZone.BARGE_LEFT), goalEndSupplier),
+    //                                             new ConditionalCommand(
+    //                                                 PathUtils.getPathToPose(getRightBranch(RobotZone.BARGE_LEFT), goalEndSupplier),
+    //                                                 new ConditionalCommand(
+    //                                                     PathUtils.getPathToPose(getLeftBranch(RobotZone.CLOSE_LEFT), goalEndSupplier),
+    //                                                     new ConditionalCommand(
+    //                                                         PathUtils.getPathToPose(getRightBranch(RobotZone.CLOSE_LEFT), goalEndSupplier),
+    //                                                         PathUtils.getPathToPose(getLeftBranch(RobotZone.CLOSE), goalEndSupplier), 
+    //                                                         () -> preferredZone == RobotZone.CLOSE_LEFT && preferredBranchSide == BranchSide.RIGHT),
+    //                                                     () -> preferredZone == RobotZone.CLOSE_LEFT && preferredBranchSide == BranchSide.LEFT),
+    //                                                 () -> preferredZone == RobotZone.BARGE_LEFT && preferredBranchSide == BranchSide.RIGHT),
+    //                                             () -> preferredZone == RobotZone.BARGE_LEFT && preferredBranchSide == BranchSide.LEFT),
+    //                                         () -> preferredZone == RobotZone.BARGE && preferredBranchSide == BranchSide.RIGHT),
+    //                                     () -> preferredZone == RobotZone.BARGE && preferredBranchSide == BranchSide.LEFT),
+    //                                 () -> preferredZone == RobotZone.BARGE_RIGHT && preferredBranchSide == BranchSide.RIGHT),
+    //                             () -> preferredZone == RobotZone.BARGE_RIGHT && preferredBranchSide == BranchSide.LEFT),
+    //                         () -> preferredZone == RobotZone.CLOSE_RIGHT && preferredBranchSide == BranchSide.RIGHT),
+    //                     () -> preferredZone == RobotZone.CLOSE_RIGHT && preferredBranchSide == BranchSide.LEFT),
+    //                 () -> preferredZone == RobotZone.CLOSE && preferredBranchSide == BranchSide.RIGHT), 
+    //             () -> preferredZone == RobotZone.CLOSE && preferredBranchSide == BranchSide.LEFT);
+    // }
 
-    public static Command getPathToPreferredCoralStation() {
-        KnownLocations locs = KnownLocations.getKnownLocations();
-        Supplier<Double> goalEndSupplier = () -> 0.5;
-        return new ConditionalCommand(
-            PathUtils.getPathToPose(locs.leftCoralStationInside, goalEndSupplier), 
-            new ConditionalCommand(
-                PathUtils.getPathToPose(locs.leftCoralStationOutside, goalEndSupplier), 
-                new ConditionalCommand(
-                    PathUtils.getPathToPose(locs.rightCoralStationInside, goalEndSupplier), 
-                    new ConditionalCommand(
-                        PathUtils.getPathToPose(locs.rightCoralStationOutside, goalEndSupplier), 
-                            PathUtils.getPathToPose(locs.rightCoralStationInside, goalEndSupplier), 
-                        () -> preferredCoralStation == CoralStation.OUTSIDERIGHT),
-                    () -> preferredCoralStation == CoralStation.INSIDERIGHT),
-                () -> preferredCoralStation == CoralStation.OUTSIDELEFT), 
-            () -> preferredCoralStation == CoralStation.INSIDELEFT);
-    }
+    // public static Command getPathToPreferredCoralStation() {
+    //     KnownLocations locs = KnownLocations.getKnownLocations();
+    //     Supplier<Double> goalEndSupplier = () -> 0.5;
+    //     return new ConditionalCommand(
+    //         PathUtils.getPathToPose(locs.leftCoralStation, goalEndSupplier), 
+    //         new ConditionalCommand(
+    //             PathUtils.getPathToPose(locs.leftCoralStationOutside, goalEndSupplier), 
+    //             new ConditionalCommand(
+    //                 PathUtils.getPathToPose(locs.rightCoralStation, goalEndSupplier), 
+    //                 new ConditionalCommand(
+    //                     PathUtils.getPathToPose(locs.rightCoralStationOutside, goalEndSupplier), 
+    //                         PathUtils.getPathToPose(locs.rightCoralStation, goalEndSupplier), 
+    //                     () -> preferredCoralStation == CoralStation.OUTSIDERIGHT),
+    //                 () -> preferredCoralStation == CoralStation.INSIDERIGHT),
+    //             () -> preferredCoralStation == CoralStation.OUTSIDELEFT), 
+    //         () -> preferredCoralStation == CoralStation.INSIDELEFT);
+    // }
 
     public static void changePreferredBranchSide(BranchSide side) {
         preferredBranchSide = side;
@@ -319,10 +313,10 @@ public class ReefscapeUtils {
     public static double getTargetHeadingToStation(Pose2d robotPose) {
         KnownLocations locs = KnownLocations.getKnownLocations();
         List<Pose2d> stations = new ArrayList<>();
-        stations.add(locs.leftCoralStationOutside);
-        stations.add(locs.rightCoralStationOutside);
-        stations.add(locs.leftCoralStationInside);
-        stations.add(locs.rightCoralStationInside);
+        // stations.add(locs.leftCoralStationOutside);
+        // stations.add(locs.rightCoralStationOutside);
+        stations.add(locs.leftCoralStation);
+        stations.add(locs.rightCoralStation);
         return robotPose.nearest(stations).getRotation().getDegrees();
     }
     /**
@@ -397,10 +391,10 @@ public class ReefscapeUtils {
     }
 
     public enum CoralStation {
-        INSIDELEFT("insideLeft", KnownLocations.getKnownLocations().leftCoralStationInside),
-        OUTSIDELEFT("outsideLeft", KnownLocations.getKnownLocations().leftCoralStationOutside),
-        INSIDERIGHT("insideRight", KnownLocations.getKnownLocations().rightCoralStationInside),
-        OUTSIDERIGHT("outsideRight", KnownLocations.getKnownLocations().rightCoralStationOutside);
+        LEFT("left", KnownLocations.getKnownLocations().leftCoralStation),
+        // OUTSIDELEFT("outsideLeft", KnownLocations.getKnownLocations().leftCoralStationOutside),
+        RIGHT("right", KnownLocations.getKnownLocations().rightCoralStation);
+        // OUTSIDERIGHT("outsideRight", KnownLocations.getKnownLocations().rightCoralStationOutside);
      
         public String coralStation;
         public Pose2d stationPose;

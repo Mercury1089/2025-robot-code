@@ -238,7 +238,7 @@ public class DriveCommands {
     public static Command getCoralFromStation(Drivetrain drivetrain, Elevator elevator, CoralIntake coralIntake, Supplier<Pose2d> station) {
         return new ParallelCommandGroup(
             goToCoralStation(drivetrain, station.get()).until(() -> coralIntake.hasCoralEntered()),
-            new InstantCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP))
+            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator)
         );
     }//untested
     /**

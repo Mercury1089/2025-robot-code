@@ -137,14 +137,17 @@ public class AprilTagCamera extends PhotonCamera {
     }
 
     public boolean rejectUpdate(EstimatedRobotPose estimatedPose) {
-        double tagArea = 0.0;
         List<PhotonTrackedTarget> usedTags = estimatedPose.targetsUsed;
 
+        double largestArea = 0.0;
+
         for (PhotonTrackedTarget t : usedTags) {
-            tagArea += t.getArea();
+            if (t.getArea() > largestArea) {
+                largestArea = t.getArea();
+            }
         }
 
-        if (tagArea < 0.25) {
+        if (largestArea < 10.0) {
             return true;
         }
         

@@ -10,14 +10,21 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SWERVE;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 //import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 
 public class PathUtils {
 
@@ -93,20 +100,22 @@ public class PathUtils {
      * @param path The PathPlannerPath to generate the Trajectory from.
      * @return The generated Trajectory.
      */
-    // public static Trajectory TrajectoryFromPath(PathPlannerPath path) {
-    //     PathPlannerTrajectory ppTrajectory = path.getTrajectory(new ChassisSpeeds(), path.getPreviewStartingHolonomicPose().getRotation());
-    //     List<Trajectory.State> states = new ArrayList<Trajectory.State>();
-    //     for(PathPlannerTrajectory.State pState : ppTrajectory.getStates()) {
-    //         states.add(new Trajectory.State(
-    //             pState.timeSeconds,
-    //             pState.velocityMps,
-    //             pState.accelerationMpsSq,
-    //             new Pose2d(pState.positionMeters, pState.heading),
-    //             pState.curvatureRadPerMeter                
-    //         ));
-    //     }
-    //     return new Trajectory(states);
-    // }
+    public static Trajectory TrajectoryFromPath(PathPlannerPath path, RobotConfig config) {
+        PathPlannerTrajectory traj = path.generateTrajectory(new ChassisSpeeds(0.0,0.0,0.0), path.getInitialHeading(), config);
+        List<Trajectory.State> states = new ArrayList<Trajectory.State>();
+        for (PathPlannerTrajectoryState state : traj.getStates()) {
+            states.add(
+              new State(
+                state.timeSeconds,
+                state.linearVelocity,
+                0.0,
+                state.pose,
+                0.0
+              )
+            );
+        }
+        return new Trajectory(states);
+    }
 
 
 }
