@@ -171,12 +171,13 @@ public class Elevator extends SubsystemBase {
     LEVEL3(13.1, "level3"),//increased by 0.2
     LEVEL2(7.25, "level2"), // old 7.14
     LEVEL1(5.07, "level1"), // check this
-    HOME(-0.15, "home"),
+    HOME(-0.20, "home"),
     L2_ALGAE(5.9, "level2Algae"), // check
     L3_ALGAE(10.75, "level3Algae"), // check
     CORAL_STATION(0.0, "coralStation"),
-    SAFE_POS(7.14, "safePos"),
-    PROCESSOR(0.0, "processor");
+    SAFE_POS(10.17, "safePos"),
+    PROCESSOR(0.0, "processor"),
+    POST_CORAL(4.5, "postCoral");
     
     public final double degreePos;
     public final String lev;

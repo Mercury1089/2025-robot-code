@@ -196,7 +196,7 @@ public class DriveCommands {
                     new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator), 
                     new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL3), elevator), 
                     () -> ReefscapeUtils.getPreferredLevel() != ElevatorPosition.LEVEL4)
-            ).until(() -> drivetrain.isAtPose(branch.get(), 0.0254,0.0254)),
+            ).until(() -> drivetrain.isAtPose(branch.get(), 0.0254)),
             new ParallelCommandGroup(
                 goToPose(drivetrain, branch),
                 new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)

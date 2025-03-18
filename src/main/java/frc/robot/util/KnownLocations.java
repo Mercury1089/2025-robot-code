@@ -97,9 +97,9 @@ public class KnownLocations {
     public static final double CORAL_STATION_DISTANCE_X = 19.0;
     public static final double CORAL_STATION_DISTANCE_Y = 1.0;
 
-    public final double X_OFFSET = 15.5;
-    public final double Y_OFFSET = 0.25;
-    public final double BIGGER_Y_OFFSET = 12.75;
+    public final double X_OFFSET = 13.5;
+    public final double Y_OFFSET = -0.62; //.25
+    public final double BIGGER_Y_OFFSET = 13.38;
     public final double ZONE_X_OFFSET = 36.0;
 
     /**

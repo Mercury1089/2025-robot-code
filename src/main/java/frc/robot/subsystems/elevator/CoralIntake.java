@@ -85,7 +85,8 @@ public class CoralIntake extends SubsystemBase {
         SLOW_INTAKE(0.3),
         BRING_BACK(-0.1),
         OUTTAKE(1.0),
-        STOP(0.0);
+        STOP(0.0),
+        L1_OUTTAKE(0.7);
 
         public final double speed;
 

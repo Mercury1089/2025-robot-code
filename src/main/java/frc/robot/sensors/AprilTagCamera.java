@@ -147,7 +147,7 @@ public class AprilTagCamera extends PhotonCamera {
             }
         }
 
-        if (largestArea < 10.0) {
+        if (largestArea < 0.15) {
             return true;
         }
         

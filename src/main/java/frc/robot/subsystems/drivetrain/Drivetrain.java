@@ -77,12 +77,12 @@ public class Drivetrain extends SubsystemBase {
 
   private Transform3d leftCamTransform3d = new Transform3d(
     new Translation3d(Units.inchesToMeters(9.0), Units.inchesToMeters(12.375), Units.inchesToMeters(9.0)), 
-    new Rotation3d(0.0, Rotation2d.fromDegrees(10).getRadians(), Rotation2d.fromDegrees(0).getRadians())
+    new Rotation3d(0.0, Rotation2d.fromDegrees(13).getRadians(), Rotation2d.fromDegrees(0).getRadians())
   );
 
   private Transform3d rightCamTransform3d = new Transform3d(
     new Translation3d(Units.inchesToMeters(9.0), Units.inchesToMeters(1.0), Units.inchesToMeters(9.0)), 
-    new Rotation3d(0.0, Rotation2d.fromDegrees(10).getRadians(), Rotation2d.fromDegrees(0).getRadians())
+    new Rotation3d(0.0, Rotation2d.fromDegrees(13).getRadians(), Rotation2d.fromDegrees(0).getRadians())
   );
     
   private Transform3d backCamTransform3d = new Transform3d(

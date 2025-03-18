@@ -129,7 +129,6 @@ public class RobotContainer {
     /**
      * CORAL MECHANISM TRIGGERS
      */
-
     Trigger hasCoral = new Trigger(() -> coralIntake.hasCoral());
     Trigger noCoralPresent = new Trigger(() -> coralIntake.noCoralPresent() && !coralIntake.isEjecting());
     Trigger isCoralEntering = new Trigger(() -> coralIntake.isCoralEntering() && !coralIntake.isEjecting());
@@ -181,11 +180,15 @@ public class RobotContainer {
     /**
      * MANUAL CONTROL
      */
+    left8.whileTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake));
+    // left9.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL1), elevator));
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     right2.onTrue(drivetrain.getDefaultCommand());
     right2.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isInPosition()));
     right8.onTrue(new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator));
-    right9.onTrue(new InstantCommand(() -> coralIntake.setEjecting(true), coralIntake));
+    // right9.onTrue(new InstantCommand(() -> coralIntake.setEjecting(true), coralIntake));
+    // fix intake (if coral is put in between auton and teleop itll get stuck and we need to unstuck it)
+    right9.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake).until(() -> coralIntake.hasCoral()));
     right10.onTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.25)));
 
     /**
