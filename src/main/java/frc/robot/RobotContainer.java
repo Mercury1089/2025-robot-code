@@ -116,15 +116,18 @@ public class RobotContainer {
     gamepadHID = new GenericHID(DS_USB.GAMEPAD);
     configureBindings();
 
+    elevator = new Elevator(); 
+
     drivetrain = new Drivetrain();
     drivetrain.setDefaultCommand(DriveCommands.joyStickDrive(leftJoystickY, leftJoystickX, rightJoystickX, drivetrain));
     drivetrain.resetGyro();
-
-    elevator = new Elevator(); 
+    
     elevator.setDefaultCommand(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator));
 
     coralIntake = new CoralIntake();
     coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
+    
+    auton = new Autons(drivetrain, coralIntake, elevator);
 
     /**
      * CORAL MECHANISM TRIGGERS
@@ -171,16 +174,12 @@ public class RobotContainer {
     articulator = new AlgaeArticulator();
     articulator.setDefaultCommand(new RunCommand(() -> articulator.setPosition(ArticulatorPosition.IN), articulator));
 
-    
     leds = new RobotModeLEDs();
-
-    auton = new Autons(drivetrain, coralIntake, elevator);
-
 
     /**
      * MANUAL CONTROL
      */
-    left8.whileTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake));
+    // left8.whileTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.L1_OUTTAKE), coralIntake));
     // left9.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL1), elevator));
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     right2.onTrue(drivetrain.getDefaultCommand());
@@ -189,7 +188,8 @@ public class RobotContainer {
     // right9.onTrue(new InstantCommand(() -> coralIntake.setEjecting(true), coralIntake));
     // fix intake (if coral is put in between auton and teleop itll get stuck and we need to unstuck it)
     right9.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake).until(() -> coralIntake.hasCoral()));
-    right10.onTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.25)));
+    right10.whileTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.25)));
+    right11.onTrue(new InstantCommand(() -> elevator.resetEncoders()));
 
     /**
      * TARGET DRIVE BUTTONS & AUTO SCORE
@@ -222,6 +222,11 @@ public class RobotContainer {
     level2BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)));
     level3BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL3)));
     level4BTN.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)));
+
+    gamepadA.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL1)));
+    gamepadB.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL2)));
+    gamepadY.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL3)));
+    gamepadX.onTrue(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)));
 
     initializeTriggers();
   }

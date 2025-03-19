@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 // import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.CoralIntake;
@@ -36,6 +37,7 @@ import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.util.KnownLocations;
 import frc.robot.util.PathUtils;
 import frc.robot.util.ReefscapeUtils;
+import frc.robot.util.TargetUtils;
 import frc.robot.util.ReefscapeUtils.CoralStation;
 
 public class Autons {
@@ -212,32 +214,51 @@ public class Autons {
         SequentialCommandGroup autonCommandGroup = new SequentialCommandGroup();
         autonCommandGroup.addCommands(new InstantCommand(() -> ReefscapeUtils.changePreferredLevel(ElevatorPosition.LEVEL4)));
 
+        //giant mess sponsored by lucas and megh
         switch (autoType) {
             case MIDDLE:
                 autonCommandGroup.addCommands(
-                    AutoBuilder.followPath(firstZonePath),
-                    DriveCommands.driveAndScoreAtBranch(drivetrain, () -> firstBranch.getBranch(), elevator, coralIntake),
+                    AutoBuilder.followPath(firstZonePath).until(() -> TargetUtils.getDistanceToPoint(drivetrain.getPose(), firstBranch.getBranch().getTranslation()) < 1),
+                    DriveCommands.driveAndScoreAtBranchAuton(drivetrain, () -> firstBranch.getBranch(), elevator, coralIntake),
                     new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator)
                 );
                 break;
             default:
                 autonCommandGroup.addCommands(
-                    AutoBuilder.followPath(firstZonePath),
-                    DriveCommands.driveAndScoreAtBranch(drivetrain, () -> firstBranch.getBranch(), elevator, coralIntake),
+                    new ParallelCommandGroup(
+                        AutoBuilder.followPath(firstZonePath),
+                        new SequentialCommandGroup(
+                            new WaitCommand(0.5),
+                            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL4))
+                        )
+                    ).until(() -> TargetUtils.getDistanceToPoint(drivetrain.getPose(), firstBranch.getBranch().getTranslation()) < 1),
+                    DriveCommands.driveAndScoreAtBranchAuton(drivetrain, () -> firstBranch.getBranch(), elevator, coralIntake),
                     new ParallelCommandGroup(
                         AutoBuilder.followPath(firstStationPath),
                         new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator)
                     ).until(() -> coralIntake.hasCoralEntered()),
 
-                    AutoBuilder.followPath(secondZonePath),
-                    DriveCommands.driveAndScoreAtBranch(drivetrain, () -> secondBranch.getBranch(), elevator, coralIntake),
+                    new ParallelCommandGroup(
+                        AutoBuilder.followPath(secondZonePath),
+                        new SequentialCommandGroup(
+                            new WaitCommand(0.75),
+                            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL4))
+                        )
+                    ).until(() -> TargetUtils.getDistanceToPoint(drivetrain.getPose(), secondBranch.getBranch().getTranslation()) < 1),
+                    DriveCommands.driveAndScoreAtBranchAuton(drivetrain, () -> secondBranch.getBranch(), elevator, coralIntake),
                     new ParallelCommandGroup(
                         AutoBuilder.followPath(secondStationPath),
                         new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator)
                     ).until(() -> coralIntake.hasCoralEntered()),
 
-                    AutoBuilder.followPath(thirdZonePath),
-                    DriveCommands.driveAndScoreAtBranch(drivetrain, () -> thirdBranch.getBranch(), elevator, coralIntake)
+                    new ParallelCommandGroup(
+                        AutoBuilder.followPath(thirdZonePath),
+                        new SequentialCommandGroup(
+                            new WaitCommand(0.75),
+                            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL4))
+                        )
+                    ).until(() -> TargetUtils.getDistanceToPoint(drivetrain.getPose(), thirdBranch.getBranch().getTranslation()) < 1),
+                    DriveCommands.driveAndScoreAtBranchAuton(drivetrain, () -> thirdBranch.getBranch(), elevator, coralIntake)
                 );
                 break;
         }

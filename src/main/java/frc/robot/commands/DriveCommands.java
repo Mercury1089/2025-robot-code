@@ -194,9 +194,33 @@ public class DriveCommands {
                 goToPose(drivetrain, branch),
                 new ConditionalCommand(
                     new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator), 
-                    new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL3), elevator), 
+                    new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL3), elevator),
                     () -> ReefscapeUtils.getPreferredLevel() != ElevatorPosition.LEVEL4)
-            ).until(() -> drivetrain.isAtPose(branch.get(), 0.0254)),
+            ).until(() -> drivetrain.isAtPose(branch.get(), 0.03)),
+            new ParallelCommandGroup(
+                goToPose(drivetrain, branch),
+                new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
+            ).until(() -> elevator.isInPosition()),
+            new ParallelCommandGroup(
+                new InstantCommand(() -> coralIntake.setEjecting(true)),
+                new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
+            ).until(() -> coralIntake.noCoralPresent()),
+            new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isSafe())
+        );
+    }
+
+    /**
+    * input: Sensors, Human Input (Preferred Branch), Human Input (Preferred Level)
+    * SELECT BRANCH AND ZONE BEFORE USING
+    * @param : Drivetrain, Elevator, and Coral Intake
+    * @return : Returns Sequential Command Group 
+    */
+    public static Command driveAndScoreAtBranchAuton(Drivetrain drivetrain, Supplier<Pose2d> branch, Elevator elevator, CoralIntake coralIntake) {
+        return new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                goToPose(drivetrain, branch),
+                new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
+            ).until(() -> drivetrain.isAtPose(branch.get(), 0.03)),
             new ParallelCommandGroup(
                 goToPose(drivetrain, branch),
                 new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)

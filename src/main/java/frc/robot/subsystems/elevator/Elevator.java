@@ -169,13 +169,13 @@ public class Elevator extends SubsystemBase {
   public enum ElevatorPosition {
     LEVEL4(20.85,"level4"),
     LEVEL3(13.1, "level3"),//increased by 0.2
-    LEVEL2(7.25, "level2"), // old 7.14
+    LEVEL2(7.75, "level2"), // old 7.14, 7.25
     LEVEL1(5.07, "level1"), // check this
     HOME(-0.20, "home"),
-    L2_ALGAE(5.9, "level2Algae"), // check
-    L3_ALGAE(10.75, "level3Algae"), // check
+    L2_ALGAE(5.5, "level2Algae"), // check
+    L3_ALGAE(10.8, "level3Algae"), // check
     CORAL_STATION(0.0, "coralStation"),
-    SAFE_POS(10.17, "safePos"),
+    SAFE_POS(14.0, "safePos"),//used to be 11.17
     PROCESSOR(0.0, "processor"),
     POST_CORAL(4.5, "postCoral");
     
