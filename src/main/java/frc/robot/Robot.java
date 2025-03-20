@@ -78,6 +78,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     Command autonCommand = m_robotContainer.getAutonomous().getAutonCommand();
+    // m_robotContainer.getDrivetrain().resetPose(m_robotContainer.getDrivetrain().getPose()); // check this and if we want it
     if (autonCommand != null){
       autonCommand.schedule();
       DriverStation.reportError("Auton is Scheduled", false);

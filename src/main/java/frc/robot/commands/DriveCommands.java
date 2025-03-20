@@ -11,6 +11,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -61,7 +62,7 @@ public class DriveCommands {
               -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
               -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
               -MercMath.squareInput(MathUtil.applyDeadband(angularSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-              false)
+              fieldRelative)
           , drivetrain);
     } 
     // /**
@@ -110,13 +111,23 @@ public class DriveCommands {
 
     public static Command targetDriveToClosestAlgaePickUp(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
         Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
+        Supplier<Transform2d> closestTagTransform = () -> new Transform2d(drivetrain.getPose(), drivetrain.getCurrentZoneTagPose());
         return new RunCommand(
                 () -> drivetrain.drive(
                   -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
                   -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
                   drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), Rotation2d.fromDegrees(heading.get()).rotateBy(Rotation2d.fromDegrees(180)).getDegrees()),
                   true)
-              , drivetrain);
+              , drivetrain).andThen(
+                new RunCommand(
+                    () -> drivetrain.drive(
+                        drivetrain.getXController().calculate(closestTagTransform.get().getX(), 0.0),
+                        // dont negate the Y as you want to drive closer to reef for pick which is driving backwards
+                        MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+                        0.0,
+                        false)
+                    , drivetrain)
+              );
     }
     /**
     * @param : Drivetrain, Pose2d Supplier 
