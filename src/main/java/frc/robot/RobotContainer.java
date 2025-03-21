@@ -208,9 +208,9 @@ public class RobotContainer {
      * ALGAE BUTTONS
      */
     left3.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
-    gamepadRT.onTrue(ElevatorCommands.getAlgaeRemovalCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone()))
+    gamepadLT.onTrue(ElevatorCommands.getAlgaeRemovalCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone()))
       .onFalse(new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator));
-    gamepadLT.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).alongWith(
+    gamepadRT.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).alongWith(
       new RunCommand(() -> articulator.setPosition(ArticulatorPosition.IN), articulator)
     ));
     gamepadRB.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
