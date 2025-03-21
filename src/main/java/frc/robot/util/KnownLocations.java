@@ -240,7 +240,7 @@ public class KnownLocations {
             Pose2d middleFictionalTagPose = new Pose2d(averageX, averageY, Rotation2d.fromDegrees(180.0));
             
             leftStart = new Pose2d(topTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(-135.0));
-            middleStart = new Pose2d(middleFictionalTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(0));
+            middleStart = new Pose2d(middleFictionalTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(180));
             rightStart = new Pose2d(bottomTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(135.0));
 
             Pose2d processorTagPose = getFieldLayout().getTagPose(16).get().toPose2d();
@@ -316,7 +316,7 @@ public class KnownLocations {
             Pose2d middleFictionalTagPose = new Pose2d(averageX, averageY, Rotation2d.fromDegrees(0.0));
             
             rightStart = new Pose2d(topTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(-45.0));
-            middleStart = new Pose2d(middleFictionalTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(180));
+            middleStart = new Pose2d(middleFictionalTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(0));
             leftStart = new Pose2d(bottomTagPose.transformBy(new Transform2d(Units.inchesToMeters(37.5), 0.0, Rotation2d.fromDegrees(0.0))).getTranslation(), Rotation2d.fromDegrees(45.0));
 
             Pose2d processorTagPose = getFieldLayout().getTagPose(3).get().toPose2d();

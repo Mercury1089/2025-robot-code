@@ -525,6 +525,10 @@ public class Drivetrain extends SubsystemBase {
     targetHeadingToReef = ReefscapeUtils.getTargetHeadingToReef(getPose());
     targetHeadingToStation = ReefscapeUtils.getTargetHeadingToStation(getPose());
     currentZoneTagPose = KnownLocations.getFieldLayout().getTagPose(ReefscapeUtils.getCurrentRobotZoneAprilTag()).get().toPose2d();
+    Pose2d newDrivetrainPose = getPose().relativeTo(getCurrentZoneTagPose());
+
+    SmartDashboard.putNumber("Drivetrain/newPoseHeading", newDrivetrainPose.getRotation().getDegrees());
+    SmartDashboard.putNumber("Drivetrain/newHeadingY", newDrivetrainPose.getY());
 
     SmartDashboard.putNumber("Drivetrain/CurrentPose X", getPose().getX());
     SmartDashboard.putNumber("Drivetrain/CurrentPose Y", getPose().getY());

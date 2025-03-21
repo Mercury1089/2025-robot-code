@@ -110,24 +110,26 @@ public class DriveCommands {
     }
 
     public static Command targetDriveToClosestAlgaePickUp(Supplier<Double> xSpeedSupplier, Supplier<Double> ySpeedSupplier, Drivetrain drivetrain) {
-        Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
-        Supplier<Transform2d> closestTagTransform = () -> new Transform2d(drivetrain.getPose(), drivetrain.getCurrentZoneTagPose());
-        return new RunCommand(
-                () -> drivetrain.drive(
-                  -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-                  -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-                  drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), Rotation2d.fromDegrees(heading.get()).rotateBy(Rotation2d.fromDegrees(180)).getDegrees()),
-                  true)
-              , drivetrain).andThen(
-                new RunCommand(
+        // Supplier<Double> heading = () -> drivetrain.getTargetHeadingToReef();
+        Supplier<Pose2d> newDrivetrainPose = () -> drivetrain.getPose().relativeTo(drivetrain.getCurrentZoneTagPose()).rotateBy(Rotation2d.fromDegrees(180.0));
+        Supplier<Double> invert = () -> ReefscapeUtils.getCurrentRobotZone() == RobotZone.BARGE || ReefscapeUtils.getCurrentRobotZone() == RobotZone.BARGE_LEFT || ReefscapeUtils.getCurrentRobotZone() == RobotZone.BARGE_RIGHT ?
+            -1.0 : 1.0;
+        // Supplier<Transform2d> closestTagTransform = () -> new Transform2d(new Pose2d(), newDrivetrainPose.get());
+        // return new RunCommand(
+        //         () -> drivetrain.drive(
+        //           -MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+        //           -MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+        //           drivetrain.getRotationalController().calculate(drivetrain.getPose().getRotation().getDegrees(), Rotation2d.fromDegrees(heading.get()).rotateBy(Rotation2d.fromDegrees(180)).getDegrees()),
+        //           true)
+        //       , drivetrain).andThen(
+              return new RunCommand(
                     () -> drivetrain.drive(
-                        drivetrain.getXController().calculate(closestTagTransform.get().getX(), 0.0),
-                        // dont negate the Y as you want to drive closer to reef for pick which is driving backwards
-                        MercMath.squareInput(MathUtil.applyDeadband(ySpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
-                        0.0,
+                        // dont negate the X as you want to drive closer to reef for pick which is driving backwards
+                        invert.get() * MercMath.squareInput(MathUtil.applyDeadband(xSpeedSupplier.get(), SWERVE.JOYSTICK_DEADBAND)),
+                        drivetrain.getYController().calculate(newDrivetrainPose.get().getY(), Units.inchesToMeters(2.0)),
+                        drivetrain.getRotationalController().calculate(newDrivetrainPose.get().getRotation().getDegrees(), 0.0),
                         false)
-                    , drivetrain)
-              );
+                    , drivetrain);
     }
     /**
     * @param : Drivetrain, Pose2d Supplier 
