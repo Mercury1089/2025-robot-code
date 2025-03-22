@@ -137,6 +137,8 @@ public class RobotContainer {
     Trigger isCoralEntering = new Trigger(() -> coralIntake.isCoralEntering() && !coralIntake.isEjecting());
     Trigger isCoralExiting = new Trigger(() -> coralIntake.isCoralExiting() && !coralIntake.isEjecting());
     Trigger ejecting = new Trigger(() -> coralIntake.isEjecting());
+    // Trigger ejectingL4 = new Trigger(() -> coralIntake.isEjecting());
+    // Trigger ejectingNotL4 = new Trigger(() -> coralIntake.isEjecting());
 
     Trigger readyToScore = new Trigger(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel()) &&
                                             drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneLeftBranch(), 0.0254) && 
@@ -162,6 +164,16 @@ public class RobotContainer {
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE), coralIntake)
     );
 
+    //ejectingL4.whileTrue(
+    //  new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKEL4), coralIntake)
+    //);
+
+    //ejectingNotL4.whileTrue(
+    //  new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE), coralIntake)
+    //);
+
+    
+
     Trigger fidoOff = new Trigger(() -> !leds.isFIDOEnabled() && DriverStation.isTeleop());
 
     // gamepadA.and(hasCoral.and(hasCoralEntered)).onTrue(new RunCommand(() -> coralIntake.spitCoral(), coralIntake).until(() -> coralIntake.noCoralPresent()).andThen(
@@ -179,7 +191,7 @@ public class RobotContainer {
     /**
      * MANUAL CONTROL
      */
-    left8.whileTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.L1_OUTTAKE), coralIntake));
+    // left8.whileTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.L1_OUTTAKE), coralIntake));
     // left9.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL1), elevator));
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     right2.onTrue(drivetrain.getDefaultCommand());
@@ -210,7 +222,7 @@ public class RobotContainer {
     left3.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
     gamepadLT.onTrue(ElevatorCommands.getAlgaeRemovalCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone()));
     gamepadRT.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).alongWith(
-      new RunCommand(() -> articulator.setPosition(ArticulatorPosition.IN), articulator)//when do we hit this?
+      new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator)
     ));
     gamepadRB.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
     gamepadLB.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(1.5));
