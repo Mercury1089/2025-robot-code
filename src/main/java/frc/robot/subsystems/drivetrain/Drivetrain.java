@@ -251,7 +251,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldRelative, boolean rateLimit) {
-    drive(xSpeed, ySpeed, angularSpeed, fieldRelative, rateLimit, () -> this.getRotation(this.gyroOffset));
+    drive(xSpeed, ySpeed, angularSpeed, fieldRelative, rateLimit, () -> this.getPose().getRotation().plus(KnownLocations.getKnownLocations().zeroGyroRotation));
   }
 
   public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldRelative, boolean rateLimit, Supplier<Rotation2d> rotationSupplier) {
@@ -561,6 +561,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Drivetrain/fLeftY", KnownLocations.getKnownLocations().rightCloseSideLeftBranch.getY());
     SmartDashboard.putBoolean("Drivetrain/isLeftCamUpdating", leftResult.isPresent() && !leftCam.rejectUpdate(leftResult.get()));
     SmartDashboard.putBoolean("Drivetrain/isRightCamUpdating", rightResult.isPresent() && !rightCam.rejectUpdate(rightResult.get()));
-    
+    SmartDashboard.putBoolean("Drivetrain/isAtLeftBranch", isAtPose(ReefscapeUtils.getLeftBranch(ReefscapeUtils.getCurrentRobotZone()), 0.0508));
+    SmartDashboard.putBoolean("Drivetrain/isAtRightBranch", isAtPose(ReefscapeUtils.getRightBranch(ReefscapeUtils.getCurrentRobotZone()), 0.0508));
   }
 }

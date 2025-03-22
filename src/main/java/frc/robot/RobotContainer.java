@@ -179,7 +179,7 @@ public class RobotContainer {
     /**
      * MANUAL CONTROL
      */
-    // left8.whileTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.L1_OUTTAKE), coralIntake));
+    left8.whileTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.L1_OUTTAKE), coralIntake));
     // left9.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL1), elevator));
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     right2.onTrue(drivetrain.getDefaultCommand());
@@ -189,7 +189,7 @@ public class RobotContainer {
     // fix intake (if coral is put in between auton and teleop itll get stuck and we need to unstuck it)
     right9.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake).until(() -> coralIntake.hasCoral()));
     right10.whileTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.25)));
-    right11.onTrue(new InstantCommand(() -> elevator.resetEncoders()));
+    right11.onTrue(new InstantCommand(() -> elevator.resetEncoders()).ignoringDisable(true));
 
     /**
      * TARGET DRIVE BUTTONS & AUTO SCORE
@@ -208,10 +208,9 @@ public class RobotContainer {
      * ALGAE BUTTONS
      */
     left3.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
-    gamepadLT.onTrue(ElevatorCommands.getAlgaeRemovalCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone()))
-      .onFalse(new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator));
+    gamepadLT.onTrue(ElevatorCommands.getAlgaeRemovalCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone()));
     gamepadRT.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).alongWith(
-      new RunCommand(() -> articulator.setPosition(ArticulatorPosition.IN), articulator)
+      new RunCommand(() -> articulator.setPosition(ArticulatorPosition.IN), articulator)//when do we hit this?
     ));
     gamepadRB.onTrue(new RunCommand(() -> algaeIntake.intakeAlgae(), algaeIntake));
     gamepadLB.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(1.5));
