@@ -136,9 +136,9 @@ public class RobotContainer {
     Trigger noCoralPresent = new Trigger(() -> coralIntake.noCoralPresent() && !coralIntake.isEjecting());
     Trigger isCoralEntering = new Trigger(() -> coralIntake.isCoralEntering() && !coralIntake.isEjecting());
     Trigger isCoralExiting = new Trigger(() -> coralIntake.isCoralExiting() && !coralIntake.isEjecting());
-    Trigger ejecting = new Trigger(() -> coralIntake.isEjecting());
-    // Trigger ejectingL4 = new Trigger(() -> coralIntake.isEjecting());
-    // Trigger ejectingNotL4 = new Trigger(() -> coralIntake.isEjecting());
+    // Trigger ejecting = new Trigger(() -> coralIntake.isEjecting());
+    Trigger ejectingL4 = new Trigger(() -> coralIntake.isEjecting() && ReefscapeUtils.getPreferredLevel() == ElevatorPosition.LEVEL4);
+    Trigger ejectingNotL4 = new Trigger(() -> coralIntake.isEjecting() && ReefscapeUtils.getPreferredLevel() != ElevatorPosition.LEVEL4);
 
     Trigger readyToScore = new Trigger(() -> elevator.isAtPosition(ReefscapeUtils.getPreferredLevel()) &&
                                             drivetrain.isAtPose(ReefscapeUtils.getCurrentZoneLeftBranch(), 0.0254) && 
@@ -160,17 +160,17 @@ public class RobotContainer {
       new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake)
     );
 
-    ejecting.whileTrue(
-      new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE), coralIntake)
+    // ejecting.whileTrue(
+    //   new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE), coralIntake)
+    // );
+
+    ejectingL4.whileTrue(
+     new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKEL4), coralIntake)
     );
 
-    //ejectingL4.whileTrue(
-    //  new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKEL4), coralIntake)
-    //);
-
-    //ejectingNotL4.whileTrue(
-    //  new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE), coralIntake)
-    //);
+    ejectingNotL4.whileTrue(
+     new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.OUTTAKE), coralIntake)
+    );
 
     
 
