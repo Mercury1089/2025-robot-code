@@ -143,6 +143,8 @@ public final class Constants {
     public static final int ALGAE_ARTICULATOR = 22;
     public static final int ALGAE_INTAKE = 23;
 
+    public static final int CLIMBER = 24;
+
     private CAN() {} 
   }
 

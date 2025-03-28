@@ -99,7 +99,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setSpeed(Supplier<Double> speedSupplier) {
-    leftMotor.set((speedSupplier.get()));
+    leftMotor.set((speedSupplier.get() * 0.5));
   }
 
   public void setPosition(Supplier<ElevatorPosition> pos) {

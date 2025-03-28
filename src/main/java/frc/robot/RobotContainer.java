@@ -9,6 +9,7 @@ import frc.robot.Constants.JOYSTICK_BUTTONS;
 import frc.robot.commands.Autons;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
+import frc.robot.subsystems.Climber;
 // import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.RobotModeLEDs;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -99,6 +100,7 @@ public class RobotContainer {
   private AlgaeIntake algaeIntake;
   private RobotModeLEDs leds;
   private AlgaeArticulator articulator;
+  private Climber climber;
 
   private double manualThreshold = 0.2;
   
@@ -122,10 +124,14 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(DriveCommands.joyStickDrive(leftJoystickY, leftJoystickX, rightJoystickX, drivetrain));
     drivetrain.resetGyro();
     
-    elevator.setDefaultCommand(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator));
+    // elevator.setDefaultCommand(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator));
+    elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
 
     coralIntake = new CoralIntake();
     coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
+
+    climber = new Climber();
+    climber.setDefaultCommand(new RunCommand(() -> climber.changePos(), climber));
     
     auton = new Autons(drivetrain, coralIntake, elevator);
 
@@ -193,6 +199,8 @@ public class RobotContainer {
      */
     // left8.whileTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.L1_OUTTAKE), coralIntake));
     // left9.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL1), elevator));
+    left8.onTrue(new RunCommand(() -> climber.lockRatchet(), climber));
+    left9.onTrue(new RunCommand(() -> climber.unlockRatchet(), climber));
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     right2.onTrue(drivetrain.getDefaultCommand());
     right2.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isInPosition()));
@@ -202,6 +210,8 @@ public class RobotContainer {
     right9.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake).until(() -> coralIntake.hasCoral()));
     right10.whileTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.25)));
     right11.onTrue(new InstantCommand(() -> elevator.resetEncoders()).ignoringDisable(true));
+
+
 
     /**
      * TARGET DRIVE BUTTONS & AUTO SCORE
@@ -415,6 +425,10 @@ public class RobotContainer {
         rightJoystickY = () -> rightJoystick.getY();
 
 
+  }
+
+  public CoralIntake getCoralIntake() {
+    return coralIntake;
   }
 
   /**
