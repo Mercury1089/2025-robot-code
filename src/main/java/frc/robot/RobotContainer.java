@@ -124,8 +124,8 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(DriveCommands.joyStickDrive(leftJoystickY, leftJoystickX, rightJoystickX, drivetrain));
     drivetrain.resetGyro();
     
-    // elevator.setDefaultCommand(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator));
-    elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
+    elevator.setDefaultCommand(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator));
+    // elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
 
     coralIntake = new CoralIntake();
     coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
