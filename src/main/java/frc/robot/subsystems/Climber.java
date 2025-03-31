@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 
 import java.util.function.Supplier;
@@ -8,9 +9,11 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CAN;
@@ -18,16 +21,16 @@ import frc.robot.Constants.CAN;
 public class Climber extends SubsystemBase{
 
     private Servo servo;
-    private SparkMax climber;
+    private SparkFlex climber;
     private double lockAngle = 80.0, unlockAngle = 46.0;
 
     private double angle = 0.0;
     
     public Climber() {
-        servo = new Servo(1);
-        climber = new SparkMax(CAN.CLIMBER, MotorType.kBrushless);
+        servo = new Servo(0);
+        climber = new SparkFlex(CAN.CLIMBER, MotorType.kBrushless);
 
-        SparkMaxConfig climberConfig = new SparkMaxConfig();
+        SparkFlexConfig climberConfig = new SparkFlexConfig();
         
         climberConfig
             .idleMode(IdleMode.kBrake)
