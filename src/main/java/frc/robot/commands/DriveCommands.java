@@ -220,7 +220,7 @@ public class DriveCommands {
             ).until(() -> coralIntake.noCoralPresent()),
             new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isSafe())
         );
-    }
+    };
 
     /**
     * input: Sensors, Human Input (Preferred Branch), Human Input (Preferred Level)

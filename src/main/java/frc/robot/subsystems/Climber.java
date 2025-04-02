@@ -34,7 +34,7 @@ public class Climber extends SubsystemBase{
         
         climberConfig
             .idleMode(IdleMode.kBrake)
-            .inverted(false);
+            .inverted(true);
 
         climber.configure(climberConfig, ResetMode.kResetSafeParameters,
             PersistMode.kPersistParameters);
@@ -50,26 +50,19 @@ public class Climber extends SubsystemBase{
         servo.setAngle(unlockAngle);
     }
 
-    public void setSpeed(Supplier<Double> speed) {
-        climber.set(speed.get());
+    public void stopClimber() {
+        climber.set(0.0);
+        lockRatchet();
     }
 
     public void climberOut() {
-        if (servo.getAngle() == lockAngle) {
-            setSpeed(() -> 1.0);
-        } else {
-            lockRatchet();
-            climberOut();
-        }
+        unlockRatchet();
+        climber.set(0.50);
     }
 
     public void climberIn() {
-        if (servo.getAngle() == unlockAngle) {
-            setSpeed(() -> -1.0);
-        } else {
-            unlockRatchet();
-            climberIn();
-        }
+        lockRatchet();
+        climber.set(-0.50);
     }
 
     public void changePos() {

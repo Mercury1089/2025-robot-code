@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -131,7 +132,9 @@ public class RobotContainer {
     coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
 
     climber = new Climber();
-    climber.setDefaultCommand(new RunCommand(() -> climber.changePos(), climber));
+    climber.setDefaultCommand(
+     new RunCommand(() -> climber.stopClimber(), climber) 
+    );
     
     auton = new Autons(drivetrain, coralIntake, elevator);
 
@@ -199,10 +202,19 @@ public class RobotContainer {
      */
     // left8.whileTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.L1_OUTTAKE), coralIntake));
     // left9.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL1), elevator));
-    left8.onTrue(new RunCommand(() -> climber.lockRatchet(), climber));
-    left9.onTrue(new RunCommand(() -> climber.unlockRatchet(), climber));
+    left9.whileTrue(new RunCommand(() -> climber.unlockRatchet(), climber).withTimeout(0.5).andThen(
+      new RunCommand(() -> climber.climberOut(), climber)
+    ));
+    left8.whileTrue(
+      new RunCommand(() -> climber.climberIn(), climber)
+    );
+
+    // left8.onTrue(new RunCommand(() -> climber.lockRatchet(), climber));
+    // left9.onTrue(new RunCommand(() -> climber.unlockRatchet(), climber));
+
     left10.onTrue(new InstantCommand(() -> drivetrain.resetGyro(), drivetrain).ignoringDisable(true));
     right2.onTrue(drivetrain.getDefaultCommand());
+    right2.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(0.75));
     right2.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isInPosition()));
     right8.onTrue(new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator));
     // right9.onTrue(new InstantCommand(() -> coralIntake.setEjecting(true), coralIntake));
