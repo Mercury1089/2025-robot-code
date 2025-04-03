@@ -17,7 +17,7 @@ public class RobotModeLEDs extends SubsystemBase {
   private RobotMode robotMode;
   /** Creates a new GamePieceLEDs. */
   public RobotModeLEDs() {
-    this.blinkin = new Spark(1);
+    this.blinkin = new Spark(0);
     robotMode = RobotMode.FIDODISABLED;
   }
 

@@ -202,12 +202,14 @@ public class RobotContainer {
      */
     // left8.whileTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.L1_OUTTAKE), coralIntake));
     // left9.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.LEVEL1), elevator));
-    left9.whileTrue(new RunCommand(() -> climber.unlockRatchet(), climber).withTimeout(0.5).andThen(
+    left3.whileTrue(new RunCommand(() -> climber.unlockRatchet(), climber).withTimeout(0.5).andThen(
       new RunCommand(() -> climber.climberOut(), climber)
     ));
-    left8.whileTrue(
+    left2.whileTrue(
       new RunCommand(() -> climber.climberIn(), climber)
     );
+
+    left6.onTrue(new InstantCommand(() -> climber.resetEncoder(), climber).ignoringDisable(true));
 
     // left8.onTrue(new RunCommand(() -> climber.lockRatchet(), climber));
     // left9.onTrue(new RunCommand(() -> climber.unlockRatchet(), climber));
@@ -222,6 +224,11 @@ public class RobotContainer {
     right9.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake).until(() -> coralIntake.hasCoral()));
     right10.whileTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.25)));
     right11.onTrue(new InstantCommand(() -> elevator.resetEncoders()).ignoringDisable(true));
+
+    // CLIMB
+    gamepadPOVDownLeft.or(gamepadPOVDown).or(gamepadPOVDownRight).onTrue(new RunCommand(() -> climber.unlockRatchet(), climber).withTimeout(0.5).andThen(
+      new RunCommand(() -> climber.climberOut(), climber)
+    ));
 
 
 
@@ -241,7 +248,7 @@ public class RobotContainer {
     /**
      * ALGAE BUTTONS
      */
-    left3.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
+    // left3.whileTrue(DriveCommands.lockToProcessor(drivetrain, leftJoystickX, elevator, articulator));
     gamepadLT.onTrue(ElevatorCommands.getAlgaeRemovalCommand(elevator, articulator, () -> ReefscapeUtils.getCurrentRobotZone()));
     gamepadRT.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).alongWith(
       new RunCommand(() -> articulator.setPosition(ArticulatorPosition.OUT), articulator)

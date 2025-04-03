@@ -72,7 +72,7 @@ public class Elevator extends SubsystemBase {
     //   .reverseSoftLimit(ARM_SOFT_LIMIT_REV);
     leftConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
-      .pid(1.0 / 3.5,0,0)
+      .pid(1.0 / 3.25,0,0)
       .positionWrappingEnabled(false)
       .outputRange(-1,1);
 
@@ -120,7 +120,7 @@ public class Elevator extends SubsystemBase {
 
   public void setPosition(double pos) {
     setPosition = pos;
-    elevatorClosedLoopController.setReference(pos, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0,1.2);
+    elevatorClosedLoopController.setReference(pos, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0,0.5);
   }
 
   public boolean isAtPosition(double pos) {
