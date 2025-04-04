@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.SWERVE;
 // import frc.robot.sensors.DistanceSensors;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -232,7 +233,10 @@ public class DriveCommands {
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
                 goToPose(drivetrain, branch),
-                new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
+                new SequentialCommandGroup(
+                    new WaitUntilCommand(() -> TargetUtils.getDistanceToPoint(drivetrain.getPose(), branch.get().getTranslation()) < 0.4),
+                    new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator)
+                )
             ).until(() -> drivetrain.isAtPose(branch.get(), 0.03)),
             new ParallelCommandGroup(
                 goToPose(drivetrain, branch),
