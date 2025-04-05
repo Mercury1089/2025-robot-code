@@ -129,7 +129,15 @@ public class RobotContainer {
     // elevator.setDefaultCommand(new RunCommand(() -> elevator.setSpeed(gamepadLeftY), elevator));
 
     coralIntake = new CoralIntake();
-    coralIntake.setDefaultCommand(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake));
+    coralIntake.setDefaultCommand(
+      new ConditionalCommand(
+        new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.STOP), coralIntake),
+        new ConditionalCommand(
+          new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake), 
+          new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.BRING_BACK), coralIntake), 
+          () -> coralIntake.isCoralEntering()), 
+        () -> coralIntake.hasCoral() || coralIntake.noCoralPresent())
+    );
 
     climber = new Climber();
     climber.setDefaultCommand(
@@ -219,14 +227,17 @@ public class RobotContainer {
     right2.onTrue(new RunCommand(() -> algaeIntake.setSpeed(AlgaeSpeed.OUTTAKE), algaeIntake).withTimeout(0.75));
     right2.onTrue(new RunCommand(() -> elevator.setPosition(() -> ElevatorPosition.HOME), elevator).until(() -> elevator.isInPosition()));
     right8.onTrue(new RunCommand(() -> elevator.setPosition(() -> ReefscapeUtils.getPreferredLevel()), elevator));
-    // right9.onTrue(new InstantCommand(() -> coralIntake.setEjecting(true), coralIntake));
+    right9.onTrue(new InstantCommand(() -> coralIntake.setEjecting(true)));
     // fix intake (if coral is put in between auton and teleop itll get stuck and we need to unstuck it)
-    right9.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake).until(() -> coralIntake.hasCoral()));
+    // right9.onTrue(new RunCommand(() -> coralIntake.setSpeed(IntakeSpeed.SLOW_INTAKE), coralIntake).until(() -> coralIntake.hasCoral()));
     right10.whileTrue(new RunCommand(() -> elevator.setSpeed(() -> -0.25)));
     right11.onTrue(new InstantCommand(() -> elevator.resetEncoders()).ignoringDisable(true));
 
     // CLIMB
-    gamepadPOVDownLeft.or(gamepadPOVDown).or(gamepadPOVDownRight).onTrue(new RunCommand(() -> climber.unlockRatchet(), climber).withTimeout(0.5).andThen(
+    // gamepadPOVDownLeft.or(gamepadPOVDown).or(gamepadPOVDownRight).onTrue(new RunCommand(() -> climber.unlockRatchet(), climber).withTimeout(0.5).andThen(
+    //   new RunCommand(() -> climber.climberOut(), climber)
+    // ));
+    gamepadStart.onTrue(new RunCommand(() -> climber.unlockRatchet(), climber).withTimeout(0.5).andThen(
       new RunCommand(() -> climber.climberOut(), climber)
     ));
 

@@ -37,7 +37,8 @@ public class Climber extends SubsystemBase{
         
         climberConfig
             .idleMode(IdleMode.kBrake)
-            .inverted(true);
+            .inverted(true)
+            .openLoopRampRate(0.3);
         climberConfig.softLimit
             .forwardSoftLimitEnabled(true)
             .forwardSoftLimit(43.0);
@@ -70,7 +71,7 @@ public class Climber extends SubsystemBase{
 
     public void climberIn() {
         lockRatchet();
-        climber.set(-0.50);
+        climber.set(-0.75);
     }
 
     public void changePos() {
